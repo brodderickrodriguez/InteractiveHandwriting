@@ -6,10 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 import java.util.Random;
+import java.util.jar.Attributes;
 
 
 // https://stackoverflow.com/questions/16650419/draw-in-canvas-by-finger-android
@@ -32,27 +34,25 @@ public class DrawingView extends View {
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
 
-
-    private void setRandomColor() {
-        Random rnd = new Random();
-        int c = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-        circlePaint.setColor(c);
-        linePaint.setColor(c);
-    } // setRandomColor()
-
-
     public DrawingView(Context c) {
-        super(c);
-        context = c;
+        this(c, null);
+    }
+
+    public DrawingView(Context context, AttributeSet attributes) {
+        super(context, attributes);
+        this.context = context;
         linePath = new Path();
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
         circlePath = new Path();
 
         createLinePaintObject();
         createCirclePaintObject();
-        setRandomColor();
-    } // DrawingView()
+    }
 
+    public void setDrawingColor(int color) {
+        circlePaint.setColor(color);
+        linePaint.setColor(color);
+    }
 
     private void createLinePaintObject() {
         linePaint = new Paint();
@@ -92,7 +92,6 @@ public class DrawingView extends View {
 
 
     private void touchStarted(float x, float y) {
-        setRandomColor();
         linePath.reset();
         linePath.moveTo(x, y);
         mX = x;

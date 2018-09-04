@@ -1,20 +1,31 @@
 package group6.interactivehandwriting;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.View;
 
 
 public class DrawActivity extends Activity {
 
-    DrawingView dv;
-
+    private DrawingView drawingView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dv = new DrawingView(this);
-        setContentView(dv);
-    } // onCreate()
 
+        setContentView(R.layout.activity_draw);
 
-} // DrawActivity()
+        drawingView = findViewById(R.id.drawing_view);
+        drawingView.setDrawingColor(Color.RED);
+    }
+
+    public void setColorRed(View view) {
+        drawingView.setDrawingColor(Color.RED);
+    }
+
+    public void setColorBlue(View view) {
+        drawingView.setDrawingColor(Color.BLUE);
+    }
+
+}

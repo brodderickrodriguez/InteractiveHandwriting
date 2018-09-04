@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">InteractiveHandwriting</string>
+    <string name="title_activity_menu">MenuActivity</string>
+
+    <!-- for the prototype -->
+    <string name="room">Room</string>
+    <string name="username">Username</string>
+    <string name="create_room">Create Room</string>
 </resources>
