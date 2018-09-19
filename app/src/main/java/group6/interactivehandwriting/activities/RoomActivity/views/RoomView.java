@@ -1,4 +1,4 @@
-package group6.interactivehandwriting;
+package group6.interactivehandwriting.activities.RoomActivity.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,7 +17,7 @@ import java.util.jar.Attributes;
 // https://stackoverflow.com/questions/16650419/draw-in-canvas-by-finger-android
 
 
-public class DrawingView extends View {
+public class RoomView extends View {
 
     private Context context;
     private Canvas canvas;
@@ -34,11 +34,11 @@ public class DrawingView extends View {
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
 
-    public DrawingView(Context c) {
+    public RoomView(Context c) {
         this(c, null);
     }
 
-    public DrawingView(Context context, AttributeSet attributes) {
+    public RoomView(Context context, AttributeSet attributes) {
         super(context, attributes);
         this.context = context;
         linePath = new Path();
