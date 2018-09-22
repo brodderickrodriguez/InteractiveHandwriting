@@ -1,9 +1,7 @@
-package group6.interactivehandwriting.activities.MenuActivity;
+package group6.interactivehandwriting.activities.Menu;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
-import group6.interactivehandwriting.R;
 
 public class MenuActivity extends AppCompatActivity {
     @Override
