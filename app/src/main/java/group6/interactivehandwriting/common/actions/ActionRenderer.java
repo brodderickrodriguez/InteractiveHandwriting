@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.services;
+package group6.interactivehandwriting.common.actions;
 
 public class ActionRenderer {
 

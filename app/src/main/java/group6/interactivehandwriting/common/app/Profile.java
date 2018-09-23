@@ -5,4 +5,7 @@ package group6.interactivehandwriting.common.app;
  */
 
 public class Profile {
+    public String getDeviceName() {
+        return ""; // TODO
+    }
 }
