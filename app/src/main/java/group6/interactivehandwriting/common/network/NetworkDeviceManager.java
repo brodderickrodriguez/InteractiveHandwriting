@@ -11,7 +11,6 @@ import java.util.List;
  * Created by JakeL on 9/23/18.
  */
 
-// TODO abstracts device and routing table management, update internals later
 public class NetworkDeviceManager {
     private List<NetworkDeviceEntry> entries;
 
@@ -36,21 +35,29 @@ public class NetworkDeviceManager {
 
     private Boolean addDeviceIfNew(String deviceName) {
         Boolean isDeviceAdded = false;
-        if (!entries.contains(new NetworkDeviceEntry(deviceName))) {
-            entries.add(new NetworkDeviceEntry(deviceName));
+        if (!isRegistered(deviceName)) {
+            registerDevice(deviceName);
             isDeviceAdded = true;
         }
         return isDeviceAdded;
     }
 
+    private Boolean isRegistered(String deviceName) {
+        return entries.contains(new NetworkDeviceEntry(deviceName));
+    }
+
+    private void registerDevice(String deviceName) {
+        entries.add(new NetworkDeviceEntry(deviceName));
+    }
+
     public Boolean disconnectDevice(String deviceName) {
         Boolean deviceWasPresent;
-        deviceWasPresent = entries.remove(deviceName);
+        deviceWasPresent = entries.remove(new NetworkDeviceEntry(deviceName));
         return deviceWasPresent;
     }
 
     public Boolean shouldAcceptConnection(String deviceName) {
-        if (!entries.contains(deviceName)) {
+        if (!isRegistered(deviceName)) {
             return true;
         }
         else {
@@ -58,6 +65,7 @@ public class NetworkDeviceManager {
         }
     }
 
+    // TODO for now this method only returns all the devices it knows
     public List<String> getNeighboringDeviceNames() {
         List<String> deviceNames = new ArrayList<>();
 

@@ -17,4 +17,17 @@ public class NetworkDeviceEntryTest {
         entry.setDeviceName(nextDeviceName);
         assertEquals(nextDeviceName, entry.getDeviceName());
     }
+
+    @Test
+    public void test_equals() {
+        String deviceNameOne = "device1";
+        String deviceNameTwo = "device2";
+        NetworkDeviceEntry entryOne = new NetworkDeviceEntry(deviceNameOne);
+        NetworkDeviceEntry entryTwo = new NetworkDeviceEntry(deviceNameTwo);
+        NetworkDeviceEntry entryEqualsOne = new NetworkDeviceEntry(deviceNameOne);
+
+        assertNotEquals(entryOne, entryTwo);
+        assertEquals(entryOne, entryOne);
+        assertEquals(entryOne, entryEqualsOne);
+    }
 }
