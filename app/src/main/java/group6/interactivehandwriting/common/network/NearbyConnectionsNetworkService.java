@@ -9,9 +9,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import group6.interactivehandwriting.common.app.Profile;
+import group6.interactivehandwriting.common.network.endpoint.Endpoint;
+import group6.interactivehandwriting.common.network.endpoint.NearbyConnectionsEndpoint;
 
 // TODO resolve if certain network components need their own thread
 public class NearbyConnectionsNetworkService implements NetworkService<Payload> {
@@ -21,13 +24,11 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     private ConnectionsClient connectionClient;
 
     private NetworkManager<Payload> networkServiceManager;
-    private NetworkDeviceManager networkDeviceManager;
     private String deviceName;
 
     public NearbyConnectionsNetworkService(Context context, Profile profile) {
         connectionClient = Nearby.getConnectionsClient(context);
         deviceName = profile.getDeviceName();
-        networkDeviceManager = new NetworkDeviceManager();
     }
 
     public void setNetworkServiceManager(NetworkManager<Payload> manager) {
@@ -54,19 +55,25 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
         return new ConnectionLifecycleCallback() {
             @Override
             public void onConnectionInitiated(@NonNull String endpointName, @NonNull ConnectionInfo connectionInfo) {
-                if (networkDeviceManager.shouldAcceptConnection(endpointName)) {
+                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName);
+                boolean shouldAddConnection = networkServiceManager.onConnectionInitiated(endpoint);
+
+                if (shouldAddConnection) {
                     connectionClient.acceptConnection(endpointName, getPayloadCallback());
                 }
             }
 
             @Override
             public void onConnectionResult(@NonNull String endpointName, @NonNull ConnectionResolution connectionResolution) {
-                networkDeviceManager.addDevice(endpointName, connectionResolution.getStatus());
+                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName, connectionResolution);
+                networkServiceManager.onConnectionResult(endpoint);
+
             }
 
             @Override
             public void onDisconnected(@NonNull String endpointName) {
-                networkDeviceManager.disconnectDevice(endpointName);
+                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName);
+                networkServiceManager.onDisconnected(endpoint);
             }
         };
     }
@@ -76,7 +83,8 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
             @Override
             public void onPayloadReceived(@NonNull String endpointName, @NonNull Payload payload) {
                 // TODO add logic for handling destinations that are not neighbors
-                networkServiceManager.receiveMessage(payload);
+                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName);
+                networkServiceManager.receiveMessage(payload, endpoint);
             }
 
             @Override
@@ -125,7 +133,7 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
         return new EndpointDiscoveryCallback() {
             @Override
             public void onEndpointFound(@NonNull String endpointName, @NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
-                if (discoveredEndpointInfo.getEndpointName() == SERVICE_ID) {
+                if (discoveredEndpointInfo.getServiceId().equals(SERVICE_ID)) {
                     Task<Void> requestConnectionTask = connectionClient.requestConnection(
                             deviceName,
                             endpointName,
@@ -185,18 +193,24 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
         };
     }
 
-    public void send(Payload payload) {
-        List<String> endpoints = networkDeviceManager.getNeighboringDeviceNames();
-        connectionClient.sendPayload(endpoints, payload);
-    }
 
     @Override
     public void setNetworkManager(NetworkManager manager) {
-
+        networkServiceManager = (NetworkManager<Payload>) manager;
     }
 
     @Override
-    public void sendMessage(Payload message) {
+    public void sendMessage(Payload message, List<Endpoint> endpoints) {
+        connectionClient.sendPayload(getEndpointNames(endpoints), message);
+    }
 
+    private List<String> getEndpointNames(List<Endpoint> endpoints) {
+        List<String> endpointStrings = new ArrayList<String>();
+
+        for (Endpoint endpoint : endpoints) {
+            endpointStrings.add(endpoint.getName());
+        }
+
+        return endpointStrings;
     }
 }

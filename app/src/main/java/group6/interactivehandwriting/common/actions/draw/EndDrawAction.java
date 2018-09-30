@@ -31,7 +31,7 @@ public class EndDrawAction extends NetworkedByteAction {
 
     @Override
     public NetworkMessageType getType() {
-        return null;
+        return NetworkMessageType.END_DRAW;
     }
 
     @Override

@@ -31,7 +31,7 @@ public class MoveDrawAction extends NetworkedByteAction {
 
     @Override
     public NetworkMessageType getType() {
-        return NetworkMessageType.END_DRAW;
+        return NetworkMessageType.MOVE_DRAW;
     }
 
     @Override

@@ -1,11 +1,13 @@
 package group6.interactivehandwriting.common.network;
 
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.nearby.connection.ConnectionResolution;
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import group6.interactivehandwriting.common.network.endpoint.Endpoint;
+import group6.interactivehandwriting.common.network.endpoint.NearbyConnectionsEndpoint;
 
 /**
  * Created by JakeL on 9/23/18.
@@ -22,24 +24,24 @@ public class NetworkDeviceManager {
         return entries;
     }
 
-    public Boolean addDevice(String deviceName, Status connectionStatus) {
-        Boolean isDeviceAdded = false;
+    public Boolean addDevice(Endpoint endpoint) {
+        NearbyConnectionsEndpoint ncEndpoint = (NearbyConnectionsEndpoint) endpoint;
 
-        int statusCode = connectionStatus.getStatusCode();
+        int statusCode = ncEndpoint.getConnectionResolution().getStatus().getStatusCode();
         if (statusCode == ConnectionsStatusCodes.STATUS_OK) {
-           isDeviceAdded = addDeviceIfNew(deviceName);
+           return addDeviceIfNew(ncEndpoint.getName());
         }
 
-        return isDeviceAdded;
+        return false;
     }
 
     private Boolean addDeviceIfNew(String deviceName) {
-        Boolean isDeviceAdded = false;
+
         if (!isRegistered(deviceName)) {
             registerDevice(deviceName);
-            isDeviceAdded = true;
+            return true;
         }
-        return isDeviceAdded;
+        return false;
     }
 
     private Boolean isRegistered(String deviceName) {
@@ -50,19 +52,14 @@ public class NetworkDeviceManager {
         entries.add(new NetworkDeviceEntry(deviceName));
     }
 
-    public Boolean disconnectDevice(String deviceName) {
+    public Boolean disconnectDevice(Endpoint endpoint) {
         Boolean deviceWasPresent;
-        deviceWasPresent = entries.remove(new NetworkDeviceEntry(deviceName));
+        deviceWasPresent = entries.remove(new NetworkDeviceEntry(endpoint.getName()));
         return deviceWasPresent;
     }
 
-    public Boolean shouldAcceptConnection(String deviceName) {
-        if (!isRegistered(deviceName)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    public Boolean shouldAcceptConnection(Endpoint endpoint) {
+        return !isRegistered(endpoint.getName());
     }
 
     // TODO for now this method only returns all the devices it knows
