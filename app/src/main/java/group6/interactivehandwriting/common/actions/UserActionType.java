@@ -7,8 +7,8 @@ public enum UserActionType {
 
     private int value;
 
-    private UserActionType(int v) {
-        value = v;
+    UserActionType(int n) {
+        value = n;
     }
 
     public int getValue() {

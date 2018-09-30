@@ -1,19 +1,18 @@
 package group6.interactivehandwriting.common.network;
 
-import com.google.android.gms.nearby.connection.Payload;
-
+import group6.interactivehandwriting.common.actions.UserAction;
 import group6.interactivehandwriting.common.exceptions.InvalidPayloadException;
-import group6.interactivehandwriting.common.execptions.UnpackException;
+import group6.interactivehandwriting.common.exceptions.UnpackException;
 
 /**
  * Created by JakeL on 9/19/18.
  */
 
 public interface NetworkMessage<T> {
-    public byte[] pack();
+    public NetworkMessageType getType();
 
-    public T unpack(byte[] payload) throws UnpackException;
+    public T pack();
 
-    public int byteArraySize();
+    public void unpack(T message);
 }
 
