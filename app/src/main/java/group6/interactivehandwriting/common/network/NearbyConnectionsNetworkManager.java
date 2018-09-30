@@ -43,7 +43,6 @@ public class NearbyConnectionsNetworkManager implements NetworkManager<Payload> 
 
     @Override
     public void onConnectionResult(Endpoint endpoint) {
-        NearbyConnectionsEndpoint ncEndpoint = (NearbyConnectionsEndpoint) endpoint;
         networkDeviceManager.addDevice(endpoint);
     }
 

@@ -133,7 +133,7 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
         return new EndpointDiscoveryCallback() {
             @Override
             public void onEndpointFound(@NonNull String endpointName, @NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
-                if (discoveredEndpointInfo.getEndpointName().equals(SERVICE_ID)) {
+                if (discoveredEndpointInfo.getServiceId().equals(SERVICE_ID)) {
                     Task<Void> requestConnectionTask = connectionClient.requestConnection(
                             deviceName,
                             endpointName,
