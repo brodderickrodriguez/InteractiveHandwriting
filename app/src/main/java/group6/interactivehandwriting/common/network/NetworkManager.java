@@ -8,7 +8,7 @@ import group6.interactivehandwriting.common.network.endpoint.Endpoint;
  */
 
 public interface NetworkManager<T> {
-    public void setNetworkService(NearbyConnectionsNetworkService service);
+    public void setNetworkService(NetworkService service);
 
     public void receiveMessage(T serviceMessage, Endpoint endpoint);
 

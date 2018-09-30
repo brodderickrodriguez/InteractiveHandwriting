@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import group6.interactivehandwriting.common.app.Profile;
@@ -199,7 +200,17 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     }
 
     @Override
-    public void sendMessage(Payload message, List<String> endpoints) {
-        connectionClient.sendPayload(endpoints, message);
+    public void sendMessage(Payload message, List<Endpoint> endpoints) {
+        connectionClient.sendPayload(getEndpointNames(endpoints), message);
+    }
+
+    private List<String> getEndpointNames(List<Endpoint> endpoints) {
+        List<String> endpointStrings = new ArrayList<String>();
+
+        for (Endpoint endpoint : endpoints) {
+            endpointStrings.add(endpoint.getName());
+        }
+
+        return endpointStrings;
     }
 }

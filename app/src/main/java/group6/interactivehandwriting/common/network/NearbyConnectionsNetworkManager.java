@@ -11,6 +11,7 @@ import group6.interactivehandwriting.common.network.endpoint.NearbyConnectionsEn
 
 public class NearbyConnectionsNetworkManager implements NetworkManager<Payload> {
     private NetworkDeviceManager networkDeviceManager;
+    private NearbyConnectionsNetworkService networkService;
 
 
     public NearbyConnectionsNetworkManager() {
@@ -19,8 +20,8 @@ public class NearbyConnectionsNetworkManager implements NetworkManager<Payload> 
 
 
     @Override
-    public void setNetworkService(NearbyConnectionsNetworkService service) {
-
+    public void setNetworkService(NetworkService service) {
+        networkService = (NearbyConnectionsNetworkService) service;
     }
 
     @Override
