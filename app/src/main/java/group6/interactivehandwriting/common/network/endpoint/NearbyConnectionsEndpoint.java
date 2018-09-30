@@ -8,6 +8,7 @@ public class NearbyConnectionsEndpoint extends Endpoint {
     private ConnectionResolution connectionResolution;
 
     public NearbyConnectionsEndpoint(String name) {
+        super();
         this.name = name;
     }
 
