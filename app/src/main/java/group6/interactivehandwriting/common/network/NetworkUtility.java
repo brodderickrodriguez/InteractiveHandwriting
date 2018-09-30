@@ -5,6 +5,9 @@ package group6.interactivehandwriting.common.network;
  */
 
 public class NetworkUtility {
+    public static final int BYTES_IN_A_FLOAT = 4;
+    public static final int BYTES_IN_A_INT = 4;
+
     public static String getPayloadTypeName(int enumeratedPayloadType) {
         // Payload enumeration documentation:
         //      https://developers.google.com/android/reference/com/google/android/gms/nearby/connection/Payload.Type
