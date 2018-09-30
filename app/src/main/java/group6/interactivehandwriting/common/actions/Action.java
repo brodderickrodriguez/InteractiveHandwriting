@@ -1,8 +1,8 @@
 package group6.interactivehandwriting.common.actions;
 
-import group6.interactivehandwriting.common.actions.states.ActionState;
+public abstract class Action {
+    private int actionId;
 
-public abstract class UserAction {
     private static int actionIdCount;
 
     static {
@@ -18,9 +18,11 @@ public abstract class UserAction {
         return actionIdCount;
     }
 
-    protected abstract void setActionId();
+    protected void setActionId(int id) {
+        actionId = id;
+    };
 
-    public abstract int getActionId();
-
-    public abstract UserActionType getActionType();
+    public int getActionId() {
+        return actionId;
+    }
 }
