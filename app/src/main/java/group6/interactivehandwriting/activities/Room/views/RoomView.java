@@ -12,25 +12,26 @@ import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
 import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
+import group6.interactivehandwriting.common.app.Profile;
+import group6.interactivehandwriting.common.network.NetworkManager;
 
 public class RoomView extends View {
     private static final String DEBUG_TAG_V = "RoomView";
 
     private static final float TOUCH_TOLERANCE = 4;
 
+    private NetworkManager networkManager;
+
     private CanvasManager canvasManager;
-    private float touchX, touchY;
     private String deviceName;
 
-    public RoomView(Context context) {
+    public RoomView(Context context, Profile profile, NetworkManager networkManager) {
         super(context);
-        deviceName = getDeviceId();
+        this.networkManager = networkManager;
+        deviceName = profile.getDeviceName();
         canvasManager = new CanvasManager(this);
     }
 
-    private String getDeviceId() {
-        return "Scribe" + (new Random()).nextInt(100);
-    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldWidth, int oldHeight) {
@@ -87,5 +88,6 @@ public class RoomView extends View {
 
     private void handleDrawAction(DrawAction action) {
         canvasManager.putAction(deviceName, action);
+        networkManager.sendMessage(action);
     }
 }

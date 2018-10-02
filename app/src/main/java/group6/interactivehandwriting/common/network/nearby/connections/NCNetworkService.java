@@ -26,14 +26,12 @@ public class NCNetworkService implements NetworkService<Payload> {
     private NetworkManager<Payload> networkServiceManager;
     private String deviceName;
 
-    public NCNetworkService(Context context, Profile profile) {
+    public NCNetworkService(Context context, Profile profile, NetworkManager manager) {
         connectionClient = Nearby.getConnectionsClient(context);
         deviceName = profile.getDeviceName();
-    }
-
-    public void setNetworkServiceManager(NetworkManager<Payload> manager) {
         networkServiceManager = manager;
     }
+
 
     public void begin() {
         advertise();

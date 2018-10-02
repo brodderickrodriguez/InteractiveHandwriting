@@ -1,5 +1,7 @@
 package group6.interactivehandwriting.activities.Room.draw;
 
+import java.util.Random;
+
 import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
 import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.activities.Room.actions.draw.MoveDrawAction;
@@ -13,6 +15,16 @@ public class RoomViewActionUtility {
     private static float touchX;
     private static float touchY;
 
+    private static int R;
+    private static int G;
+    private static int B;
+
+    static {
+        R = randomColorValue();
+        G = randomColorValue();
+        B = randomColorValue();
+    }
+
     public static void setTouchPosition(float x, float y) {
         touchX = x;
         touchY = y;
@@ -22,9 +34,14 @@ public class RoomViewActionUtility {
         setTouchPosition(x, y);
         StartDrawAction startAction = new StartDrawAction(true);
         startAction.setPosition(x, y);
-        startAction.setColor(0, 255, 0, 255);
+        startAction.setColor(R, G, B, 255);
         startAction.setWidth(12.0f);
         return startAction;
+    }
+
+    // TODO this is wrong
+    private static int randomColorValue() {
+        return (new Random()).nextInt(255);
     }
 
     public static boolean didTouchMove(float x, float y, float tolerance) {

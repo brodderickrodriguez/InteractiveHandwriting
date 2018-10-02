@@ -18,4 +18,17 @@ public enum NetworkMessageType {
     public int getValue() {
         return value;
     }
+
+    public static NetworkMessageType fromValue(int v) {
+        switch(v) {
+            case 1:
+                return START_DRAW;
+            case 2:
+                return MOVE_DRAW;
+            case 3:
+                return END_DRAW;
+            default:
+                return null;
+        }
+    }
 }
