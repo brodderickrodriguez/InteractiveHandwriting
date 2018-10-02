@@ -1,6 +1,5 @@
 package group6.interactivehandwriting.common.network;
 
-import group6.interactivehandwriting.common.actions.UserAction;
 import group6.interactivehandwriting.common.exceptions.InvalidPayloadException;
 import group6.interactivehandwriting.common.exceptions.UnpackException;
 

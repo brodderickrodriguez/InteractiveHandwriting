@@ -1,7 +1,8 @@
 package group6.interactivehandwriting.common.network;
 
+import com.google.android.gms.common.api.Status;
 
-import group6.interactivehandwriting.common.network.endpoint.Endpoint;
+import group6.interactivehandwriting.common.network.nearby.connections.NCDevice;
 
 /**
  * Created by JakeL on 9/22/18.
@@ -10,14 +11,14 @@ import group6.interactivehandwriting.common.network.endpoint.Endpoint;
 public interface NetworkManager<T> {
     public void setNetworkService(NetworkService service);
 
-    public void receiveMessage(T serviceMessage, Endpoint endpoint);
+    public void receiveMessage(T serviceMessage, NCDevice device);
 
     public void sendMessage(NetworkMessage message);
 
-    public boolean onConnectionInitiated(Endpoint endpoint);
+    public boolean onConnectionInitiated(NCDevice device);
 
-    public void onConnectionResult(Endpoint endpoint);
+    public void onConnectionResult(NCDevice device, Status connectionStatus);
 
-    public void onDisconnected(Endpoint endpoint);
+    public void onDisconnected(NCDevice device);
 
 }

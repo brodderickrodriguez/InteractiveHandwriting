@@ -3,16 +3,16 @@ package group6.interactivehandwriting.common.network.endpoint;
 
 import com.google.android.gms.nearby.connection.ConnectionResolution;
 
-public class NearbyConnectionsEndpoint extends Endpoint {
+public class NCEndpoint extends Endpoint {
 
     private ConnectionResolution connectionResolution;
 
-    public NearbyConnectionsEndpoint(String name) {
+    public NCEndpoint(String name) {
         super();
         this.name = name;
     }
 
-    public NearbyConnectionsEndpoint(String name, ConnectionResolution connectionResolution) {
+    public NCEndpoint(String name, ConnectionResolution connectionResolution) {
         this.name = name;
         this.connectionResolution = connectionResolution;
     }
