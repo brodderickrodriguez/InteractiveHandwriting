@@ -10,15 +10,11 @@ import com.google.android.gms.nearby.connection.Payload;
 import java.nio.ByteBuffer;
 
 import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.MoveDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.StartDrawAction;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkManager;
 import group6.interactivehandwriting.common.network.NetworkMessage;
 import group6.interactivehandwriting.common.network.NetworkMessageType;
-import group6.interactivehandwriting.common.network.NetworkService;
 import group6.interactivehandwriting.common.network.NetworkUtility;
 
 /**
@@ -37,8 +33,10 @@ public class NCNetworkManager implements NetworkManager<Payload> {
 
     public NCNetworkManager(Context context, Profile profile) {
         this.context = context;
-        this.networkService = new NCNetworkService(context, profile, this);
+
+        Toast.makeText(context, "Starting network service...", Toast.LENGTH_LONG).show();
         this.deviceManager = new NCDeviceManager();
+        this.networkService = new NCNetworkService(context, profile, this);
     }
 
     public void setCanvasManager(CanvasManager canvasManager) {
