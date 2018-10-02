@@ -9,7 +9,5 @@ import group6.interactivehandwriting.common.network.nearby.connections.NCDevice;
  */
 
 public interface NetworkService<T> {
-    public void setNetworkManager(NetworkManager<T> manager);
-
     public void sendMessage(T message, List<NCDevice> device);
 }

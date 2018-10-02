@@ -42,7 +42,11 @@ public class CanvasManager {
             indexedDrawables.put(deviceName, deviceItems);
         }
 
+        Log.v("CANVAS", "for device " + deviceName);
+        Log.v("CANVAS", "adding item with type " + action.getType().toString());
+        Log.v("CANVAS", "adding item with id " + action.getActionId());
         Drawable canvasItem = deviceItems.get(action.getActionId());
+        Log.v("CANVAS", "canvas item is null: " + (canvasItem == null));
         deviceItems.put(action.getActionId(), action.update(canvasItem));
 
         parentView.invalidate();

@@ -1,6 +1,8 @@
 package group6.interactivehandwriting.common.network.nearby.connections;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.connection.Payload;
@@ -17,30 +19,52 @@ import group6.interactivehandwriting.common.network.NetworkManager;
 import group6.interactivehandwriting.common.network.NetworkMessage;
 import group6.interactivehandwriting.common.network.NetworkMessageType;
 import group6.interactivehandwriting.common.network.NetworkService;
+import group6.interactivehandwriting.common.network.NetworkUtility;
 
 /**
  * Created by JakeL on 9/30/18.
  */
 
+// TODO we should definitely create an object that encapsulates the HEADER, DATA section pair for byte[]
 public class NCNetworkManager implements NetworkManager<Payload> {
+    private static final String E_TAG = "NCNetworkManager";
     private static final int HEADER_LENGTH_BYTES = 4;
 
+    private Context context;
     private NCDeviceManager deviceManager;
     private NCNetworkService networkService;
     private CanvasManager canvasManager;
 
     public NCNetworkManager(Context context, Profile profile) {
-        networkService = new NCNetworkService(context, profile, this);
-        deviceManager = new NCDeviceManager();
+        this.context = context;
+        this.networkService = new NCNetworkService(context, profile, this);
+        this.deviceManager = new NCDeviceManager();
     }
 
     public void setCanvasManager(CanvasManager canvasManager) {
         this.canvasManager = canvasManager;
     }
 
+    public boolean isSet(Object o) {
+        return o != null;
+    }
+
     @Override
-    public void setNetworkService(NetworkService service) {
-        networkService = (NCNetworkService) service;
+    public boolean onConnectionInitiated(NCDevice device) {
+        Toast.makeText(context, "Device found with name" + device.getDeviceName(), Toast.LENGTH_SHORT).show();
+        return deviceManager.shouldAcceptConnection(device);
+    }
+
+    @Override
+    public void onConnectionResult(NCDevice device, Status connectionStatus) {
+        Toast.makeText(context, "Device connected with name " + device.getDeviceName(), Toast.LENGTH_SHORT).show();
+        deviceManager.addDevice(device, connectionStatus);
+    }
+
+    @Override
+    public void onDisconnected(NCDevice device) {
+        Toast.makeText(context, "Device disconnected with name " + device.getDeviceName(), Toast.LENGTH_SHORT).show();
+        deviceManager.disconnectDevice(device);
     }
 
     @Override
@@ -60,83 +84,43 @@ public class NCNetworkManager implements NetworkManager<Payload> {
         // TODO only action messages for now
         ByteBuffer buffer = ByteBuffer.wrap(payloadBytes);
         int typeValue = buffer.getInt();
-        dispatch( NetworkMessageType.fromValue(typeValue), payloadBytes, device);
+
+        NetworkMessageType type = NetworkMessageType.fromValue(typeValue);
+        byte[] dataSectionBytes = NetworkUtility.getDataSection(payloadBytes, HEADER_LENGTH_BYTES);
+        dispatch(type, dataSectionBytes, device);
     }
 
-    private void dispatch(NetworkMessageType messageType, byte[] bytes, NCDevice device) {
+    private void dispatch(NetworkMessageType messageType, byte[] dataSectionBytes, NCDevice device) {
         switch(messageType) {
             case START_DRAW:
             case MOVE_DRAW:
             case END_DRAW:
-                dispatchToCanvasManager(messageType, bytes, device);
+                dispatchToCanvasManager(messageType, dataSectionBytes, device);
+                break;
             default:
                 break;
         }
     }
 
-    private void dispatchToCanvasManager(NetworkMessageType messageType, byte[] bytes, NCDevice device) {
-        DrawAction action = null;
-        switch(messageType) {
-            case START_DRAW:
-                action = new StartDrawAction(false);
-            case MOVE_DRAW:
-                action = new MoveDrawAction();
-            case END_DRAW:
-                action = new EndDrawAction();
-            default:
-                break;
-        }
-        if (action != null && canvasManager != null) {
-            action.unpack(bytes);
-            canvasManager.putAction(device.getDeviceName(), action);
+    private void dispatchToCanvasManager(NetworkMessageType messageType, byte[] dataSectionBytes, NCDevice device) {
+        DrawAction action = DrawAction.getDrawAction(messageType);
+        action.unpack(dataSectionBytes);
+        sendActionToCanvasManager(device.getDeviceName(), action);
+
+    }
+
+    private void sendActionToCanvasManager(String deviceName, DrawAction action) {
+        if (isSet(canvasManager)) {
+            canvasManager.putAction(deviceName, action);
+        } else {
+            Log.e(E_TAG, "Message received but canvas manager is not set");
         }
     }
 
     @Override
     public void sendMessage(NetworkMessage message) {
-        byte[] messageBytes = createByteMessage(message);
+        byte[] messageBytes = NetworkUtility.createByteMessage(message, HEADER_LENGTH_BYTES);
         Payload payload = Payload.fromBytes(messageBytes);
         networkService.sendMessage(payload, deviceManager.getDevices());
-    }
-
-    private byte[] createByteMessage(NetworkMessage<byte[]> message) {
-        byte[] header = createHeader(message);
-        byte[] data = (byte[]) message.pack();
-        return joinByteArrays(header, data);
-    }
-
-    private byte[] createHeader(NetworkMessage<byte[]> message) {
-        ByteBuffer buffer = ByteBuffer.allocate(HEADER_LENGTH_BYTES);
-        buffer.putInt(message.getType().getValue());
-        return buffer.array();
-    }
-
-    private byte[] joinByteArrays(byte[] one, byte[] two) {
-        int length = one.length + two.length;
-        byte[] result = new byte[length];
-
-        for (int i = 0; i < one.length; i++) {
-            result[i] = one[i];
-        }
-        for (int i = one.length; i < length; i++) {
-            result[i] = two[i - one.length];
-        }
-
-        return result;
-    }
-
-    @Override
-    public boolean onConnectionInitiated(NCDevice device) {
-        return deviceManager.shouldAcceptConnection(device);
-    }
-
-    @Override
-    public void onConnectionResult(NCDevice device, Status connectionStatus) {
-        deviceManager.addDevice(device, connectionStatus);
-    }
-
-    @Override
-    public void onDisconnected(NCDevice device) {
-        deviceManager.disconnectDevice(device);
     }
 }

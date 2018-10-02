@@ -13,4 +13,16 @@ public abstract class DrawAction extends NetworkedByteAction {
     public abstract NetworkMessageType getType();
 
     public abstract Drawable update(Drawable drawableItem);
+
+    public static DrawAction getDrawAction(NetworkMessageType messageType) {
+        if (messageType == NetworkMessageType.START_DRAW) {
+            return new StartDrawAction(false);
+        } else if (messageType == NetworkMessageType.MOVE_DRAW) {
+            return new MoveDrawAction();
+        } else if (messageType == NetworkMessageType.END_DRAW) {
+            return new EndDrawAction();
+        } else {
+            return null;
+        }
+    }
 }

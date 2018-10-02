@@ -56,8 +56,8 @@ public class EndDrawActionTest {
 
     @Test
     public void test_getByteBufferSize() {
-        MoveDrawAction action = new MoveDrawAction();
-        assertEquals(20, action.getByteBufferSize());
+        EndDrawAction action = new EndDrawAction();
+        assertEquals(12, action.getByteBufferSize());
     }
 
     // TODO exceptions with unpacking

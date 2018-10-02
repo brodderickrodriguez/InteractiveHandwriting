@@ -30,6 +30,7 @@ public class RoomView extends View {
         this.networkManager = networkManager;
         deviceName = profile.getDeviceName();
         canvasManager = new CanvasManager(this);
+        networkManager.setCanvasManager(canvasManager);
     }
 
 
