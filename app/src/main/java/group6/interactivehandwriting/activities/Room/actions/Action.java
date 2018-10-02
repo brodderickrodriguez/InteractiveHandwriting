@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.actions;
+package group6.interactivehandwriting.activities.Room.actions;
 
 public abstract class Action {
     private static int actionIdCount;

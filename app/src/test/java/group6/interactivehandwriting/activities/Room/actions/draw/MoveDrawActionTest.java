@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.actions.draw;
+package group6.interactivehandwriting.activities.Room.actions.draw;
 
 /**
  * Created by JakeL on 10/1/18.
@@ -6,7 +6,6 @@ package group6.interactivehandwriting.common.actions.draw;
 
 import org.junit.Test;
 
-import group6.interactivehandwriting.common.network.NetworkMessage;
 import group6.interactivehandwriting.common.network.NetworkMessageType;
 
 import static org.junit.Assert.*;

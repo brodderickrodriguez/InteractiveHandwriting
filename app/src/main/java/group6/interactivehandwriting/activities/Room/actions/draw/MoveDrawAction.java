@@ -1,9 +1,11 @@
-package group6.interactivehandwriting.common.actions.draw;
+package group6.interactivehandwriting.activities.Room.actions.draw;
+
+import android.graphics.drawable.Drawable;
 
 import java.nio.ByteBuffer;
 
-import group6.interactivehandwriting.common.actions.Action;
-import group6.interactivehandwriting.common.actions.NetworkedByteAction;
+import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
+import group6.interactivehandwriting.activities.Room.actions.Action;
 import group6.interactivehandwriting.common.network.NetworkMessageType;
 import group6.interactivehandwriting.common.network.NetworkUtility;
 
@@ -11,7 +13,7 @@ import group6.interactivehandwriting.common.network.NetworkUtility;
  * Created by JakeL on 9/30/18.
  */
 
-public class MoveDrawAction extends NetworkedByteAction {
+public class MoveDrawAction extends DrawAction {
     private float xPosition;
     private float yPosition;
     private float dX;
@@ -19,6 +21,14 @@ public class MoveDrawAction extends NetworkedByteAction {
 
     public MoveDrawAction() {
         setActionId(Action.getCurrentActionId());
+    }
+
+    @Override
+    public Drawable update(Drawable drawableItem) {
+        // assert item is correct type
+        Line line = (Line) drawableItem;
+        line.moveAction(this);
+        return line;
     }
 
     public void setMovePosition(float x, float y, float offsetX, float offsetY) {

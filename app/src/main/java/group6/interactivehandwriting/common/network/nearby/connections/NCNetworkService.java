@@ -2,6 +2,7 @@ package group6.interactivehandwriting.common.network.nearby.connections;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.*;
@@ -18,6 +19,7 @@ import group6.interactivehandwriting.common.network.NetworkService;
 
 // TODO resolve if certain network components need their own thread
 public class NCNetworkService implements NetworkService<Payload> {
+    private final String V_TAG = "NCNetworkService";
     private final String SERVICE_ID = "group6.interactive.handwriting";
     private final Strategy NEARBY_CONNECTIONS_STRATEGY = Strategy.P2P_CLUSTER;
 
@@ -26,18 +28,17 @@ public class NCNetworkService implements NetworkService<Payload> {
     private NetworkManager<Payload> networkServiceManager;
     private String deviceName;
 
-    public NCNetworkService(Context context, Profile profile) {
+    public NCNetworkService(Context context, Profile profile, NetworkManager manager) {
         connectionClient = Nearby.getConnectionsClient(context);
         deviceName = profile.getDeviceName();
+        networkServiceManager = manager;
+        begin();
     }
 
-    public void setNetworkServiceManager(NetworkManager<Payload> manager) {
-        networkServiceManager = manager;
-    }
 
     public void begin() {
+        Log.v(V_TAG, "Starting network service");
         advertise();
-        discover();
     }
 
     private void advertise() {
@@ -104,6 +105,7 @@ public class NCNetworkService implements NetworkService<Payload> {
             @Override
             public void onSuccess(Void aVoid) {
                 // TODO what happens when the advertising begins successfully
+                discover();
             }
         };
     }
@@ -192,11 +194,6 @@ public class NCNetworkService implements NetworkService<Payload> {
         };
     }
 
-
-    @Override
-    public void setNetworkManager(NetworkManager manager) {
-        networkServiceManager = (NetworkManager<Payload>) manager;
-    }
 
     @Override
     public void sendMessage(Payload message, List<NCDevice> devices) {

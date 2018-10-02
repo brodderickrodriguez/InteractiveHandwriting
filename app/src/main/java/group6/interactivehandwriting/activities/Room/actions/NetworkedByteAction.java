@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.actions;
+package group6.interactivehandwriting.activities.Room.actions;
 
 import group6.interactivehandwriting.common.network.NetworkMessage;
 

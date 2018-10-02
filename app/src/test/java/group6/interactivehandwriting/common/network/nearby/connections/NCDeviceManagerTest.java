@@ -32,7 +32,7 @@ public class NCDeviceManagerTest {
         wasDeviceAdded = NCDeviceManager.addDevice(nextDevice, statusOk);
         assertTrue(wasDeviceAdded);
 
-        List<NCDevice> entries = NCDeviceManager.getDeviceEntries();
+        List<NCDevice> entries = NCDeviceManager.getDevices();
         assertTrue(entries.contains(new NCDevice(deviceName)));
         assertTrue(entries.contains(new NCDevice(nextDeviceName)));
         assertEquals(2, entries.size());
@@ -48,7 +48,7 @@ public class NCDeviceManagerTest {
         Boolean wasDeviceAdded = NCDeviceManager.addDevice(device, statusError);
         assertFalse(wasDeviceAdded);
 
-        List<NCDevice> entries = NCDeviceManager.getDeviceEntries();
+        List<NCDevice> entries = NCDeviceManager.getDevices();
         assertEquals(0, entries.size());
     }
 
@@ -64,7 +64,7 @@ public class NCDeviceManagerTest {
         NCDeviceManager.addDevice(device, NCDeviceManagerTest.getStatusOk());
         wasDeviceRemoved = NCDeviceManager.disconnectDevice(device);
         assertTrue(wasDeviceRemoved);
-        assertEquals(0, NCDeviceManager.getDeviceEntries().size());
+        assertEquals(0, NCDeviceManager.getDevices().size());
 
         wasDeviceRemoved = NCDeviceManager.disconnectDevice(device);
         assertFalse(wasDeviceRemoved);

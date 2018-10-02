@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.actions.draw;
+package group6.interactivehandwriting.activities.Room.actions.draw;
 
 /**
  * Created by JakeL on 10/1/18.
@@ -56,8 +56,8 @@ public class EndDrawActionTest {
 
     @Test
     public void test_getByteBufferSize() {
-        MoveDrawAction action = new MoveDrawAction();
-        assertEquals(20, action.getByteBufferSize());
+        EndDrawAction action = new EndDrawAction();
+        assertEquals(12, action.getByteBufferSize());
     }
 
     // TODO exceptions with unpacking

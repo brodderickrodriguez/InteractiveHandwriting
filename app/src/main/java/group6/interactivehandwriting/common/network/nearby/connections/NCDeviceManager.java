@@ -73,7 +73,7 @@ public class NCDeviceManager {
         return deviceNames;
     }
 
-    public List<NCDevice> getDeviceEntries() {
+    public List<NCDevice> getDevices() {
         return entries;
     }
 }

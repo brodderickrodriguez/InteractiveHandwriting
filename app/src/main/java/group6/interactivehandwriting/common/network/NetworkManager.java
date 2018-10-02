@@ -2,6 +2,7 @@ package group6.interactivehandwriting.common.network;
 
 import com.google.android.gms.common.api.Status;
 
+import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.network.nearby.connections.NCDevice;
 
 /**
@@ -9,8 +10,6 @@ import group6.interactivehandwriting.common.network.nearby.connections.NCDevice;
  */
 
 public interface NetworkManager<T> {
-    public void setNetworkService(NetworkService service);
-
     public void receiveMessage(T serviceMessage, NCDevice device);
 
     public void sendMessage(NetworkMessage message);
@@ -21,4 +20,5 @@ public interface NetworkManager<T> {
 
     public void onDisconnected(NCDevice device);
 
+    public void setCanvasManager(CanvasManager canvasManager);
 }
