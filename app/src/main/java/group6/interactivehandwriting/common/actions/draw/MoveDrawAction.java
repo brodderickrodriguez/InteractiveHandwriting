@@ -12,7 +12,6 @@ import group6.interactivehandwriting.common.network.NetworkUtility;
  */
 
 public class MoveDrawAction extends NetworkedByteAction {
-    private int actionId;
     private float xPosition;
     private float yPosition;
     private float dX;
@@ -29,9 +28,25 @@ public class MoveDrawAction extends NetworkedByteAction {
         dY = offsetY;
     }
 
+    public float getX() {
+        return xPosition;
+    }
+
+    public float getY() {
+        return yPosition;
+    }
+
+    public float getOffsetX() {
+        return dX;
+    }
+
+    public float getOffsetY() {
+        return dY;
+    }
+
     @Override
     public NetworkMessageType getType() {
-        return NetworkMessageType.END_DRAW;
+        return NetworkMessageType.MOVE_DRAW;
     }
 
     @Override

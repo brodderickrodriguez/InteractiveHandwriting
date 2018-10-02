@@ -11,22 +11,27 @@ import group6.interactivehandwriting.common.network.NetworkUtility;
  */
 
 public class StartDrawAction extends NetworkedByteAction {
-    private int actionId;
     private float xPosition;
     private float yPosition;
     private float penWidth;
-    private float rColor;
-    private float gColor;
-    private float bColor;
-    private float alphaColor;
+    private int rColor;
+    private int gColor;
+    private int bColor;
+    private int alphaColor;
 
 
     StartDrawAction(boolean shouldGetNewActionId) {
+        setActionIdIfNeeded(shouldGetNewActionId);
+    }
+
+    private void setActionIdIfNeeded(boolean shouldGetNewActionId) {
+        int id;
         if (shouldGetNewActionId) {
-            setActionId(NetworkedByteAction.getNextActionId());
+            id = NetworkedByteAction.getNextActionId();
         } else {
-            setActionId(NetworkedByteAction.getCurrentActionId());
+            id = NetworkedByteAction.getCurrentActionId();
         }
+        setActionId(id);
     }
 
     public void setPosition(float x, float y) {
@@ -34,30 +39,44 @@ public class StartDrawAction extends NetworkedByteAction {
         yPosition = y;
     }
 
-    public void setColor(float r, float g, float b, float a) {
+    public float getX() {
+        return xPosition;
+    }
+
+    public float getY() {
+        return yPosition;
+    }
+
+    public void setColor(int r, int g, int b, int a) {
         rColor = r;
         gColor = g;
         bColor = b;
         alphaColor = a;
     }
 
+    public int getRed() {
+        return rColor;
+    }
+
+    public int getGreen() {
+        return gColor;
+    }
+
+    public int getBlue() {
+        return bColor;
+    }
+
+    public int getAlpha() {
+        return alphaColor;
+    }
+
     public void setWidth(float width) {
         penWidth = width;
     }
 
-
-    //////////////////////////////////////////////////////
-    // Action
-    //////////////////////////////////////////////////////
-
-    @Override
-    public int getActionId() {
-        return actionId;
+    public float getWidth() {
+        return penWidth;
     }
-
-    //////////////////////////////////////////////////////
-    // NetworkMessage interface
-    //////////////////////////////////////////////////////
 
     @Override
     public NetworkMessageType getType() {
@@ -72,10 +91,10 @@ public class StartDrawAction extends NetworkedByteAction {
         buffer.putFloat(xPosition);
         buffer.putFloat(yPosition);
         buffer.putFloat(penWidth);
-        buffer.putFloat(rColor);
-        buffer.putFloat(gColor);
-        buffer.putFloat(bColor);
-        buffer.putFloat(alphaColor);
+        buffer.putInt(rColor);
+        buffer.putInt(gColor);
+        buffer.putInt(bColor);
+        buffer.putInt(alphaColor);
 
         return buffer.array();
     }
@@ -89,10 +108,10 @@ public class StartDrawAction extends NetworkedByteAction {
         xPosition = buffer.getFloat();
         yPosition = buffer.getFloat();
         penWidth = buffer.getFloat();
-        rColor = buffer.getFloat();
-        gColor = buffer.getFloat();
-        bColor = buffer.getFloat();
-        alphaColor = buffer.getFloat();
+        rColor = buffer.getInt();
+        gColor = buffer.getInt();
+        bColor = buffer.getInt();
+        alphaColor = buffer.getInt();
     }
 
     public int getByteBufferSize() {
@@ -100,10 +119,10 @@ public class StartDrawAction extends NetworkedByteAction {
         int xPositionSize = NetworkUtility.BYTES_IN_A_FLOAT;
         int yPositionSize = NetworkUtility.BYTES_IN_A_FLOAT;
         int penWidthSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int rColorSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int gColorSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int bColorSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int alphaColorSize = NetworkUtility.BYTES_IN_A_FLOAT;
+        int rColorSize = NetworkUtility.BYTES_IN_A_INT;
+        int gColorSize = NetworkUtility.BYTES_IN_A_INT;
+        int bColorSize = NetworkUtility.BYTES_IN_A_INT;
+        int alphaColorSize = NetworkUtility.BYTES_IN_A_INT;
 
         int size = 0;
         size += actionIdSize + xPositionSize + yPositionSize + penWidthSize;

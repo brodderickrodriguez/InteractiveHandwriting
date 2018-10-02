@@ -8,8 +8,4 @@ import group6.interactivehandwriting.common.network.NetworkMessage;
 
 public abstract class NetworkedByteAction extends Action implements NetworkMessage<byte[]> {
     public abstract int getByteBufferSize();
-
-    protected int getTypeValue() {
-        return getType().getValue();
-    }
 }

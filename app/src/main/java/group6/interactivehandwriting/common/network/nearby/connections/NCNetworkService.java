@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.network;
+package group6.interactivehandwriting.common.network.nearby.connections;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.network.endpoint.Endpoint;
-import group6.interactivehandwriting.common.network.endpoint.NearbyConnectionsEndpoint;
+import group6.interactivehandwriting.common.network.NetworkManager;
+import group6.interactivehandwriting.common.network.NetworkService;
 
 // TODO resolve if certain network components need their own thread
-public class NearbyConnectionsNetworkService implements NetworkService<Payload> {
+public class NCNetworkService implements NetworkService<Payload> {
     private final String SERVICE_ID = "group6.interactive.handwriting";
     private final Strategy NEARBY_CONNECTIONS_STRATEGY = Strategy.P2P_CLUSTER;
 
@@ -26,7 +26,7 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     private NetworkManager<Payload> networkServiceManager;
     private String deviceName;
 
-    public NearbyConnectionsNetworkService(Context context, Profile profile) {
+    public NCNetworkService(Context context, Profile profile) {
         connectionClient = Nearby.getConnectionsClient(context);
         deviceName = profile.getDeviceName();
     }
@@ -54,26 +54,25 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     private ConnectionLifecycleCallback getConnectionLifeCycleCallback() {
         return new ConnectionLifecycleCallback() {
             @Override
-            public void onConnectionInitiated(@NonNull String endpointName, @NonNull ConnectionInfo connectionInfo) {
-                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName);
-                boolean shouldAddConnection = networkServiceManager.onConnectionInitiated(endpoint);
+            public void onConnectionInitiated(@NonNull String deviceName, @NonNull ConnectionInfo connectionInfo) {
+                NCDevice device = new NCDevice(deviceName);
+                boolean shouldAddConnection = networkServiceManager.onConnectionInitiated(device);
 
                 if (shouldAddConnection) {
-                    connectionClient.acceptConnection(endpointName, getPayloadCallback());
+                    connectionClient.acceptConnection(device.getDeviceName(), getPayloadCallback());
                 }
             }
 
             @Override
-            public void onConnectionResult(@NonNull String endpointName, @NonNull ConnectionResolution connectionResolution) {
-                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName, connectionResolution);
-                networkServiceManager.onConnectionResult(endpoint);
-
+            public void onConnectionResult(@NonNull String deviceName, @NonNull ConnectionResolution connectionResolution) {
+                NCDevice device = new NCDevice(deviceName);
+                networkServiceManager.onConnectionResult(device, connectionResolution.getStatus());
             }
 
             @Override
-            public void onDisconnected(@NonNull String endpointName) {
-                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName);
-                networkServiceManager.onDisconnected(endpoint);
+            public void onDisconnected(@NonNull String deviceName) {
+                NCDevice device = new NCDevice(deviceName);
+                networkServiceManager.onDisconnected(device);
             }
         };
     }
@@ -81,10 +80,10 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     private PayloadCallback getPayloadCallback() {
         return new PayloadCallback() {
             @Override
-            public void onPayloadReceived(@NonNull String endpointName, @NonNull Payload payload) {
+            public void onPayloadReceived(@NonNull String deviceName, @NonNull Payload payload) {
                 // TODO add logic for handling destinations that are not neighbors
-                NearbyConnectionsEndpoint endpoint = new NearbyConnectionsEndpoint(endpointName);
-                networkServiceManager.receiveMessage(payload, endpoint);
+                NCDevice device = new NCDevice(deviceName);
+                networkServiceManager.receiveMessage(payload, device);
             }
 
             @Override
@@ -132,11 +131,11 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     private EndpointDiscoveryCallback getEndpointDiscoveryCallback() {
         return new EndpointDiscoveryCallback() {
             @Override
-            public void onEndpointFound(@NonNull String endpointName, @NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
+            public void onEndpointFound(@NonNull String deviceName, @NonNull DiscoveredEndpointInfo discoveredEndpointInfo) {
                 if (discoveredEndpointInfo.getServiceId().equals(SERVICE_ID)) {
                     Task<Void> requestConnectionTask = connectionClient.requestConnection(
                             deviceName,
-                            endpointName,
+                            deviceName,
                             getConnectionLifeCycleCallback()
                     );
                     requestConnectionTask.addOnSuccessListener(getRequestConnectionSucceededCallback());
@@ -200,17 +199,17 @@ public class NearbyConnectionsNetworkService implements NetworkService<Payload> 
     }
 
     @Override
-    public void sendMessage(Payload message, List<Endpoint> endpoints) {
-        connectionClient.sendPayload(getEndpointNames(endpoints), message);
+    public void sendMessage(Payload message, List<NCDevice> devices) {
+        connectionClient.sendPayload(getNames(devices), message);
     }
 
-    private List<String> getEndpointNames(List<Endpoint> endpoints) {
-        List<String> endpointStrings = new ArrayList<String>();
+    private List<String> getNames(List<NCDevice> devices) {
+        List<String> names = new ArrayList<>();
 
-        for (Endpoint endpoint : endpoints) {
-            endpointStrings.add(endpoint.getName());
+        for (NCDevice device : devices) {
+            names.add(device.getDeviceName());
         }
 
-        return endpointStrings;
+        return names;
     }
 }

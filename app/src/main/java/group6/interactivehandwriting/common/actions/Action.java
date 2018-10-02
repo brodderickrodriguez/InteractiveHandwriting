@@ -1,21 +1,21 @@
 package group6.interactivehandwriting.common.actions;
 
 public abstract class Action {
-    private int actionId;
-
     private static int actionIdCount;
 
+    protected int actionId;
+
     static {
-        actionIdCount = 0;
+        Action.actionIdCount = 0;
     }
 
     protected static int getNextActionId() {
-        actionIdCount += 1;
-        return actionIdCount;
+        Action.actionIdCount += 1;
+        return Action.actionIdCount;
     }
 
     protected static int getCurrentActionId() {
-        return actionIdCount;
+        return Action.actionIdCount;
     }
 
     protected void setActionId(int id) {

@@ -16,7 +16,6 @@ import group6.interactivehandwriting.common.network.NetworkUtility;
  */
 
 public class EndDrawAction extends NetworkedByteAction {
-    private int actionId;
     private float xPosition;
     private float yPosition;
 
@@ -27,6 +26,14 @@ public class EndDrawAction extends NetworkedByteAction {
     public void setPosition(float x, float y) {
         xPosition = x;
         yPosition = y;
+    }
+
+    public float getX() {
+        return xPosition;
+    }
+
+    public float getY() {
+        return yPosition;
     }
 
     @Override
