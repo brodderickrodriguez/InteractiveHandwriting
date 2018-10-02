@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.actions.draw;
+package group6.interactivehandwriting.activities.Room.actions.draw;
 
 /**
  * Created by JakeL on 10/1/18.

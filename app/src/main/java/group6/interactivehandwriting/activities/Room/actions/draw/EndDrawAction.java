@@ -1,13 +1,15 @@
-package group6.interactivehandwriting.common.actions.draw;
+package group6.interactivehandwriting.activities.Room.actions.draw;
 
 /**
  * Created by JakeL on 9/30/18.
  */
 
+import android.graphics.drawable.Drawable;
+
 import java.nio.ByteBuffer;
 
-import group6.interactivehandwriting.common.actions.Action;
-import group6.interactivehandwriting.common.actions.NetworkedByteAction;
+import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
+import group6.interactivehandwriting.activities.Room.actions.Action;
 import group6.interactivehandwriting.common.network.NetworkMessageType;
 import group6.interactivehandwriting.common.network.NetworkUtility;
 
@@ -15,12 +17,20 @@ import group6.interactivehandwriting.common.network.NetworkUtility;
  * Created by JakeL on 9/30/18.
  */
 
-public class EndDrawAction extends NetworkedByteAction {
+public class EndDrawAction extends DrawAction {
     private float xPosition;
     private float yPosition;
 
     public EndDrawAction() {
         setActionId(Action.getCurrentActionId());
+    }
+
+    @Override
+    public Drawable update(Drawable drawableItem) {
+        // assert item is correct type
+        Line line = (Line) drawableItem;
+        line.endAction(this);
+        return line;
     }
 
     public void setPosition(float x, float y) {
