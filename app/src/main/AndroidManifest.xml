@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<<<<<<< HEAD
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+=======
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
 
     <application
         android:allowBackup="true"
