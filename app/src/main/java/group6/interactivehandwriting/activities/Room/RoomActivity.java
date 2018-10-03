@@ -2,7 +2,10 @@ package group6.interactivehandwriting.activities.Room;
 
 import android.Manifest;
 import android.content.Context;
+<<<<<<< HEAD
 import android.content.Intent;
+=======
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+<<<<<<< HEAD
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -24,6 +28,11 @@ import java.io.File;
 
 import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.actions.ModifyDocumentAction;
+=======
+
+import com.google.android.gms.nearby.connection.Payload;
+
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
@@ -38,6 +47,7 @@ public class RoomActivity extends Activity {
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+<<<<<<< HEAD
                     Manifest.permission.READ_EXTERNAL_STORAGE,
             };
 
@@ -49,6 +59,11 @@ public class RoomActivity extends Activity {
     private ModifyDocumentAction documentAction;
     private View view;
     private RelativeLayout main_view;
+=======
+            };
+
+    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +71,17 @@ public class RoomActivity extends Activity {
         Context context = this.getApplicationContext();
         Profile profile = new Profile();
         NetworkManager networkManager = new NCNetworkManager(context, profile);
+<<<<<<< HEAD
         documentAction = new ModifyDocumentAction(context, profile, networkManager);
         view = new RoomView(context, profile, networkManager);
         main_view = (RelativeLayout) findViewById(R.id.main_layout);
 
         setContentView(view);
 
+=======
+        View view = new RoomView(context, profile, networkManager);
+        setContentView(view);
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
     }
 
     @Override
@@ -94,8 +114,11 @@ public class RoomActivity extends Activity {
             return;
         }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
         for (int grantResult : grantResults) {
             if (grantResult == PackageManager.PERMISSION_DENIED) {
                 finish();
@@ -104,6 +127,7 @@ public class RoomActivity extends Activity {
         }
         recreate();
     }
+<<<<<<< HEAD
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -166,4 +190,6 @@ public class RoomActivity extends Activity {
 
         setContentView(view);
     }
+=======
+>>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
 }
