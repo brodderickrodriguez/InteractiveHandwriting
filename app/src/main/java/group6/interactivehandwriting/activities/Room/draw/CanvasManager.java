@@ -61,9 +61,4 @@ public class CanvasManager {
             }
         }
     }
-<<<<<<< HEAD
-=======
-
-
->>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
 }

@@ -2,15 +2,8 @@ package group6.interactivehandwriting.activities.Room.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-<<<<<<< HEAD
-import android.widget.Button;
-=======
->>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
-
-import java.util.Random;
 
 import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
 import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
@@ -35,10 +28,6 @@ public class RoomView extends View {
         deviceName = profile.getDeviceName();
         canvasManager = new CanvasManager(this);
         networkManager.setCanvasManager(canvasManager);
-<<<<<<< HEAD
-
-=======
->>>>>>> b9e3bfc5d4140d11b574af2f3c11c8e069c8036b
     }
 
 

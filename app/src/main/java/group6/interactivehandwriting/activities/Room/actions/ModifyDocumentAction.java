@@ -1,8 +1,11 @@
 package group6.interactivehandwriting.activities.Room.actions;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.view.View;
+import android.widget.ImageView;
+
 import java.io.File;
 
 import group6.interactivehandwriting.R;
