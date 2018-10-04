@@ -44,9 +44,9 @@ public class RoomActivity extends Activity {
         Profile profile = new Profile();
         NetworkManager networkManager = new NCNetworkManager(context, profile);
         View view = new RoomView(context, profile, networkManager);
-
         setContentView(R.layout.room_layout);
-        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.draw_layout);
+        // Adds the RoomView to the layout and inflates it
+        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
         roomLayout.addView(view);
      }
 
@@ -89,17 +89,6 @@ public class RoomActivity extends Activity {
         recreate();
     }
 
-    public void makeToolboxVisible(View view) {
-
-        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
-        toolboxLayout.setVisibility(View.VISIBLE);
-    }
-
-    public void makeToolboxGone(View view) {
-        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
-        toolboxLayout.setVisibility(View.GONE);
-    }
-
     public void toggleToolbox(View view) {
         ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
 
@@ -111,6 +100,8 @@ public class RoomActivity extends Activity {
         }
     }
 
+    // A few hard coded colors (Will eventually switch this to a single function where
+    // the parameters can be altered in the layout
     public void colorRed(View view) {
         RoomViewActionUtility.ChangeColorCustom(255, 0, 0);
     }

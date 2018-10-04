@@ -37,11 +37,7 @@ public class RoomView extends View {
         deviceName = profile.getDeviceName();
         canvasManager = new CanvasManager(this);
         networkManager.setCanvasManager(canvasManager);
-
     }
-
-
-
 
 
     @Override
@@ -101,6 +97,4 @@ public class RoomView extends View {
         canvasManager.putAction(deviceName, action);
         networkManager.sendMessage(action);
     }
-
-
 }
