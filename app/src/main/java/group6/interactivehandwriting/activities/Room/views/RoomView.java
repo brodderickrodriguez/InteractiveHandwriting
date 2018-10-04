@@ -2,11 +2,8 @@ package group6.interactivehandwriting.activities.Room.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
-import java.util.Random;
 
 import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
 import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;

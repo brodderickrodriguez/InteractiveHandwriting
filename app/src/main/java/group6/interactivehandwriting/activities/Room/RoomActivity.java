@@ -2,6 +2,7 @@ package group6.interactivehandwriting.activities.Room;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -11,6 +12,18 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+
+import com.github.barteksc.pdfviewer.PDFView;
+import com.google.android.gms.nearby.connection.Payload;
+import com.nbsp.materialfilepicker.MaterialFilePicker;
+import com.nbsp.materialfilepicker.ui.FilePickerActivity;
+
+import java.io.File;
+
+import group6.interactivehandwriting.R;
+import group6.interactivehandwriting.activities.Room.actions.ModifyDocumentAction;
 
 import com.google.android.gms.nearby.connection.Payload;
 
@@ -28,9 +41,17 @@ public class RoomActivity extends Activity {
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
             };
 
+    /* Request/Persmission Codes */
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    private static final int REQUEST_CODE_FILEPICKER = 2;
+
+    private PDFView pdf_view;
+    private ModifyDocumentAction documentAction;
+    private View view;
+    private RelativeLayout main_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +59,12 @@ public class RoomActivity extends Activity {
         Context context = this.getApplicationContext();
         Profile profile = new Profile();
         NetworkManager networkManager = new NCNetworkManager(context, profile);
-        View view = new RoomView(context, profile, networkManager);
+        documentAction = new ModifyDocumentAction(context, profile, networkManager);
+        view = new RoomView(context, profile, networkManager);
+        main_view = (RelativeLayout) findViewById(R.id.main_layout);
+
         setContentView(view);
+
     }
 
     @Override
@@ -79,5 +104,66 @@ public class RoomActivity extends Activity {
             }
         }
         recreate();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        File file = null;
+        switch(requestCode) {
+            case REQUEST_CODE_FILEPICKER:
+                if (requestCode == REQUEST_CODE_FILEPICKER && resultCode == RESULT_OK) {
+                    String filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
+                    file = new File(filePath);
+
+
+                    setContentView(R.layout.main);
+
+                    pdf_view = (PDFView) findViewById(R.id.pdf_view);
+                    documentAction.openDocumentWithFile(file, (PDFView) pdf_view);
+
+                    /**** setContentView(view) to return to whiteboard ****/
+                }
+             break;
+        }
+    }
+    /**
+     * Opens storage to look for files
+     */
+    private void showPDF() {
+        new MaterialFilePicker()
+                .withActivity(this)
+                .withRequestCode(REQUEST_CODE_FILEPICKER)
+                .withHiddenFiles(true) // Show hidden files and folders
+                .start();
+    }
+
+    /**
+     * Hides the PDF view.
+     */
+    public void hidePDFView(PDFView pView) {
+        pdf_view = (PDFView) findViewById(R.id.pdf_view);
+        pdf_view = pView;
+        pdf_view.setVisibility(View.GONE);
+    }
+
+    /**
+     * Shows the PDF view.
+     */
+    public void showPDFView() {
+        pdf_view = (PDFView) findViewById(R.id.pdf_view);
+        pdf_view.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Shows the whiteboard
+     */
+    public void showWhiteBoard() {
+        if (pdf_view != null & pdf_view.getVisibility() == View.VISIBLE) {
+            pdf_view.setVisibility(View.INVISIBLE);
+        }
+
+        setContentView(view);
     }
 }

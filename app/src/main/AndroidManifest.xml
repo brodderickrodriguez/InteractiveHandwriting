@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -20,7 +21,7 @@
         <activity
             android:name=".activities.Room.RoomActivity"
             android:label="@string/RoomActivity.Title"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
 
             <intent-filter>
                 <!-- designate the Room activity as the primary view -->
@@ -30,5 +31,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
