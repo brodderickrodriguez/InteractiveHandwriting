@@ -26,6 +26,58 @@
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/toolbox_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="bottom"
+            android:background="#d9e2ff"
+            android:visibility="gone"
+            >
+
+            <Button
+                android:id="@+id/change_color_black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Red"
+                android:onClick="colorRed"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.08"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.76" />
+
+            <Button
+                android:id="@+id/change_color_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Green"
+                android:onClick="colorGreen"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.08"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.173" />
+
+            <Button
+                android:id="@+id/laod_document"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="62dp"
+                android:text="Blue"
+                android:onClick="colorBlue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.08"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.79" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/toolbox_button_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,7 +92,7 @@
                 android:layout_marginBottom="25dp"
                 android:layout_marginEnd="32dp"
                 android:background="@drawable/round_button"
-                android:onClick="makeToolboxVisible"
+                android:onClick="toggleToolbox"
                 android:text="+"
                 android:textSize="25sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -50,73 +102,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/toolbox_view"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="bottom|right"
-            android:background="#d9e2ff"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/change_color_black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TEST_BUTTON_1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.07"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.76" />
-
-            <Button
-                android:id="@+id/change_color_red"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TEST_BUTTON_2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.08"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.173" />
-
-            <Button
-                android:id="@+id/laod_document"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="62dp"
-                android:text="TEST_BUTTON_3"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.08"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.79" />
-
-            <Button
-                android:id="@+id/toolbox_gone_button"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginBottom="25dp"
-                android:layout_marginEnd="32dp"
-                android:background="@drawable/round_button"
-                android:text="-"
-                android:textSize="25sp"
-                android:onClick="makeToolboxGone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.951"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.968" />
-
 
         </android.support.constraint.ConstraintLayout>
 

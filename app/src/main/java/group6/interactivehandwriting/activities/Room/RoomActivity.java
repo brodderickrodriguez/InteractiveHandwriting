@@ -19,6 +19,7 @@ import com.google.android.gms.nearby.connection.Payload;
 
 import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
+import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkManager;
@@ -97,5 +98,28 @@ public class RoomActivity extends Activity {
     public void makeToolboxGone(View view) {
         ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
         toolboxLayout.setVisibility(View.GONE);
+    }
+
+    public void toggleToolbox(View view) {
+        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
+
+        if (toolboxLayout.getVisibility() == View.VISIBLE) {
+            toolboxLayout.setVisibility(View.GONE);
+        }
+        else {
+            toolboxLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void colorRed(View view) {
+        RoomViewActionUtility.ChangeColorCustom(255, 0, 0);
+    }
+
+    public void colorGreen(View view) {
+        RoomViewActionUtility.ChangeColorCustom(0, 255, 0);
+    }
+
+    public void colorBlue(View view) {
+        RoomViewActionUtility.ChangeColorCustom(0, 0, 255);
     }
 }

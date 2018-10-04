@@ -64,4 +64,10 @@ public class RoomViewActionUtility {
         action.setPosition(touchX, touchY);
         return action;
     }
+
+    public static void ChangeColorCustom(int r, int g, int b) {
+        R = r;
+        G = g;
+        B = b;
+    }
 }
