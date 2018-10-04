@@ -2,18 +2,24 @@ package group6.interactivehandwriting.activities.Room.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.constraint.ConstraintLayout;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import java.util.Random;
 
+import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
 import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkManager;
+import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkManager;
 
 public class RoomView extends View {
     private static final String DEBUG_TAG_V = "RoomView";
@@ -31,7 +37,11 @@ public class RoomView extends View {
         deviceName = profile.getDeviceName();
         canvasManager = new CanvasManager(this);
         networkManager.setCanvasManager(canvasManager);
+
     }
+
+
+
 
 
     @Override
@@ -91,4 +101,6 @@ public class RoomView extends View {
         canvasManager.putAction(deviceName, action);
         networkManager.sendMessage(action);
     }
+
+
 }

@@ -8,12 +8,16 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.nearby.connection.Payload;
 
+import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
@@ -39,8 +43,11 @@ public class RoomActivity extends Activity {
         Profile profile = new Profile();
         NetworkManager networkManager = new NCNetworkManager(context, profile);
         View view = new RoomView(context, profile, networkManager);
-        setContentView(view);
-    }
+
+        setContentView(R.layout.room_layout);
+        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.draw_layout);
+        roomLayout.addView(view);
+     }
 
     @Override
     protected void onStart() {
@@ -79,5 +86,16 @@ public class RoomActivity extends Activity {
             }
         }
         recreate();
+    }
+
+    public void makeToolboxVisible(View view) {
+
+        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
+        toolboxLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void makeToolboxGone(View view) {
+        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
+        toolboxLayout.setVisibility(View.GONE);
     }
 }
