@@ -66,9 +66,13 @@ public class RoomActivity extends Activity {
         NetworkManager networkManager = new NCNetworkManager(context, profile);
         documentAction = new ModifyDocumentAction(context, profile, networkManager);
         View view = new RoomView(context, profile, networkManager);
+        main_view = (RelativeLayout)findViewById(R.id.main_layout);
         setContentView(R.layout.room_layout);
+
         // Adds the RoomView to the layout and inflates it
         ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
+        //RelativeLayout pdfLayout = (RelativeLayout) findViewById(R.id.pdf_layout);
+//        pdfLayout.addView(main_view);
         roomLayout.addView(view);
     }
 
@@ -148,7 +152,7 @@ public class RoomActivity extends Activity {
                     file = new File(filePath);
 
 
-                    setContentView(R.layout.main);
+                    //setContentView(R.layout.main);
 
                     pdf_view = (PDFView) findViewById(R.id.pdf_view);
                     documentAction.openDocumentWithFile(file, (PDFView) pdf_view);
@@ -161,7 +165,7 @@ public class RoomActivity extends Activity {
     /**
      * Opens storage to look for files
      */
-    private void showPDF() {
+    public void showPDF(View view) {
         new MaterialFilePicker()
                 .withActivity(this)
                 .withRequestCode(REQUEST_CODE_FILEPICKER)
@@ -181,7 +185,7 @@ public class RoomActivity extends Activity {
     /**
      * Shows the PDF view.
      */
-    public void showPDFView() {
+    public void showPDFView(View view) {
         pdf_view = (PDFView) findViewById(R.id.pdf_view);
         pdf_view.setVisibility(View.VISIBLE);
     }
@@ -189,7 +193,7 @@ public class RoomActivity extends Activity {
     /**
      * Shows the whiteboard
      */
-    public void showWhiteBoard() {
+    public void showWhiteBoard(View view) {
         if (pdf_view != null & pdf_view.getVisibility() == View.VISIBLE) {
             pdf_view.setVisibility(View.INVISIBLE);
         }
