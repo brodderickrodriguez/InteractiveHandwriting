@@ -9,9 +9,12 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -27,7 +30,9 @@ import group6.interactivehandwriting.activities.Room.actions.ModifyDocumentActio
 
 import com.google.android.gms.nearby.connection.Payload;
 
+import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
+import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkManager;
@@ -60,11 +65,15 @@ public class RoomActivity extends Activity {
         Profile profile = new Profile();
         NetworkManager networkManager = new NCNetworkManager(context, profile);
         documentAction = new ModifyDocumentAction(context, profile, networkManager);
-        view = new RoomView(context, profile, networkManager);
-        main_view = (RelativeLayout) findViewById(R.id.main_layout);
+        View view = new RoomView(context, profile, networkManager);
+        main_view = (RelativeLayout)findViewById(R.id.main_layout);
+        setContentView(R.layout.room_layout);
 
-        setContentView(view);
-
+        // Adds the RoomView to the layout and inflates it
+        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
+        //RelativeLayout pdfLayout = (RelativeLayout) findViewById(R.id.pdf_layout);
+//        pdfLayout.addView(main_view);
+        roomLayout.addView(view);
     }
 
     @Override
@@ -106,6 +115,31 @@ public class RoomActivity extends Activity {
         recreate();
     }
 
+    public void toggleToolbox(View view) {
+        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
+
+        if (toolboxLayout.getVisibility() == View.VISIBLE) {
+            toolboxLayout.setVisibility(View.GONE);
+        }
+        else {
+            toolboxLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // A few hard coded colors (Will eventually switch this to a single function where
+    // the parameters can be altered in the layout
+    public void colorRed(View view) {
+        RoomViewActionUtility.ChangeColorCustom(255, 0, 0);
+    }
+
+    public void colorGreen(View view) {
+        RoomViewActionUtility.ChangeColorCustom(0, 255, 0);
+    }
+
+    public void colorBlue(View view) {
+        RoomViewActionUtility.ChangeColorCustom(0, 0, 255);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -118,7 +152,7 @@ public class RoomActivity extends Activity {
                     file = new File(filePath);
 
 
-                    setContentView(R.layout.main);
+                    //setContentView(R.layout.main);
 
                     pdf_view = (PDFView) findViewById(R.id.pdf_view);
                     documentAction.openDocumentWithFile(file, (PDFView) pdf_view);
@@ -131,7 +165,7 @@ public class RoomActivity extends Activity {
     /**
      * Opens storage to look for files
      */
-    private void showPDF() {
+    public void showPDF(View view) {
         new MaterialFilePicker()
                 .withActivity(this)
                 .withRequestCode(REQUEST_CODE_FILEPICKER)
@@ -151,7 +185,7 @@ public class RoomActivity extends Activity {
     /**
      * Shows the PDF view.
      */
-    public void showPDFView() {
+    public void showPDFView(View view) {
         pdf_view = (PDFView) findViewById(R.id.pdf_view);
         pdf_view.setVisibility(View.VISIBLE);
     }
@@ -159,7 +193,7 @@ public class RoomActivity extends Activity {
     /**
      * Shows the whiteboard
      */
-    public void showWhiteBoard() {
+    public void showWhiteBoard(View view) {
         if (pdf_view != null & pdf_view.getVisibility() == View.VISIBLE) {
             pdf_view.setVisibility(View.INVISIBLE);
         }
