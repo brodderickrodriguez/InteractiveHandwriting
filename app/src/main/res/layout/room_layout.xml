@@ -12,7 +12,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
@@ -46,6 +46,18 @@
             android:layout_gravity="bottom"
             android:background="#d9e2ff"
             android:visibility="gone">
+
+            <Button
+                android:id="@+id/save_canvas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="saveCanvas"
+                android:text="Save"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.733"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/change_color_red"
@@ -117,8 +129,8 @@
                 android:id="@+id/toolbox_visible_button"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="25dp"
+                android:layout_marginEnd="32dp"
                 android:background="@drawable/round_button"
                 android:onClick="toggleToolbox"
                 android:text="+"

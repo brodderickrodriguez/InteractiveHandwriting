@@ -200,4 +200,8 @@ public class RoomActivity extends Activity {
 
         setContentView(view);
     }
+
+    public void saveCanvas(View view) {
+
+    }
 }
