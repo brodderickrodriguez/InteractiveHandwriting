@@ -2,12 +2,10 @@ package group6.interactivehandwriting.activities.Room.actions.draw;
 
 import android.graphics.drawable.Drawable;
 
-import java.nio.ByteBuffer;
-
+import group6.interactivehandwriting.activities.Room.actions.Action;
+import group6.interactivehandwriting.activities.Room.actions.ActionType;
 import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
-import group6.interactivehandwriting.activities.Room.actions.NetworkedByteAction;
-import group6.interactivehandwriting.common.network.NetworkMessageType;
-import group6.interactivehandwriting.common.network.NetworkUtility;
+import group6.interactivehandwriting.common.network.nearby.connections.message.serial.SerialMessage;
 
 /**
  * Created by JakeL on 9/29/18.
@@ -37,9 +35,9 @@ public class StartDrawAction extends DrawAction {
     private void setActionIdIfNeeded(boolean shouldGetNewActionId) {
         int id;
         if (shouldGetNewActionId) {
-            id = NetworkedByteAction.getNextActionId();
+            id = Action.getNextActionId();
         } else {
-            id = NetworkedByteAction.getCurrentActionId();
+            id = Action.getCurrentActionId();
         }
         setActionId(id);
     }
@@ -89,55 +87,7 @@ public class StartDrawAction extends DrawAction {
     }
 
     @Override
-    public NetworkMessageType getType() {
-        return NetworkMessageType.START_DRAW;
-    }
-
-    @Override
-    public byte[] pack() {
-        ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
-
-        buffer.putInt(actionId);
-        buffer.putFloat(xPosition);
-        buffer.putFloat(yPosition);
-        buffer.putFloat(penWidth);
-        buffer.putInt(rColor);
-        buffer.putInt(gColor);
-        buffer.putInt(bColor);
-        buffer.putInt(alphaColor);
-
-        return buffer.array();
-    }
-
-    // TODO add exceptions
-    @Override
-    public void unpack(byte[] messageData) {
-        ByteBuffer buffer = ByteBuffer.wrap(messageData);
-
-        actionId = buffer.getInt();
-        xPosition = buffer.getFloat();
-        yPosition = buffer.getFloat();
-        penWidth = buffer.getFloat();
-        rColor = buffer.getInt();
-        gColor = buffer.getInt();
-        bColor = buffer.getInt();
-        alphaColor = buffer.getInt();
-    }
-
-    public int getByteBufferSize() {
-        int actionIdSize = NetworkUtility.BYTES_IN_A_INT;
-        int xPositionSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int yPositionSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int penWidthSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int rColorSize = NetworkUtility.BYTES_IN_A_INT;
-        int gColorSize = NetworkUtility.BYTES_IN_A_INT;
-        int bColorSize = NetworkUtility.BYTES_IN_A_INT;
-        int alphaColorSize = NetworkUtility.BYTES_IN_A_INT;
-
-        int size = 0;
-        size += actionIdSize + xPositionSize + yPositionSize + penWidthSize;
-        size += rColorSize + gColorSize + bColorSize + alphaColorSize;
-
-        return size;
+    public ActionType getType() {
+        return ActionType.START_DRAW;
     }
 }

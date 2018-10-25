@@ -8,10 +8,11 @@ import android.graphics.drawable.Drawable;
 
 import java.nio.ByteBuffer;
 
+import group6.interactivehandwriting.activities.Room.actions.ActionType;
 import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
 import group6.interactivehandwriting.activities.Room.actions.Action;
-import group6.interactivehandwriting.common.network.NetworkMessageType;
-import group6.interactivehandwriting.common.network.NetworkUtility;
+import group6.interactivehandwriting.common.network.nearby.connections.message.NetworkMessageType;
+import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
 
 /**
  * Created by JakeL on 9/30/18.
@@ -47,39 +48,7 @@ public class EndDrawAction extends DrawAction {
     }
 
     @Override
-    public NetworkMessageType getType() {
-        return NetworkMessageType.END_DRAW;
-    }
-
-    @Override
-    public byte[] pack() {
-        ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
-
-        buffer.putInt(actionId);
-        buffer.putFloat(xPosition);
-        buffer.putFloat(yPosition);
-
-        return buffer.array();
-    }
-
-    @Override
-    public void unpack(byte[] messageData) {
-        ByteBuffer buffer = ByteBuffer.wrap(messageData);
-
-        actionId = buffer.getInt();
-        xPosition = buffer.getFloat();
-        yPosition = buffer.getFloat();
-    }
-
-    @Override
-    public int getByteBufferSize() {
-        int actionIdSize = NetworkUtility.BYTES_IN_A_INT;
-        int xPositionSize = NetworkUtility.BYTES_IN_A_FLOAT;
-        int yPositionSize = NetworkUtility.BYTES_IN_A_FLOAT;
-
-        int size = 0;
-        size += actionIdSize + xPositionSize + yPositionSize;
-
-        return size;
+    public ActionType getType() {
+        return ActionType.END_DRAW;
     }
 }

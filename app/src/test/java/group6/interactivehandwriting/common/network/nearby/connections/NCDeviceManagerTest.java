@@ -11,6 +11,9 @@ import org.junit.Test;
 
 import java.util.List;
 
+import group6.interactivehandwriting.common.network.nearby.connections.device.NCDevice;
+import group6.interactivehandwriting.common.network.nearby.connections.device.NCDeviceManager;
+
 import static org.junit.Assert.*;
 
 public class NCDeviceManagerTest {

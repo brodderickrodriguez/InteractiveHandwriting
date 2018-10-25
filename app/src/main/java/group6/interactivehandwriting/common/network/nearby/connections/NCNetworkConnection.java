@@ -14,27 +14,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.network.NetworkManager;
-import group6.interactivehandwriting.common.network.NetworkService;
+import group6.interactivehandwriting.common.network.nearby.connections.device.NCDevice;
 
 // TODO resolve if certain network components need their own thread
-public class NCNetworkService implements NetworkService<Payload> {
-    private final String V_TAG = "NCNetworkService";
+public class NCNetworkConnection {
+    private final String V_TAG = "NCNetworkConnection";
     private final String SERVICE_ID = "group6.interactive.handwriting";
     private final Strategy NEARBY_CONNECTIONS_STRATEGY = Strategy.P2P_CLUSTER;
 
     private ConnectionsClient connectionClient;
 
-    private NetworkManager<Payload> networkServiceManager;
+    private NCNetworkLayerService manager;
     private String deviceName;
 
-    public NCNetworkService(Context context, Profile profile, NetworkManager manager) {
-        connectionClient = Nearby.getConnectionsClient(context);
-        deviceName = profile.getDeviceName();
-        networkServiceManager = manager;
+    public NCNetworkConnection(Context context, Profile profile, NCNetworkLayerService manager) {
+        this.connectionClient = Nearby.getConnectionsClient(context);
+        this.deviceName = profile.getDeviceName();
+        this.manager = manager;
         begin();
     }
-
 
     public void begin() {
         Log.v(V_TAG, "Starting network service");
@@ -57,7 +55,7 @@ public class NCNetworkService implements NetworkService<Payload> {
             @Override
             public void onConnectionInitiated(@NonNull String deviceName, @NonNull ConnectionInfo connectionInfo) {
                 NCDevice device = new NCDevice(deviceName);
-                boolean shouldAddConnection = networkServiceManager.onConnectionInitiated(device);
+                boolean shouldAddConnection = manager.onConnectionInitiated(device);
 
                 if (shouldAddConnection) {
                     connectionClient.acceptConnection(device.getDeviceName(), getPayloadCallback());
@@ -67,13 +65,13 @@ public class NCNetworkService implements NetworkService<Payload> {
             @Override
             public void onConnectionResult(@NonNull String deviceName, @NonNull ConnectionResolution connectionResolution) {
                 NCDevice device = new NCDevice(deviceName);
-                networkServiceManager.onConnectionResult(device, connectionResolution.getStatus());
+                manager.onConnectionResult(device, connectionResolution.getStatus());
             }
 
             @Override
             public void onDisconnected(@NonNull String deviceName) {
                 NCDevice device = new NCDevice(deviceName);
-                networkServiceManager.onDisconnected(device);
+                manager.onDisconnected(device);
             }
         };
     }
@@ -84,7 +82,7 @@ public class NCNetworkService implements NetworkService<Payload> {
             public void onPayloadReceived(@NonNull String deviceName, @NonNull Payload payload) {
                 // TODO add logic for handling destinations that are not neighbors
                 NCDevice device = new NCDevice(deviceName);
-                networkServiceManager.receiveMessage(payload, device);
+                manager.receiveMessage(payload);
             }
 
             @Override
@@ -194,8 +192,6 @@ public class NCNetworkService implements NetworkService<Payload> {
         };
     }
 
-
-    @Override
     public void sendMessage(Payload message, List<NCDevice> devices) {
         connectionClient.sendPayload(getNames(devices), message);
     }

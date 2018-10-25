@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.network.nearby.connections;
+package group6.interactivehandwriting.common.network.nearby.connections.device;
 
 /**
  * Created by JakeL on 9/23/18.

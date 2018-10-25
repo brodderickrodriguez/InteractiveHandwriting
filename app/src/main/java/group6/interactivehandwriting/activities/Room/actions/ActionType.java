@@ -1,17 +1,17 @@
-package group6.interactivehandwriting.common.network;
+package group6.interactivehandwriting.activities.Room.actions;
 
 /**
- * Created by JakeL on 9/30/18.
+ * Created by JakeL on 10/18/18.
  */
 
-public enum NetworkMessageType {
+public enum ActionType {
     START_DRAW(1),
     MOVE_DRAW(2),
     END_DRAW(3);
 
-    private int value;
+    int value;
 
-    NetworkMessageType(int v) {
+    ActionType(int v) {
         value = v;
     }
 
@@ -19,7 +19,7 @@ public enum NetworkMessageType {
         return value;
     }
 
-    public static NetworkMessageType fromValue(int v) {
+    public static ActionType fromValue(int v) {
         switch(v) {
             case 1:
                 return START_DRAW;

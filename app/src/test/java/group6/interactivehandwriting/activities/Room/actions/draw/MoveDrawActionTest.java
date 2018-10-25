@@ -6,7 +6,7 @@ package group6.interactivehandwriting.activities.Room.actions.draw;
 
 import org.junit.Test;
 
-import group6.interactivehandwriting.common.network.NetworkMessageType;
+import group6.interactivehandwriting.common.network.nearby.connections.message.NetworkMessageType;
 
 import static org.junit.Assert.*;
 

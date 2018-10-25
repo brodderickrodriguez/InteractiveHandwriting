@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.common.network.nearby.connections;
+package group6.interactivehandwriting.common.network.nearby.connections.device;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
@@ -6,7 +6,7 @@ import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import group6.interactivehandwriting.common.network.nearby.connections.NCDevice;
+import group6.interactivehandwriting.common.network.nearby.connections.device.NCDevice;
 
 /**
  * Created by JakeL on 9/23/18.

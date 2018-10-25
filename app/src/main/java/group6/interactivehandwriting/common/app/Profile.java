@@ -7,15 +7,12 @@ import java.util.Random;
  */
 
 public class Profile {
-    private static boolean isNameSet = false;
-
     private String name;
 
     // TODO this needs to be fixed
     public String getDeviceName() {
-        if (Profile.isNameSet == false) {
+        if (name == null) {
             name = "Device" + (new Random()).nextInt(10000);
-            Profile.isNameSet = true;
         }
         return name;
     }

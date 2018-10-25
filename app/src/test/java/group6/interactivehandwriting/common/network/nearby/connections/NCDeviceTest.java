@@ -6,7 +6,7 @@ package group6.interactivehandwriting.common.network.nearby.connections;
 
 import org.junit.Test;
 
-import group6.interactivehandwriting.common.network.nearby.connections.NCDevice;
+import group6.interactivehandwriting.common.network.nearby.connections.device.NCDevice;
 
 import static org.junit.Assert.*;
 
