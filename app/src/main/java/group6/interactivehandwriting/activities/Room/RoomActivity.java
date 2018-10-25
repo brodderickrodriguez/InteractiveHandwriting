@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.google.android.gms.nearby.connection.Payload;
@@ -57,6 +58,7 @@ public class RoomActivity extends Activity {
     private ModifyDocumentAction documentAction;
     private View view;
     private RelativeLayout main_view;
+    private SeekBar seekbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,10 @@ public class RoomActivity extends Activity {
         //RelativeLayout pdfLayout = (RelativeLayout) findViewById(R.id.pdf_layout);
 //        pdfLayout.addView(main_view);
         roomLayout.addView(view);
+
+        //For seekbar
+        seekbar = findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
     }
 
     @Override
@@ -126,18 +132,8 @@ public class RoomActivity extends Activity {
         }
     }
 
-    // A few hard coded colors (Will eventually switch this to a single function where
-    // the parameters can be altered in the layout
-    public void colorRed(View view) {
-        RoomViewActionUtility.ChangeColorCustom(255, 0, 0);
-    }
-
-    public void colorGreen(View view) {
-        RoomViewActionUtility.ChangeColorCustom(0, 255, 0);
-    }
-
-    public void colorBlue(View view) {
-        RoomViewActionUtility.ChangeColorCustom(0, 0, 255);
+    public void changeColor(View view) {
+        RoomViewActionUtility.ChangeColorHex(view.getTag().toString());
     }
 
     @Override
@@ -204,4 +200,22 @@ public class RoomActivity extends Activity {
     public void saveCanvas(View view) {
 
     }
+
+    // Used for the SeekBar to change pen width
+    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int seekbar_progress, boolean fromUser) {
+            RoomViewActionUtility.ChangeWidth((float)seekbar_progress);
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            RoomViewActionUtility.ChangeWidth((float)seekbar.getProgress());
+        }
+    };
+
 }
