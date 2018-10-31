@@ -1,6 +1,9 @@
 package group6.interactivehandwriting.common.network;
 
 import org.junit.Test;
+
+import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
+
 import static org.junit.Assert.*;
 
 /**
@@ -14,19 +17,20 @@ public class NetworkUtilityTest {
         String actualName;
 
         expectedName = "BYTES";
-        actualName = NetworkUtility.getPayloadTypeName(1);
+        actualName = NCNetworkUtility.getPayloadTypeName(1);
         assertEquals(expectedName, actualName);
 
         expectedName = "FILE";
-        actualName = NetworkUtility.getPayloadTypeName(2);
+        actualName = NCNetworkUtility.getPayloadTypeName(2);
         assertEquals(expectedName, actualName);
 
         expectedName = "STREAM";
-        actualName = NetworkUtility.getPayloadTypeName(3);
+        actualName = NCNetworkUtility.getPayloadTypeName(3);
         assertEquals(expectedName, actualName);
 
         expectedName = "UNKNOWN";
-        actualName = NetworkUtility.getPayloadTypeName(0);
+        actualName = NCNetworkUtility.getPayloadTypeName(0);
+        assertEquals(expectedName, actualName);
     }
 
 }

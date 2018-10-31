@@ -2,10 +2,9 @@ package group6.interactivehandwriting.activities.Room.draw;
 
 import java.util.Random;
 
-import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.MoveDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.StartDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.StartDrawAction;
 
 /**
  * Created by JakeL on 10/1/18.

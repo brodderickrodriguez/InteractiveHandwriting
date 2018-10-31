@@ -1,58 +1,38 @@
 package group6.interactivehandwriting.activities.Room;
 
-import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Canvas;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.app.Activity;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+import android.os.IBinder;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.google.android.gms.nearby.connection.Payload;
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 
 import java.io.File;
 
 import group6.interactivehandwriting.R;
-import group6.interactivehandwriting.activities.Room.actions.ModifyDocumentAction;
+import group6.interactivehandwriting.common.app.actions.file.ModifyDocumentAction;
 
-import com.google.android.gms.nearby.connection.Payload;
-
-import group6.interactivehandwriting.R;
-import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.network.NetworkManager;
-import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkManager;
+import group6.interactivehandwriting.common.network.NetworkLayer;
+import group6.interactivehandwriting.common.network.NetworkLayerBinder;
+import group6.interactivehandwriting.common.network.NetworkLayerService;
 
+// TODO move the file manipulation stuff to its own class
 public class RoomActivity extends Activity {
-    private static final String[] REQUIRED_PERMISSIONS =
-            new String[] {
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_WIFI_STATE,
-                    Manifest.permission.CHANGE_WIFI_STATE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-            };
-
-    /* Request/Persmission Codes */
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
-    private static final int REQUEST_CODE_FILEPICKER = 2;
+    public static final int REQUEST_CODE_FILEPICKER = 2;
 
     private PDFView pdf_view;
     private ModifyDocumentAction documentAction;
@@ -60,21 +40,66 @@ public class RoomActivity extends Activity {
     private RelativeLayout main_view;
     private SeekBar seekbar;
 
+    NetworkLayer networkLayer;
+    ServiceConnection networkServiceConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String roomName;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                roomName = null;
+            } else {
+                roomName = extras.getString("ROOM_NAME");
+            }
+        } else {
+            roomName = (String) savedInstanceState.getSerializable("ROOM_NAME");
+        }
+        if (roomName != null) {
+            Toast.makeText(getApplicationContext(), "Joined " + roomName, Toast.LENGTH_LONG).show();
+        } else {
+            Log.e("RoomActivity", "room name was null");
+        }
+
+        networkServiceConnection = getNetworkServiceConnection();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        NetworkLayerService.startNetworkService(this);
+        NetworkLayerService.bindNetworkService(this, networkServiceConnection);
+    }
+
+    private ServiceConnection getNetworkServiceConnection() {
+        return new ServiceConnection()
+        {
+            @Override
+            public void onServiceConnected (ComponentName name, IBinder service){
+                NetworkLayerBinder binder = (NetworkLayerBinder) service;
+                networkLayer = binder.getNetworkLayer();
+                handleNetworkStarted();
+            }
+
+            @Override
+            public void onServiceDisconnected (ComponentName name){
+
+            }
+        };
+    }
+
+    private void handleNetworkStarted() {
         Context context = this.getApplicationContext();
-        Profile profile = new Profile();
-        NetworkManager networkManager = new NCNetworkManager(context, profile);
-        documentAction = new ModifyDocumentAction(context, profile, networkManager);
-        View view = new RoomView(context, profile, networkManager);
-        main_view = (RelativeLayout)findViewById(R.id.main_layout);
+        Profile profile = networkLayer.getMyProfile();
+        documentAction = new ModifyDocumentAction(context, profile, networkLayer);
+        View view = new RoomView(context, profile, networkLayer);
+        main_view = findViewById(R.id.main_layout);
         setContentView(R.layout.room_layout);
 
-        // Adds the RoomView to the layout and inflates it
         ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-        //RelativeLayout pdfLayout = (RelativeLayout) findViewById(R.id.pdf_layout);
-//        pdfLayout.addView(main_view);
         roomLayout.addView(view);
 
         //For seekbar
@@ -83,42 +108,9 @@ public class RoomActivity extends Activity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
-           ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
-        }
-    }
-
-    private static boolean hasPermissions(Context context, String... permissions) {
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /** Handles user acceptance (or denial) of our permission request. */
-    @CallSuper
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode != REQUEST_CODE_REQUIRED_PERMISSIONS) {
-            return;
-        }
-
-        for (int grantResult : grantResults) {
-            if (grantResult == PackageManager.PERMISSION_DENIED) {
-                finish();
-                return;
-            }
-        }
-        recreate();
+    protected void onStop() {
+        super.onStop();
+        unbindService(networkServiceConnection);
     }
 
     public void toggleToolbox(View view) {
@@ -140,27 +132,24 @@ public class RoomActivity extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        File file = null;
-        switch(requestCode) {
-            case REQUEST_CODE_FILEPICKER:
-                if (requestCode == REQUEST_CODE_FILEPICKER && resultCode == RESULT_OK) {
-                    String filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
-                    file = new File(filePath);
-
-
-                    //setContentView(R.layout.main);
-
-                    pdf_view = (PDFView) findViewById(R.id.pdf_view);
-                    documentAction.openDocumentWithFile(file, (PDFView) pdf_view);
-
-                    /**** setContentView(view) to return to whiteboard ****/
-                }
-             break;
+        if (isFilePickerResult(requestCode)) {
+            if (resultCode == RESULT_OK) {
+                handleFilePickerResult(data);
+            }
         }
     }
-    /**
-     * Opens storage to look for files
-     */
+
+    private boolean isFilePickerResult(int requestCode) {
+        return requestCode == REQUEST_CODE_FILEPICKER;
+    }
+
+    private void handleFilePickerResult(Intent fileSelectionIntent) {
+        String filePath = fileSelectionIntent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
+        File file = new File(filePath);
+        pdf_view = findViewById(R.id.pdf_view);
+        documentAction.openDocumentWithFile(file, pdf_view);
+    }
+
     public void showPDF(View view) {
         new MaterialFilePicker()
                 .withActivity(this)
@@ -169,31 +158,21 @@ public class RoomActivity extends Activity {
                 .start();
     }
 
-    /**
-     * Hides the PDF view.
-     */
     public void hidePDFView(PDFView pView) {
         pdf_view = (PDFView) findViewById(R.id.pdf_view);
         pdf_view = pView;
         pdf_view.setVisibility(View.GONE);
     }
 
-    /**
-     * Shows the PDF view.
-     */
     public void showPDFView(View view) {
         pdf_view = (PDFView) findViewById(R.id.pdf_view);
         pdf_view.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Shows the whiteboard
-     */
     public void showWhiteBoard(View view) {
         if (pdf_view != null & pdf_view.getVisibility() == View.VISIBLE) {
             pdf_view.setVisibility(View.INVISIBLE);
         }
-
         setContentView(view);
     }
 

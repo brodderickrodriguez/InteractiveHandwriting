@@ -2,7 +2,7 @@ package group6.interactivehandwriting.common.exceptions;
 
 import com.google.android.gms.nearby.connection.Payload;
 
-import group6.interactivehandwriting.common.network.NetworkUtility;
+import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
 
 /**
  * Created by JakeL on 9/22/18.
@@ -18,7 +18,7 @@ public final class InvalidPayloadException extends Exception {
 
     private void setMessage(Object payloadReceiver, Payload receivedPayload) {
         String receiverName = payloadReceiver.getClass().getName();
-        String payloadType = NetworkUtility.getPayloadTypeName(receivedPayload.getType());
+        String payloadType = NCNetworkUtility.getPayloadTypeName(receivedPayload.getType());
 
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder
