@@ -2,7 +2,6 @@ package group6.interactivehandwriting.common.network.nearby.connections.device;
 
 import android.support.annotation.NonNull;
 import android.util.ArraySet;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -27,8 +26,6 @@ public class NCRoutingTable implements Iterable<Long> {
     }
 
     public void setMyProfile(final Profile p) {
-        Log.v(NCNetworkUtility.DEBUG, "adding a record for local profile");
-
         NCRoutingTableRecord record = new NCRoutingTableRecord();
         record.distance = 0;
         record.username = p.username;
@@ -51,15 +48,11 @@ public class NCRoutingTable implements Iterable<Long> {
     }
 
     public void update(String endpointId, NCRoutingTable otherTable) {
-        Log.v(NCNetworkUtility.DEBUG, "updating with otherTable size " + otherTable.size());
-
         for (Long deviceId : otherTable) {
             NCRoutingTableRecord staleRecord = table.get(deviceId);
             if (staleRecord == null) {
-                Log.v(NCNetworkUtility.DEBUG, "inserting record with deviceid " + deviceId);
                 insertRecord(endpointId, deviceId, otherTable.get(deviceId));
             } else {
-                Log.v(NCNetworkUtility.DEBUG, "updating record");
                 updateRecord(endpointId, deviceId, otherTable.get(deviceId));
             }
         }
@@ -74,9 +67,6 @@ public class NCRoutingTable implements Iterable<Long> {
             record.updateTime();
             table.put(deviceId, record);
             recordWasUpdated = true;
-            Log.v(NCNetworkUtility.DEBUG, "record insert success");
-        } else {
-            Log.v(NCNetworkUtility.DEBUG, "record insertion failed");
         }
 
         return recordWasUpdated;
@@ -87,15 +77,15 @@ public class NCRoutingTable implements Iterable<Long> {
 
         if (table.containsKey(deviceId)) {
             NCRoutingTableRecord stale = table.get(deviceId);
-            if (stale.timeStamp < record.timeStamp) {
-                if (stale.distance > record.distance + 1) {
-                    stale.distance = record.distance + 1;
-                    stale.nextHopEndpointId = endpointId;
-                }
-                stale.username = record.username;
-                stale.updateTime();
-                recordWasUpdated = true;
+            if (stale.distance > record.distance + 1) {
+                stale.distance = record.distance + 1;
+                stale.nextHopEndpointId = endpointId;
             }
+            stale.username = record.username;
+            stale.updateTime();
+            stale.room = new Room(record.room.deviceId, record.room.name);
+            table.put(deviceId, stale);
+            recordWasUpdated = true;
         }
 
         return recordWasUpdated;
@@ -127,7 +117,6 @@ public class NCRoutingTable implements Iterable<Long> {
     }
 
     public Profile getProfile(long deviceId) {
-        Log.v(NCNetworkUtility.DEBUG, "getting profile for " + deviceId);
         NCRoutingTableRecord r = table.get(deviceId);
         Profile p = new Profile();
         p.deviceId = deviceId;

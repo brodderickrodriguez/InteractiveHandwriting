@@ -71,7 +71,6 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
 
     @Override
     public NetworkLayerBinder onBind(Intent bindIntent) {
-        Log.v(NCNetworkUtility.DEBUG, "Binding NC Network Layer ");
         return new NCNetworkLayerBinder(this);
     }
 
@@ -101,12 +100,14 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     @Override
     public Set<Room> getRooms() {
         sendSerialMessage(new RoutingUpdateRequest());
-        return routingTable.getRooms();
+        Set<Room> rooms = routingTable.getRooms();
+        return rooms;
     }
 
     @Override
     public void joinRoom(final Profile profile, final Room room) {
-        routingTable.setMyRoom(profile, room);
+        myRoom = new Room(room.deviceId, room.name);
+        routingTable.setMyRoom(profile, myRoom);
         sendRoutingUpdate();
     }
 
@@ -150,10 +151,9 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     }
 
     public void sendSerialMessage(NetworkSerializable data, List<String> endpoints) {
-        Log.v(NCNetworkUtility.DEBUG, "sending serial message");
         SerialMessageHeader header = new SerialMessageHeader()
                 .withId(myProfile.deviceId)
-                .withRoomNumber(-1)
+                .withRoomNumber(myRoom.getRoomNumber())
                 .withSequenceNumber(SerialMessageHeader.getNextSequenceNumber())
                 .withType(data.getType());
 
@@ -165,7 +165,6 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     }
 
     public void receiveMessage(String endpoint, Payload payload) {
-        Log.v(NCNetworkUtility.DEBUG, "receiving serial message");
         switch(payload.getType()) {
             case Payload.Type.BYTES:
                 handleBytesPayload(endpoint, payload.asBytes());
@@ -180,9 +179,13 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
         SerialMessageHeader header = new SerialMessageHeader().fromBytes(message.getHeader());
         byte[] data = message.getData();
 
-        if (header.getRoomNumber() == myRoom.getRoomNumber()) {
+        if (myRoom != null &&
+                myRoom.getRoomNumber() != Room.VOID_ROOM_NUMBER &&
+                header.getRoomNumber() == myRoom.getRoomNumber()) {
+            Log.v("Room", "Room message received");
             dispatchRoomMessage(endpoint, header, data);
         } else {
+            Log.v("Room", "Non room message received");
             dispatchMessage(endpoint, header, data);
         }
     }
@@ -207,11 +210,9 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     private void dispatchMessage(String endpoint, SerialMessageHeader header, byte[] dataSection) {
         switch(header.getType()) {
             case ROUTING_UPDATE_REQUEST:
-                Log.v(NCNetworkUtility.DEBUG, "ROUTING_UPDATE_REQUEST received");
                 sendRoutingUpdate(endpoint);
                 break;
             case ROUTING_UPDATE_REPLY:
-                Log.v(NCNetworkUtility.DEBUG, "ROUTING_UPDATE_REPLY received");
                 handleRoutingUpdateReply(endpoint, new RoutingUpdate().fromBytes(dataSection));
                 break;
             default:
@@ -224,23 +225,17 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     }
 
     private void sendRoutingUpdate(String endpoint) {
-        Log.v(NCNetworkUtility.DEBUG, "sending ROUTING_UPDATE_REPLY");
-
         sendSerialMessage(new RoutingUpdate().withTable(routingTable), endpoint);
     }
 
 
     private void handleRoutingUpdateReply(String endpoint, RoutingUpdate updateMessage) {
-        Log.v(NCNetworkUtility.DEBUG, "ROUTING_UPDATE_REPLY handling");
-        
         routingTable.update(endpoint, updateMessage.getData());
     }
 
     private void sendActionToCanvasManager(long deviceId, DrawableAction action) {
         if (drawActionHandle != null) {
             drawActionHandle.handleDrawAction(routingTable.getProfile(deviceId), action);
-        } else {
-            Log.e(NCNetworkUtility.DEBUG, "Message received but canvas manager is not set");
         }
     }
 }

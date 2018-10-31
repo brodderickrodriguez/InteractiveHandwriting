@@ -97,10 +97,7 @@ public class RoomActivity extends Activity {
         main_view = findViewById(R.id.main_layout);
         setContentView(R.layout.room_layout);
 
-        // Adds the RoomView to the layout and inflates it
         ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-        // RelativeLayout pdfLayout = (RelativeLayout) findViewById(R.id.pdf_layout);
-        // pdfLayout.addView(main_view);
         roomLayout.addView(view);
     }
 
@@ -155,8 +152,6 @@ public class RoomActivity extends Activity {
         File file = new File(filePath);
         pdf_view = findViewById(R.id.pdf_view);
         documentAction.openDocumentWithFile(file, pdf_view);
-        //setContentView(R.layout.main);
-        /**** setContentView(view) to return to whiteboard ****/
     }
 
     public void showPDF(View view) {

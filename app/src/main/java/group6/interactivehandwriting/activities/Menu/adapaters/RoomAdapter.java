@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.Collection;
+import java.util.Set;
 
 import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.common.app.rooms.Room;
@@ -48,7 +49,8 @@ public class RoomAdapter extends ArrayAdapter<Room> {
                 add(room);
             }
         }
-        notifyDataSetChanged();
+
+        notifyDataSetInvalidated();
     }
 
     private boolean contains(Room room) {

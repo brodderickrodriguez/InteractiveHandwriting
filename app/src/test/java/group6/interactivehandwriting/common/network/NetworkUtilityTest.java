@@ -30,6 +30,7 @@ public class NetworkUtilityTest {
 
         expectedName = "UNKNOWN";
         actualName = NCNetworkUtility.getPayloadTypeName(0);
+        assertEquals(expectedName, actualName);
     }
 
 }

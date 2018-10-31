@@ -5,18 +5,15 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Set;
 import java.util.Timer;
@@ -51,7 +48,6 @@ public class MenuActivity extends AppCompatActivity {
         networkServiceConnection = getNetworkServiceConnection();
         myProfile = new Profile();
         myProfile.deviceId = Profile.DEVICE_ID;
-        myProfile.username = "Jake Laney";
         roomAdapter = new RoomAdapter(getApplicationContext(), R.layout.room_button);
         roomListView = findViewById(R.id.room_list);
         roomListView.setAdapter(roomAdapter);
@@ -127,22 +123,30 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void startRequestingRooms() {
+        final Handler handle = new Handler();
         roomRequestTimer = new Timer();
         roomRequestTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                updateRoomList(networkLayer.getRooms());
+                handle.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateRoomList(networkLayer.getRooms());
+                    }
+                });
             }
         }, REQUEST_ROOMS_DELAY_MS, REQUEST_ROOMS_INTERVAL_MS);
     }
 
     private void updateRoomList(Set<Room> discoveredRooms) {
         // TODO add a listview and adapter
+        roomAdapter.addAll(discoveredRooms);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        roomRequestTimer.cancel();
         unbindService(networkServiceConnection);
     }
 

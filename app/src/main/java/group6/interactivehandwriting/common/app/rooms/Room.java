@@ -5,8 +5,18 @@ package group6.interactivehandwriting.common.app.rooms;
  */
 
 public class Room {
+    public static final int VOID_ROOM_NUMBER = 0;
     public String name;
     public long deviceId;
+
+    public Room() {
+        this(0, "");
+    }
+
+    public Room(long deviceId, String name) {
+        this.deviceId = deviceId;
+        this.name = name;
+    }
 
     @Override
     public boolean equals(Object other) {
@@ -16,7 +26,7 @@ public class Room {
             return true;
         } else if (other instanceof Room) {
             Room otherRoom = (Room) other;
-            return otherRoom.hashCode() == this.hashCode();
+            return otherRoom.getRoomNumber() == this.getRoomNumber();
         } else {
             return false;
         }

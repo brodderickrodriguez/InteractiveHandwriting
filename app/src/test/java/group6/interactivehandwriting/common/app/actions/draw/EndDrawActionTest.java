@@ -11,6 +11,7 @@ import group6.interactivehandwriting.common.network.nearby.connections.message.N
 import static org.junit.Assert.*;
 
 public class EndDrawActionTest {
+    /*
     @Test
     public void test_actionId() {
         StartDrawAction startAction = new StartDrawAction(true);
@@ -59,6 +60,6 @@ public class EndDrawActionTest {
         EndDrawAction action = new EndDrawAction();
         assertEquals(12, action.getByteBufferSize());
     }
-
+    */
     // TODO exceptions with unpacking
 }
