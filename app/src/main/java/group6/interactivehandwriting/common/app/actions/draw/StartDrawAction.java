@@ -1,17 +1,18 @@
-package group6.interactivehandwriting.activities.Room.actions.draw;
+package group6.interactivehandwriting.common.app.actions.draw;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
-import group6.interactivehandwriting.activities.Room.actions.Action;
-import group6.interactivehandwriting.activities.Room.actions.ActionType;
+import group6.interactivehandwriting.common.app.actions.Action;
+import group6.interactivehandwriting.common.app.actions.ActionId;
+import group6.interactivehandwriting.common.app.actions.ActionType;
 import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
-import group6.interactivehandwriting.common.network.nearby.connections.message.serial.SerialMessage;
 
 /**
  * Created by JakeL on 9/29/18.
  */
 
-public class StartDrawAction extends DrawAction {
+public class StartDrawAction extends DrawableAction {
     private float xPosition;
     private float yPosition;
     private float penWidth;
@@ -26,20 +27,19 @@ public class StartDrawAction extends DrawAction {
 
     @Override
     public Drawable update(Drawable drawableItem) {
-        // assert item is correct type
+        Log.v("Canvas", "creating a line line");
+
         Line line = new Line();
-        line.startAction(this);
+        line.startDraw(this);
         return line;
     }
 
     private void setActionIdIfNeeded(boolean shouldGetNewActionId) {
-        int id;
         if (shouldGetNewActionId) {
-            id = Action.getNextActionId();
+            id = ActionId.next();
         } else {
-            id = Action.getCurrentActionId();
+            id = ActionId.get();
         }
-        setActionId(id);
     }
 
     public void setPosition(float x, float y) {

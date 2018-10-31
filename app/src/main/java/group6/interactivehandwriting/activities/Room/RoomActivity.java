@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.os.IBinder;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.nbsp.materialfilepicker.MaterialFilePicker;
@@ -18,7 +20,7 @@ import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 import java.io.File;
 
 import group6.interactivehandwriting.R;
-import group6.interactivehandwriting.activities.Room.actions.file.ModifyDocumentAction;
+import group6.interactivehandwriting.common.app.actions.file.ModifyDocumentAction;
 
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
@@ -42,6 +44,24 @@ public class RoomActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String roomName;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                roomName = null;
+            } else {
+                roomName = extras.getString("ROOM_NAME");
+            }
+        } else {
+            roomName = (String) savedInstanceState.getSerializable("ROOM_NAME");
+        }
+        if (roomName != null) {
+            Toast.makeText(getApplicationContext(), "Joined " + roomName, Toast.LENGTH_LONG).show();
+        } else {
+            Log.e("RoomActivity", "room name was null");
+        }
+
         networkServiceConnection = getNetworkServiceConnection();
     }
 
@@ -59,7 +79,6 @@ public class RoomActivity extends Activity {
             public void onServiceConnected (ComponentName name, IBinder service){
                 NetworkLayerBinder binder = (NetworkLayerBinder) service;
                 networkLayer = binder.getNetworkLayer();
-                networkLayer.begin(new Profile());
                 handleNetworkStarted();
             }
 
@@ -72,7 +91,7 @@ public class RoomActivity extends Activity {
 
     private void handleNetworkStarted() {
         Context context = this.getApplicationContext();
-        Profile profile = new Profile();
+        Profile profile = networkLayer.getMyProfile();
         documentAction = new ModifyDocumentAction(context, profile, networkLayer);
         View view = new RoomView(context, profile, networkLayer);
         main_view = findViewById(R.id.main_layout);

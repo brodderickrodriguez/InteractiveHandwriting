@@ -2,7 +2,8 @@ package group6.interactivehandwriting.common.network.nearby.connections.message.
 
 import java.nio.ByteBuffer;
 
-import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
+import group6.interactivehandwriting.common.app.actions.ActionId;
+import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
 import group6.interactivehandwriting.common.network.nearby.connections.message.NetworkMessageType;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.SerialMessageData;
@@ -35,7 +36,8 @@ public class EndDrawActionMessage implements SerialMessageData<EndDrawActionMess
     public byte[] toBytes() {
         ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
 
-        buffer.putInt(action.getActionId());
+        buffer.putInt(action.getId().value);
+        buffer.putInt(action.getId().sequence);
         buffer.putFloat(action.getX());
         buffer.putFloat(action.getY());
 
@@ -51,12 +53,13 @@ public class EndDrawActionMessage implements SerialMessageData<EndDrawActionMess
     public EndDrawActionMessage fromBytes(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
-        int actionId = buffer.getInt();
+        int actionIdValue = buffer.getInt();
+        int actionIdSeq = buffer.getInt();
         float xPosition = buffer.getFloat();
         float yPosition = buffer.getFloat();
 
         action = new EndDrawAction();
-        action.setActionId(actionId);
+        action.setId(new ActionId(actionIdValue, actionIdSeq));
         action.setPosition(xPosition, yPosition);
 
         return this;
@@ -64,7 +67,7 @@ public class EndDrawActionMessage implements SerialMessageData<EndDrawActionMess
 
     @Override
     public int getByteBufferSize() {
-        int actionIdSize = NCNetworkUtility.BYTES_IN_A_INT;
+        int actionIdSize = 2 * NCNetworkUtility.BYTES_IN_A_INT;
         int xPositionSize = NCNetworkUtility.BYTES_IN_A_FLOAT;
         int yPositionSize = NCNetworkUtility.BYTES_IN_A_FLOAT;
 

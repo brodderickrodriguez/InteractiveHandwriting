@@ -2,11 +2,10 @@ package group6.interactivehandwriting.common.network.nearby.connections.message.
 
 import java.nio.ByteBuffer;
 
-import group6.interactivehandwriting.activities.Room.actions.draw.MoveDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.StartDrawAction;
+import group6.interactivehandwriting.common.app.actions.ActionId;
+import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
 import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
 import group6.interactivehandwriting.common.network.nearby.connections.message.NetworkMessageType;
-import group6.interactivehandwriting.common.network.nearby.connections.message.serial.NetworkSerializable;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.SerialMessageData;
 
 /**
@@ -41,7 +40,8 @@ public class MoveDrawActionMessage implements SerialMessageData<MoveDrawActionMe
     public byte[] toBytes() {
         ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
 
-        buffer.putInt(action.getActionId());
+        buffer.putInt(action.getId().value);
+        buffer.putInt(action.getId().sequence);
         buffer.putFloat(action.getX());
         buffer.putFloat(action.getY());
         buffer.putFloat(action.getOffsetX());
@@ -54,14 +54,15 @@ public class MoveDrawActionMessage implements SerialMessageData<MoveDrawActionMe
     public MoveDrawActionMessage fromBytes(byte[] data) {
         ByteBuffer buffer = ByteBuffer.wrap(data);
 
-        int actionId = buffer.getInt();
+        int actionIdValue = buffer.getInt();
+        int actionIdSeq = buffer.getInt();
         float xPosition = buffer.getFloat();
         float yPosition = buffer.getFloat();
         float dX = buffer.getFloat();
         float dY = buffer.getFloat();
 
         action = new MoveDrawAction();
-        action.setActionId(actionId);
+        action.setId(new ActionId(actionIdValue, actionIdSeq));
         action.setMovePosition(xPosition, yPosition, dX, dY);
 
         return this;
@@ -69,7 +70,7 @@ public class MoveDrawActionMessage implements SerialMessageData<MoveDrawActionMe
 
     @Override
     public int getByteBufferSize() {
-        int actionIdSize = NCNetworkUtility.BYTES_IN_A_INT;
+        int actionIdSize = 2 * NCNetworkUtility.BYTES_IN_A_INT;
         int xPositionSize = NCNetworkUtility.BYTES_IN_A_FLOAT;
         int yPositionSize = NCNetworkUtility.BYTES_IN_A_FLOAT;
         int dXSize = NCNetworkUtility.BYTES_IN_A_FLOAT;

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.network.nearby.connections.device.NCDevice;
 
 // TODO resolve if certain network components need their own thread
 public class NCNetworkConnection {
@@ -27,15 +26,19 @@ public class NCNetworkConnection {
     private NCNetworkLayerService manager;
     private String deviceName;
 
-    public NCNetworkConnection(Context context, Profile profile, NCNetworkLayerService manager) {
-        this.connectionClient = Nearby.getConnectionsClient(context);
-        this.deviceName = profile.getDeviceName();
-        this.manager = manager;
-        begin();
+    public NCNetworkConnection forService(NCNetworkLayerService service) {
+        this.manager = service;
+        return this;
     }
 
-    public void begin() {
+    public NCNetworkConnection withProfile(Profile profile) {
+        this.deviceName = profile.username;
+        return this;
+    }
+
+    public void begin(Context context) {
         Log.v(V_TAG, "Starting network service");
+        this.connectionClient = Nearby.getConnectionsClient(context);
         advertise();
     }
 
@@ -53,25 +56,21 @@ public class NCNetworkConnection {
     private ConnectionLifecycleCallback getConnectionLifeCycleCallback() {
         return new ConnectionLifecycleCallback() {
             @Override
-            public void onConnectionInitiated(@NonNull String deviceName, @NonNull ConnectionInfo connectionInfo) {
-                NCDevice device = new NCDevice(deviceName);
-                boolean shouldAddConnection = manager.onConnectionInitiated(device);
-
+            public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
+                boolean shouldAddConnection = manager.onConnectionInitiated(endpointId);
                 if (shouldAddConnection) {
-                    connectionClient.acceptConnection(device.getDeviceName(), getPayloadCallback());
+                    connectionClient.acceptConnection(endpointId, getPayloadCallback());
                 }
             }
 
             @Override
-            public void onConnectionResult(@NonNull String deviceName, @NonNull ConnectionResolution connectionResolution) {
-                NCDevice device = new NCDevice(deviceName);
-                manager.onConnectionResult(device, connectionResolution.getStatus());
+            public void onConnectionResult(@NonNull String endpointId, @NonNull ConnectionResolution connectionResolution) {
+                manager.onConnectionResult(endpointId, connectionResolution.getStatus());
             }
 
             @Override
-            public void onDisconnected(@NonNull String deviceName) {
-                NCDevice device = new NCDevice(deviceName);
-                manager.onDisconnected(device);
+            public void onDisconnected(@NonNull String endpointId) {
+                manager.onDisconnected(endpointId);
             }
         };
     }
@@ -79,10 +78,9 @@ public class NCNetworkConnection {
     private PayloadCallback getPayloadCallback() {
         return new PayloadCallback() {
             @Override
-            public void onPayloadReceived(@NonNull String deviceName, @NonNull Payload payload) {
+            public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
                 // TODO add logic for handling destinations that are not neighbors
-                NCDevice device = new NCDevice(deviceName);
-                manager.receiveMessage(payload);
+                manager.receiveMessage(endpointId, payload);
             }
 
             @Override
@@ -192,17 +190,7 @@ public class NCNetworkConnection {
         };
     }
 
-    public void sendMessage(Payload message, List<NCDevice> devices) {
-        connectionClient.sendPayload(getNames(devices), message);
-    }
-
-    private List<String> getNames(List<NCDevice> devices) {
-        List<String> names = new ArrayList<>();
-
-        for (NCDevice device : devices) {
-            names.add(device.getDeviceName());
-        }
-
-        return names;
+    public void sendMessage(Payload message, List<String> endpointIds) {
+        connectionClient.sendPayload(endpointIds, message);
     }
 }

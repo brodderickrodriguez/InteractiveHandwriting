@@ -5,10 +5,9 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
 
-import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.MoveDrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.StartDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.StartDrawAction;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
@@ -22,14 +21,14 @@ public class RoomView extends View {
     private NetworkLayer networkLayer;
 
     private CanvasManager canvasManager;
-    private String deviceName;
+    private Profile profile;
 
     public RoomView(Context context, Profile profile, NetworkLayer networkLayer) {
         super(context);
         this.networkLayer = networkLayer;
-        deviceName = profile.getDeviceName();
+        this.profile = profile;
         canvasManager = new CanvasManager(this);
-        networkLayer.setCanvasManager(canvasManager);
+        networkLayer.receiveDrawActions(canvasManager);
     }
 
     @Override
@@ -71,20 +70,20 @@ public class RoomView extends View {
     private void touchStarted(float x, float y) {
         StartDrawAction action = RoomViewActionUtility.touchStarted(x, y);
         networkLayer.startDraw(action);
-        canvasManager.putAction(deviceName, action);
+        canvasManager.handleDrawAction(profile, action);
     }
 
     private void touchMoved(float x, float y) {
         if (RoomViewActionUtility.didTouchMove(x, y, TOUCH_TOLERANCE)) {
             MoveDrawAction action = RoomViewActionUtility.touchMoved(x, y);
             networkLayer.moveDraw(action);
-            canvasManager.putAction(deviceName, action);
+            canvasManager.handleDrawAction(profile, action);
         }
     }
 
     private void touchReleased() {
         EndDrawAction action = RoomViewActionUtility.touchReleased();
         networkLayer.endDraw(action);
-        canvasManager.putAction(deviceName, action);
+        canvasManager.handleDrawAction(profile, action);
     }
 }

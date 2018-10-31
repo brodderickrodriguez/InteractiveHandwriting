@@ -1,27 +1,24 @@
-package group6.interactivehandwriting.activities.Room.actions.draw;
+package group6.interactivehandwriting.common.app.actions.draw;
 
 import android.graphics.drawable.Drawable;
 
-import java.nio.ByteBuffer;
-
-import group6.interactivehandwriting.activities.Room.actions.ActionType;
+import group6.interactivehandwriting.common.app.actions.ActionId;
+import group6.interactivehandwriting.common.app.actions.ActionType;
 import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
-import group6.interactivehandwriting.activities.Room.actions.Action;
-import group6.interactivehandwriting.common.network.nearby.connections.message.NetworkMessageType;
-import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
+import group6.interactivehandwriting.common.app.actions.Action;
 
 /**
  * Created by JakeL on 9/30/18.
  */
 
-public class MoveDrawAction extends DrawAction {
+public class MoveDrawAction extends DrawableAction {
     private float xPosition;
     private float yPosition;
     private float dX;
     private float dY;
 
     public MoveDrawAction() {
-        setActionId(Action.getCurrentActionId());
+        id = ActionId.get();
     }
 
     @Override
@@ -33,7 +30,7 @@ public class MoveDrawAction extends DrawAction {
     public Drawable update(Drawable drawableItem) {
         // assert item is correct type
         Line line = (Line) drawableItem;
-        line.moveAction(this);
+        line.moveDraw(this);
         return line;
     }
 

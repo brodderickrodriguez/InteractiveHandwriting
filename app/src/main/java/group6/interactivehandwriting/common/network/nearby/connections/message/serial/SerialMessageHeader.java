@@ -9,12 +9,11 @@ import group6.interactivehandwriting.common.network.nearby.connections.message.N
  */
 
 public class SerialMessageHeader implements NetworkSerializable<SerialMessageHeader> {
-    public static final int BYTE_SIZE = 4 * 4;
-
+    public static final int BYTE_SIZE = 20;
     private NetworkMessageType type;
     private int roomNumber;
     private int sequenceNumber;
-    private int deviceId;
+    private long deviceId;
 
     private static int globalSequenceNumber;
 
@@ -22,9 +21,15 @@ public class SerialMessageHeader implements NetworkSerializable<SerialMessageHea
         globalSequenceNumber = 0;
     }
 
+
     public static int getNextSequenceNumber() {
         globalSequenceNumber += 1;
         return globalSequenceNumber;
+    }
+
+    public SerialMessageHeader withId(long deviceId) {
+        this.deviceId = deviceId;
+        return this;
     }
 
     public SerialMessageHeader withType(NetworkMessageType type) {
@@ -42,18 +47,13 @@ public class SerialMessageHeader implements NetworkSerializable<SerialMessageHea
         return this;
     }
 
-    public SerialMessageHeader withDeviceName(String deviceName) {
-        this.deviceId = deviceName.hashCode();
-        return this;
-    }
-
     @Override
     public byte[] toBytes() {
-        ByteBuffer buffer = ByteBuffer.allocate(BYTE_SIZE);
+        ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
         buffer.putInt(type.getValue());
         buffer.putInt(roomNumber);
-        buffer.putInt(sequenceNumber);
-        buffer.putInt(deviceId);
+        buffer.putInt(SerialMessageHeader.getNextSequenceNumber());
+        buffer.putLong(deviceId);
         return buffer.array();
     }
 
@@ -63,7 +63,7 @@ public class SerialMessageHeader implements NetworkSerializable<SerialMessageHea
         type = NetworkMessageType.get(buffer.getInt());
         roomNumber = buffer.getInt();
         sequenceNumber = buffer.getInt();
-        deviceId = buffer.getInt();
+        deviceId = buffer.getLong();
         return this;
     }
 
@@ -77,7 +77,9 @@ public class SerialMessageHeader implements NetworkSerializable<SerialMessageHea
         return type;
     }
 
-    public int getDeviceId() {
+    public long getDeviceId() {
         return deviceId;
     }
+
+    public int getRoomNumber() { return roomNumber; }
 }

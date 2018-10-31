@@ -9,9 +9,15 @@ import java.util.Map;
 
 public enum NetworkMessageType {
     SERIAL(0),
-    START_DRAW(1),
-    MOVE_DRAW(2),
-    END_DRAW(3);
+    ROUTING_UPDATE_REQUEST(1),
+    ROUTING_UPDATE_REPLY(2),
+
+    START_DRAW(10),
+    MOVE_DRAW(12),
+    END_DRAW(13),
+
+    ROOMS_REQUEST(24),
+    ROOMS_REPLY(25);
 
     private int value;
 

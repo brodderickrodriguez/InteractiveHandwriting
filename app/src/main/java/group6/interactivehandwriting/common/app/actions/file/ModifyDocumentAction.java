@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.activities.Room.actions.file;
+package group6.interactivehandwriting.common.app.actions.file;
 
 import android.content.Context;
 import android.net.Uri;

@@ -12,7 +12,7 @@ import org.junit.Test;
 import java.util.List;
 
 import group6.interactivehandwriting.common.network.nearby.connections.device.NCDevice;
-import group6.interactivehandwriting.common.network.nearby.connections.device.NCDeviceManager;
+import group6.interactivehandwriting.common.network.nearby.connections.device.NCRoutingTable;
 
 import static org.junit.Assert.*;
 
@@ -22,7 +22,7 @@ public class NCDeviceManagerTest {
         String deviceName = "deviceName";
         NCDevice device = new NCDevice(deviceName);
         Status statusOk = NCDeviceManagerTest.getStatusOk();
-        NCDeviceManager NCDeviceManager = new NCDeviceManager();
+        NCRoutingTable NCDeviceManager = new NCRoutingTable();
 
         Boolean wasDeviceAdded = NCDeviceManager.addDevice(device, statusOk);
         assertTrue(wasDeviceAdded);
@@ -46,7 +46,7 @@ public class NCDeviceManagerTest {
         String deviceName = "deviceName";
         NCDevice device = new NCDevice(deviceName);
         Status statusError = NCDeviceManagerTest.getStatusError();
-        NCDeviceManager NCDeviceManager = new NCDeviceManager();
+        NCRoutingTable NCDeviceManager = new NCRoutingTable();
 
         Boolean wasDeviceAdded = NCDeviceManager.addDevice(device, statusError);
         assertFalse(wasDeviceAdded);
@@ -59,7 +59,7 @@ public class NCDeviceManagerTest {
     public void test_disconnectDevice() {
         String deviceName = "deviceName";
         NCDevice device = new NCDevice(deviceName);
-        NCDeviceManager NCDeviceManager = new NCDeviceManager();
+        NCRoutingTable NCDeviceManager = new NCRoutingTable();
 
         Boolean wasDeviceRemoved = NCDeviceManager.disconnectDevice(device);
         assertFalse(wasDeviceRemoved);
@@ -77,7 +77,7 @@ public class NCDeviceManagerTest {
     public void test_shouldAcceptConnection() {
         String deviceName = "deviceName";
         NCDevice device = new NCDevice(deviceName);
-        NCDeviceManager NCDeviceManager = new NCDeviceManager();
+        NCRoutingTable NCDeviceManager = new NCRoutingTable();
 
         Boolean shouldAcceptConnection = NCDeviceManager.shouldAcceptConnection(device);
         assertTrue(shouldAcceptConnection);
@@ -97,7 +97,7 @@ public class NCDeviceManagerTest {
     public void test_getNeighboringDeviceNames() {
         String deviceName = "deviceName";
         NCDevice device = new NCDevice(deviceName);
-        NCDeviceManager NCDeviceManager = new NCDeviceManager();
+        NCRoutingTable NCDeviceManager = new NCRoutingTable();
 
         NCDeviceManager.addDevice(device, NCDeviceManagerTest.getStatusOk());
 
