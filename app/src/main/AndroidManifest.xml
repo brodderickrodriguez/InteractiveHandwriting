@@ -30,5 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.Room.DocumentActivity"
+            android:label="@string/DocumentActivity.Title"
+            android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 </manifest>

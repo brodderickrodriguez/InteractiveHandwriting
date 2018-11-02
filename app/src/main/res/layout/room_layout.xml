@@ -17,19 +17,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/main_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <com.github.barteksc.pdfviewer.PDFView
-                android:id="@+id/pdf_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-
-        </RelativeLayout>
-
         <!-- Layout used to position RoomView underneath the toolbox-->
         <android.support.constraint.ConstraintLayout
             android:id="@+id/roomView_layout"
@@ -93,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="62dp"
-                android:onClick="showPDF"
+                android:onClick="showDocument"
                 android:text="Load Document"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
