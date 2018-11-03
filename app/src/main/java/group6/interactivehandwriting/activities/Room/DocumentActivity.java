@@ -14,9 +14,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
@@ -24,26 +23,19 @@ import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.DocumentView;
-import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkManager;
 import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkManager;
 
-//TODO Add toolbar on top of the document view and add button to enable/disable drawing for resizing
 
 public class DocumentActivity extends Activity {
     private DocumentView view;
     private Context context;
-
-    private ScaleGestureDetector mScaleGestureDetector;
-
-    private float mScaleFactor = 1.0f;
 
     private static final String[] REQUIRED_PERMISSIONS =
             new String[] {
@@ -59,6 +51,7 @@ public class DocumentActivity extends Activity {
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final int REQUEST_CODE_FILEPICKER = 2;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,16 +60,15 @@ public class DocumentActivity extends Activity {
         NetworkManager networkManager = new NCNetworkManager(context, profile);
 
         view = new DocumentView(context, profile, networkManager);
-        setContentView(view);
-
-        mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        setContentView(R.layout.room_layout);
 
         loadPDF();
 
-
+        //Adds the RoomView to the layout and inflates it
         // Adds the RoomView to the layout and inflates it
-       // ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-       // roomLayout.addView(view);
+        ConstraintLayout docLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
+        docLayout.addView(view);
     }
 
     @Override
@@ -143,10 +135,10 @@ public class DocumentActivity extends Activity {
             // RGB_565 - little worse quality, twice less memory usage
             bitmap = Bitmap.createBitmap(screen_width, screen_height,
                     Bitmap.Config.ARGB_8888);
+
+
             pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0,
                     screen_width, screen_height, true);
-            //if you need to render annotations and form fields, you can use
-            //the same method above adding 'true' as last param
 
             view.setImageBitmap(bitmap);
 
@@ -184,6 +176,10 @@ public class DocumentActivity extends Activity {
                 .start();
     }
 
+    public void returnToRoomView() {
+        this.finish();
+    }
+
     public void toggleToolbox(View view) {
         ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
 
@@ -207,25 +203,5 @@ public class DocumentActivity extends Activity {
 
     public void colorBlue(View view) {
         RoomViewActionUtility.ChangeColorCustom(0, 0, 255);
-    }
-
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector){
-
-            mScaleFactor *= scaleGestureDetector.getScaleFactor();
-
-            mScaleFactor = Math.max(0.1f,
-
-                    Math.min(mScaleFactor, 10.0f));
-
-            view.setScaleX(mScaleFactor);
-
-            view.setScaleY(mScaleFactor);
-
-            return true;
-
-        }
     }
 }
