@@ -200,15 +200,14 @@ public class DocumentView extends ImageView {
         return this;
     }
 
-    public void toggleDrawing() {
-        if (this.allowDrawing == 1) {
-            allowDrawing = 0;
-        }
-
-        if (this.allowDrawing == 0) {
-            allowDrawing = 1;
-        }
+    public int getDrawingStatus() {
+        return this.allowDrawing;
     }
+
+    public void setDrawingStatus(int allowDrawingIn) {
+        this.allowDrawing = allowDrawingIn;
+    }
+
     public class DocumentScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         @Override

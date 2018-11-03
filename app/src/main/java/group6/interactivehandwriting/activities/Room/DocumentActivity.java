@@ -61,6 +61,7 @@ public class DocumentActivity extends Activity {
 
         view = new DocumentView(context, profile, networkManager);
         view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
         setContentView(R.layout.room_layout);
 
         loadPDF();
@@ -178,6 +179,17 @@ public class DocumentActivity extends Activity {
 
     public void returnToRoomView() {
         this.finish();
+    }
+
+    public void toggleDrawing() {
+        int status = view.getDrawingStatus();
+        if (status == 1) {
+            view.setDrawingStatus(0);
+        }
+
+        if (status == 0) {
+            view.setDrawingStatus(1);
+        }
     }
 
     public void toggleToolbox(View view) {
