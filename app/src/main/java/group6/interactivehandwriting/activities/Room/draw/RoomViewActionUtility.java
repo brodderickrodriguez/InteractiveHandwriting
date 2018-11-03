@@ -17,11 +17,13 @@ public class RoomViewActionUtility {
     private static int R;
     private static int G;
     private static int B;
+    private static float Width;
 
     static {
         R = randomColorValue();
         G = randomColorValue();
         B = randomColorValue();
+        Width = 11;
     }
 
     public static void setTouchPosition(float x, float y) {
@@ -34,7 +36,7 @@ public class RoomViewActionUtility {
         StartDrawAction startAction = new StartDrawAction(true);
         startAction.setPosition(x, y);
         startAction.setColor(R, G, B, 255);
-        startAction.setWidth(12.0f);
+        startAction.setWidth(Width);
         return startAction;
     }
 
@@ -68,5 +70,15 @@ public class RoomViewActionUtility {
         R = r;
         G = g;
         B = b;
+    }
+
+    public static void ChangeColorHex(String hexValue) {
+        R = Integer.parseInt(hexValue.substring(0,2), 16);
+        G = Integer.parseInt(hexValue.substring(2,4), 16);
+        B = Integer.parseInt(hexValue.substring(4), 16);
+    }
+
+    public static void ChangeWidth(float width) {
+        Width = width;
     }
 }
