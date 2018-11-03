@@ -1,36 +1,29 @@
 package group6.interactivehandwriting.activities.Room.views;
 
 
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-
-import java.util.Random;
-
-import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
-import group6.interactivehandwriting.activities.Room.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkManager;
-import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkManager;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
 public class DocumentView extends ImageView {
-    private static final String DEBUG_TAG_V = "RoomView";
+    private static final String DEBUG_TAG_V = "DocumentView";
 
     private static final float TOUCH_TOLERANCE = 4;
 
@@ -39,21 +32,25 @@ public class DocumentView extends ImageView {
     private CanvasManager canvasManager;
     private String deviceName;
 
-
-    private float mScaleFactor = 1.0f;
-
-    // 0 - zoom/resize .. 1 - drawing
-    private int allowDrawing = 0;
-
     private Drawable mImage;
     private float mPosX;
     private float mPosY;
 
     private float mLastTouchX;
     private float mLastTouchY;
+    private float mScaleFactor = 1.0f;
     private int mActivePointerId = INVALID_POINTER_ID;
 
     private ScaleGestureDetector mScaleDetector;
+
+    private ConstraintLayout.LayoutParams layoutParams;
+
+    // 0 - zoom/resize .. 1 - drawing
+    private int allowDrawing = 1;
+
+    /*
+     * Need to add button to finish the activity and button to switch between allowing to draw and allowing to resize
+     */
 
     public DocumentView(Context context, Profile profile, NetworkManager networkManager) {
         super(context);
@@ -62,12 +59,12 @@ public class DocumentView extends ImageView {
         canvasManager = new CanvasManager(this);
         networkManager.setCanvasManager(canvasManager);
 
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        mScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
     }
 
     public DocumentView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        mScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
     }
 
 
@@ -86,8 +83,7 @@ public class DocumentView extends ImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (allowDrawing) {
-            case 0:
-                // Let the ScaleGestureDetector inspect all events.
+            case 0: /* Resize / Zoom */
                 mScaleDetector.onTouchEvent(event);
 
                 final int action = event.getAction();
@@ -151,7 +147,7 @@ public class DocumentView extends ImageView {
                 }
 
                 break;
-            case 1:
+            case 1: /* Draw */
                 performClick();
                 float x = event.getX();
                 float y = event.getY();
@@ -170,6 +166,8 @@ public class DocumentView extends ImageView {
         }
         return true;
     }
+
+
 
     @Override
     public boolean performClick() {
@@ -197,16 +195,31 @@ public class DocumentView extends ImageView {
         canvasManager.putAction(deviceName, action);
         networkManager.sendMessage(action);
     }
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+    public ImageView getView() {
+        return this;
+    }
+
+
+    public class DocumentScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
         @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            mScaleFactor *= detector.getScaleFactor();
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector){
 
-            // Don't let the object get too small or too large.
-            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f));
+            mScaleFactor *= scaleGestureDetector.getScaleFactor();
 
-            invalidate();
+            mScaleFactor = Math.max(0.1f,
+
+                    Math.min(mScaleFactor, 10.0f));
+
+            getView().setScaleX(mScaleFactor);
+
+            getView().setScaleY(mScaleFactor);
+
             return true;
+
         }
     }
 }
+
+
