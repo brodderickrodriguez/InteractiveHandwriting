@@ -209,8 +209,6 @@ public class DocumentView extends ImageView {
             allowDrawing = 1;
         }
     }
-
-
     public class DocumentScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         @Override
