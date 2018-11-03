@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
     implementation 'com.nbsp:library:1.8'
+    implementation 'com.github.skydoves:colorpickerview:2.0.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
