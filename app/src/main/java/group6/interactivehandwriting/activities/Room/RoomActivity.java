@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -17,6 +18,11 @@ import android.widget.Toast;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
+import com.skydoves.colorpickerview.listeners.ColorListener;
+import com.skydoves.colorpickerview.listeners.ColorPickerViewListener;
 
 import java.io.File;
 
@@ -39,6 +45,7 @@ public class RoomActivity extends Activity {
     private View view;
     private RelativeLayout main_view;
     private SeekBar seekbar;
+    private ColorPickerView color_picker_view;
 
     NetworkLayer networkLayer;
     ServiceConnection networkServiceConnection;
@@ -97,14 +104,22 @@ public class RoomActivity extends Activity {
         documentAction = new ModifyDocumentAction(context, profile, networkLayer);
         View view = new RoomView(context, profile, networkLayer);
         main_view = findViewById(R.id.main_layout);
-        setContentView(R.layout.room_layout);
 
+        setContentView(R.layout.room_layout);
         ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
         roomLayout.addView(view);
 
         //For seekbar
         seekbar = findViewById(R.id.seekBar);
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+        //For color picker
+        color_picker_view = findViewById(R.id.colorPickerLayout);
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
     }
 
     @Override
@@ -121,6 +136,17 @@ public class RoomActivity extends Activity {
         }
         else {
             toolboxLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void toggleColorPickerView(View view) {
+        ConstraintLayout colorPickerLayout = findViewById(R.id.color_picker_view);
+
+        if (colorPickerLayout.getVisibility() == View.VISIBLE) {
+            colorPickerLayout.setVisibility(View.GONE);
+        }
+        else {
+            colorPickerLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -196,5 +222,6 @@ public class RoomActivity extends Activity {
             RoomViewActionUtility.ChangeWidth((float)seekbar.getProgress());
         }
     };
+
 
 }
