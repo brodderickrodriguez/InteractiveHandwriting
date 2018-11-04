@@ -26,12 +26,20 @@ public class RoomView extends View {
     private CanvasManager canvasManager;
     private Profile profile;
 
-    public RoomView(Context context, Profile profile, NetworkLayer networkLayer) {
+    public RoomView(Context context) {
         super(context);
-        this.networkLayer = networkLayer;
-        this.profile = profile;
         canvasManager = new CanvasManager(this);
-        networkLayer.receiveDrawActions(canvasManager);
+    }
+
+    public boolean setNetworkLayer(NetworkLayer layer) {
+        if (layer != null) {
+            this.profile = layer.getMyProfile();
+            this.networkLayer = layer;
+            this.networkLayer.receiveDrawActions(canvasManager);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -72,21 +80,30 @@ public class RoomView extends View {
 
     private void touchStarted(float x, float y) {
         StartDrawAction action = RoomViewActionUtility.touchStarted(x, y);
-        networkLayer.startDraw(action);
         canvasManager.handleDrawAction(profile, action);
+
+        if (networkLayer != null) {
+            networkLayer.startDraw(action);
+        }
     }
 
     private void touchMoved(float x, float y) {
         if (RoomViewActionUtility.didTouchMove(x, y, TOUCH_TOLERANCE)) {
             MoveDrawAction action = RoomViewActionUtility.touchMoved(x, y);
-            networkLayer.moveDraw(action);
             canvasManager.handleDrawAction(profile, action);
+
+            if (networkLayer != null) {
+                networkLayer.moveDraw(action);
+            }
         }
     }
 
     private void touchReleased() {
         EndDrawAction action = RoomViewActionUtility.touchReleased();
-        networkLayer.endDraw(action);
         canvasManager.handleDrawAction(profile, action);
+
+        if (networkLayer != null) {
+            networkLayer.endDraw(action);
+        }
     }
 }

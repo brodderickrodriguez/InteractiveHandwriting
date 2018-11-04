@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -18,7 +19,7 @@ import group6.interactivehandwriting.common.network.NetworkLayer;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
-public class DocumentView extends ImageView {
+public class DocumentView extends AppCompatImageView {
     private static final String DEBUG_TAG_V = "DocumentView";
 
     private static final float TOUCH_TOLERANCE = 4;

@@ -44,6 +44,7 @@ public class RoomActivity extends Activity {
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     public static final int REQUEST_CODE_FILEPICKER = 2;
 
+    private RoomView roomView;
     private SeekBar seekbar;
     private ColorPickerView color_picker_view;
 
@@ -72,6 +73,24 @@ public class RoomActivity extends Activity {
         }
 
         networkServiceConnection = getNetworkServiceConnection();
+
+        roomView = new RoomView(getApplicationContext());
+
+        setContentView(R.layout.room_layout);
+        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
+        roomLayout.addView(roomView);
+
+        //For seekbar
+        seekbar = findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+        //For color picker
+        color_picker_view = findViewById(R.id.colorPickerLayout);
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
     }
 
     @Override
@@ -99,25 +118,7 @@ public class RoomActivity extends Activity {
     }
 
     private void handleNetworkStarted() {
-        Context context = this.getApplicationContext();
-        Profile profile = networkLayer.getMyProfile();
-        View view = new RoomView(context, profile, networkLayer);
-
-        setContentView(R.layout.room_layout);
-        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-        roomLayout.addView(view);
-
-        //For seekbar
-        seekbar = findViewById(R.id.seekBar);
-        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
-        //For color picker
-        color_picker_view = findViewById(R.id.colorPickerLayout);
-        color_picker_view.setColorListener(new ColorEnvelopeListener() {
-            @Override
-            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
-            }
-        });
+        roomView.setNetworkLayer(networkLayer);
     }
 
     @Override
