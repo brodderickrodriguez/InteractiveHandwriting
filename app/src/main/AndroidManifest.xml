@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".HandwritingApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,17 +19,25 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".activities.Room.RoomActivity"
-            android:label="@string/RoomActivity.Title"
-            android:theme="@style/AppTheme">
+        <service android:name=".common.network.nearby.connections.NCNetworkLayerService"></service>
 
+        <activity
+            android:name=".activities.Menu.MenuActivity"
+            android:label="Menu Activity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <!-- designate the Room activity as the primary view -->
                 <!-- TODO when we add the menu we want that to be the main intent - Jake -->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".activities.Room.RoomActivity"
+            android:label="@string/RoomActivity.Title"
+            android:theme="@style/AppTheme">
         </activity>
 
         <activity

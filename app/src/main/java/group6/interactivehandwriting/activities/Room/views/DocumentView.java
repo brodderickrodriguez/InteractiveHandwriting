@@ -1,24 +1,20 @@
 package group6.interactivehandwriting.activities.Room.views;
 
-
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.View;
 import android.widget.ImageView;
-import group6.interactivehandwriting.activities.Room.actions.draw.DrawAction;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.network.NetworkManager;
+import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
+import group6.interactivehandwriting.common.app.actions.draw.StartDrawAction;
+import group6.interactivehandwriting.common.network.NetworkLayer;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
@@ -27,10 +23,11 @@ public class DocumentView extends ImageView {
 
     private static final float TOUCH_TOLERANCE = 4;
 
-    private NetworkManager networkManager;
-
     private CanvasManager canvasManager;
+    private Profile profile;
     private String deviceName;
+
+    private NetworkLayer networkLayer;
 
     private Drawable mImage;
     private float mPosX;
@@ -52,12 +49,12 @@ public class DocumentView extends ImageView {
      * Need to add button to finish the activity and button to switch between allowing to draw and allowing to resize
      */
 
-    public DocumentView(Context context, Profile profile, NetworkManager networkManager) {
+    public DocumentView(Context context, Profile profile, NetworkLayer networkManager) {
         super(context);
-        this.networkManager = networkManager;
-        deviceName = profile.getDeviceName();
+        this.networkLayer = networkLayer;
+        this.profile = profile;
         canvasManager = new CanvasManager(this);
-        networkManager.setCanvasManager(canvasManager);
+        //networkLayer.receiveDrawActions(canvasManager);
 
         mScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
     }
@@ -167,33 +164,29 @@ public class DocumentView extends ImageView {
         return true;
     }
 
-
-
     @Override
     public boolean performClick() {
         return super.performClick();
     }
 
     private void touchStarted(float x, float y) {
-        DrawAction action = RoomViewActionUtility.touchStarted(x, y);
-        handleDrawAction(action);
+        StartDrawAction action = RoomViewActionUtility.touchStarted(x, y);
+        networkLayer.startDraw(action);
+        canvasManager.handleDrawAction(profile, action);
     }
 
     private void touchMoved(float x, float y) {
         if (RoomViewActionUtility.didTouchMove(x, y, TOUCH_TOLERANCE)) {
-            DrawAction action = RoomViewActionUtility.touchMoved(x, y);
-            handleDrawAction(action);
+            MoveDrawAction action = RoomViewActionUtility.touchMoved(x, y);
+            networkLayer.moveDraw(action);
+            canvasManager.handleDrawAction(profile, action);
         }
     }
 
     private void touchReleased() {
-        DrawAction action = RoomViewActionUtility.touchReleased();
-        handleDrawAction(action);
-    }
-
-    private void handleDrawAction(DrawAction action) {
-        canvasManager.putAction(deviceName, action);
-        networkManager.sendMessage(action);
+        EndDrawAction action = RoomViewActionUtility.touchReleased();
+        networkLayer.endDraw(action);
+        canvasManager.handleDrawAction(profile, action);
     }
 
     public ImageView getView() {

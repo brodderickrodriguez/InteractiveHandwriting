@@ -1,26 +1,34 @@
 package group6.interactivehandwriting.activities.Room;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.app.Activity;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
+import android.os.IBinder;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 
 import group6.interactivehandwriting.R;
 
+import android.widget.SeekBar;
+import android.widget.Toast;
+
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
+
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.network.NetworkManager;
-import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkManager;
+import group6.interactivehandwriting.common.network.NetworkLayer;
+import group6.interactivehandwriting.common.network.NetworkLayerBinder;
+import group6.interactivehandwriting.common.network.NetworkLayerService;
 
+// TODO move the file manipulation stuff to its own class
 public class RoomActivity extends Activity {
     private static final String[] REQUIRED_PERMISSIONS =
             new String[] {
@@ -34,58 +42,88 @@ public class RoomActivity extends Activity {
 
     /* Request/Persmission Codes */
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    public static final int REQUEST_CODE_FILEPICKER = 2;
+
+    private SeekBar seekbar;
+    private ColorPickerView color_picker_view;
+
+    NetworkLayer networkLayer;
+    ServiceConnection networkServiceConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Context context = this.getApplicationContext();
-        Profile profile = new Profile();
-        NetworkManager networkManager = new NCNetworkManager(context, profile);
-        View view = new RoomView(context, profile, networkManager);
-        setContentView(R.layout.room_layout);
 
-        // Adds the RoomView to the layout and inflates it
-        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-        roomLayout.addView(view);
+        String roomName;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                roomName = null;
+            } else {
+                roomName = extras.getString("ROOM_NAME");
+            }
+        } else {
+            roomName = (String) savedInstanceState.getSerializable("ROOM_NAME");
+        }
+        if (roomName != null) {
+            Toast.makeText(getApplicationContext(), "Joined " + roomName, Toast.LENGTH_LONG).show();
+        } else {
+            Log.e("RoomActivity", "room name was null");
+        }
+
+        networkServiceConnection = getNetworkServiceConnection();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
-           ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
-        }
+        NetworkLayerService.startNetworkService(this);
+        NetworkLayerService.bindNetworkService(this, networkServiceConnection);
     }
 
-    private static boolean hasPermissions(Context context, String... permissions) {
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
+    private ServiceConnection getNetworkServiceConnection() {
+        return new ServiceConnection()
+        {
+            @Override
+            public void onServiceConnected (ComponentName name, IBinder service){
+                NetworkLayerBinder binder = (NetworkLayerBinder) service;
+                networkLayer = binder.getNetworkLayer();
+                handleNetworkStarted();
             }
-        }
-        return true;
+
+            @Override
+            public void onServiceDisconnected (ComponentName name){
+
+            }
+        };
     }
 
-    /** Handles user acceptance (or denial) of our permission request. */
-    @CallSuper
+    private void handleNetworkStarted() {
+        Context context = this.getApplicationContext();
+        Profile profile = networkLayer.getMyProfile();
+        View view = new RoomView(context, profile, networkLayer);
+
+        setContentView(R.layout.room_layout);
+        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
+        roomLayout.addView(view);
+
+        //For seekbar
+        seekbar = findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+        //For color picker
+        color_picker_view = findViewById(R.id.colorPickerLayout);
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
+    }
+
     @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode != REQUEST_CODE_REQUIRED_PERMISSIONS) {
-            return;
-        }
-
-        for (int grantResult : grantResults) {
-            if (grantResult == PackageManager.PERMISSION_DENIED) {
-                finish();
-                return;
-            }
-        }
-        recreate();
+    protected void onStop() {
+        super.onStop();
+        unbindService(networkServiceConnection);
     }
 
     public void showDocument(View view) {
@@ -104,17 +142,39 @@ public class RoomActivity extends Activity {
         }
     }
 
-    // A few hard coded colors (Will eventually switch this to a single function where
-    // the parameters can be altered in the layout
-    public void colorRed(View view) {
-        RoomViewActionUtility.ChangeColorCustom(255, 0, 0);
+    public void toggleColorPickerView(View view) {
+        ConstraintLayout colorPickerLayout = findViewById(R.id.color_picker_view);
+
+        if (colorPickerLayout.getVisibility() == View.VISIBLE) {
+            colorPickerLayout.setVisibility(View.GONE);
+        }
+        else {
+            colorPickerLayout.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void colorGreen(View view) {
-        RoomViewActionUtility.ChangeColorCustom(0, 255, 0);
+    public void changeColor(View view) {
+        RoomViewActionUtility.ChangeColorHex(view.getTag().toString());
     }
 
-    public void colorBlue(View view) {
-        RoomViewActionUtility.ChangeColorCustom(0, 0, 255);
+    public void saveCanvas(View view) {
+
     }
+
+    // Used for the SeekBar to change pen width
+    SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int seekbar_progress, boolean fromUser) {
+            RoomViewActionUtility.ChangeWidth((float)seekbar_progress);
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            RoomViewActionUtility.ChangeWidth((float)seekbar.getProgress());
+        }
+    };
 }
