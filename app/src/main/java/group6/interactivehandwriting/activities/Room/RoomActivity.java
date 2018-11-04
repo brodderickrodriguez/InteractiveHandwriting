@@ -21,6 +21,8 @@ import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
+import org.w3c.dom.Document;
+
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;

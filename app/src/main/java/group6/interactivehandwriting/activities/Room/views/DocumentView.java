@@ -3,9 +3,6 @@ package group6.interactivehandwriting.activities.Room.views;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.AppCompatImageView;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
@@ -19,7 +16,7 @@ import group6.interactivehandwriting.common.network.NetworkLayer;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
-public class DocumentView extends AppCompatImageView {
+public class DocumentView extends ImageView {
     private static final String DEBUG_TAG_V = "DocumentView";
 
     private static final float TOUCH_TOLERANCE = 4;
@@ -41,28 +38,25 @@ public class DocumentView extends AppCompatImageView {
 
     private ScaleGestureDetector mScaleDetector;
 
-    private ConstraintLayout.LayoutParams layoutParams;
-
     // 0 - zoom/resize .. 1 - drawing
     private int allowDrawing = 1;
 
-    /*
-     * Need to add button to finish the activity and button to switch between allowing to draw and allowing to resize
-     */
-
-    public DocumentView(Context context, Profile profile, NetworkLayer networkManager) {
+    public DocumentView(Context context) {
         super(context);
-        this.networkLayer = networkLayer;
-        this.profile = profile;
         canvasManager = new CanvasManager(this);
-        //networkLayer.receiveDrawActions(canvasManager);
 
         mScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
     }
 
-    public DocumentView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        mScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
+    public boolean setNetworkLayer(NetworkLayer layer) {
+        if (layer != null) {
+            this.profile = layer.getMyProfile();
+            this.networkLayer = layer;
+            this.networkLayer.receiveDrawActions(canvasManager);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -172,22 +166,31 @@ public class DocumentView extends AppCompatImageView {
 
     private void touchStarted(float x, float y) {
         StartDrawAction action = RoomViewActionUtility.touchStarted(x, y);
-        networkLayer.startDraw(action);
         canvasManager.handleDrawAction(profile, action);
+
+        if (networkLayer != null) {
+            networkLayer.startDraw(action);
+        }
     }
 
     private void touchMoved(float x, float y) {
         if (RoomViewActionUtility.didTouchMove(x, y, TOUCH_TOLERANCE)) {
             MoveDrawAction action = RoomViewActionUtility.touchMoved(x, y);
-            networkLayer.moveDraw(action);
             canvasManager.handleDrawAction(profile, action);
+
+            if (networkLayer != null) {
+                networkLayer.moveDraw(action);
+            }
         }
     }
 
     private void touchReleased() {
         EndDrawAction action = RoomViewActionUtility.touchReleased();
-        networkLayer.endDraw(action);
         canvasManager.handleDrawAction(profile, action);
+
+        if (networkLayer != null) {
+            networkLayer.endDraw(action);
+        }
     }
 
     public ImageView getView() {
@@ -222,5 +225,3 @@ public class DocumentView extends AppCompatImageView {
         }
     }
 }
-
-

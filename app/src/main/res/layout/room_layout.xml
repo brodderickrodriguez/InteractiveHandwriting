@@ -12,10 +12,10 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
 
         <!-- Layout used to position RoomView underneath the toolbox-->
         <android.support.constraint.ConstraintLayout
@@ -40,7 +40,7 @@
             android:layout_height="280dp"
             android:layout_gravity="bottom"
             android:background="#d9e2ff"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <Button
                 android:id="@+id/save_canvas"
@@ -152,6 +152,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/change_color_black" />
 
+            <Button
+                android:id="@+id/toggle_drawing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="37dp"
+                android:layout_marginTop="11dp"
+                android:text="Toggle Drawing/Resize"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/save_canvas"
+                app:layout_constraintEnd_toStartOf="@+id/return_home"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+            <Button
+                android:id="@+id/return_home"
+                android:layout_width="137dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="34dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="11dp"
+                android:text="Home"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/load_document"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/toggle_drawing"
+                app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -222,8 +253,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                />
+                app:layout_constraintVertical_bias="0.0" />
 
         </android.support.constraint.ConstraintLayout>
 

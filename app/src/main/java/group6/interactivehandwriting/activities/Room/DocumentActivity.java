@@ -1,6 +1,5 @@
 package group6.interactivehandwriting.activities.Room;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,11 +13,10 @@ import android.os.ParcelFileDescriptor;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.SeekBar;
 
 import com.nbsp.materialfilepicker.MaterialFilePicker;
@@ -36,17 +34,14 @@ import java.util.concurrent.TimeUnit;
 import group6.interactivehandwriting.R;
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.DocumentView;
-import group6.interactivehandwriting.activities.Room.views.RoomView;
-import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkLayer;
 import group6.interactivehandwriting.common.network.NetworkLayerBinder;
 import group6.interactivehandwriting.common.network.NetworkLayerService;
 
 
 public class DocumentActivity extends Activity {
-    private DocumentView view;
     private Context context;
-    private Profile profile;
+    private DocumentView view;
 
 
     /* Request/Persmission Codes */
@@ -63,8 +58,55 @@ public class DocumentActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            loadPDF();
+        } finally {
+            networkServiceConnection = getNetworkServiceConnection();
 
-        networkServiceConnection = getNetworkServiceConnection();
+            context = this.getApplicationContext();
+            view = new DocumentView(context);
+
+            setContentView(R.layout.room_layout);
+
+            ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.docView_layout);
+            roomLayout.addView(view);
+        }
+
+        //For seekbar
+        seekbar = findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+        //For color picker
+        color_picker_view = findViewById(R.id.colorPickerLayout);
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
+
+        Button return_home = (Button) findViewById(R.id.return_home);
+        return_home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity thisActivitiy = getDocActivity();
+                thisActivitiy.finish();
+            }
+        });
+
+        Button toggle_drawing = (Button) findViewById(R.id.toggle_drawing);
+        toggle_drawing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int status = view.getDrawingStatus();
+                if (status == 1) {
+                    view.setDrawingStatus(0);
+                }
+
+                if (status == 0) {
+                    view.setDrawingStatus(1);
+                }
+            }
+        });
     }
 
     @Override
@@ -84,6 +126,10 @@ public class DocumentActivity extends Activity {
         return true;
     }
 
+    private void handleNetworkStarted() {
+        view.setNetworkLayer(networkLayer);
+    }
+
     private ServiceConnection getNetworkServiceConnection() {
         return new ServiceConnection()
         {
@@ -99,36 +145,6 @@ public class DocumentActivity extends Activity {
 
             }
         };
-    }
-
-
-    private void handleNetworkStarted() {
-            context = this.getApplicationContext();
-            profile = networkLayer.getMyProfile();
-
-            view = new DocumentView(context, profile, networkLayer);
-            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-            setContentView(R.layout.room_layout);
-
-            loadPDF();
-
-            //Adds the RoomView to the layout and inflates it
-            // Adds the RoomView to the layout and inflates it
-            ConstraintLayout docLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-            docLayout.addView(view);
-
-      /*  //For seekbar
-        seekbar = findViewById(R.id.seekBar);
-        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
-        //For color picker
-        color_picker_view = findViewById(R.id.colorPickerLayout);
-        color_picker_view.setColorListener(new ColorEnvelopeListener() {
-            @Override
-            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
-            }
-        });*/
     }
 
     @Override
@@ -170,7 +186,7 @@ public class DocumentActivity extends Activity {
 
             pdfiumCore.openPage(pdfDocument, pageNum);
 
-            //int width = pdfiumCore.getPageWidthPoint(pdfDocument, pageNum);
+           //int width = pdfiumCore.getPageWidthPoint(pdfDocument, pageNum);
            // int height = pdfiumCore.getPageHeightPoint(pdfDocument, pageNum);
 
             //Get current screen size
@@ -230,21 +246,6 @@ public class DocumentActivity extends Activity {
                 .start();
     }
 
-    public void returnToRoomView() {
-        this.finish();
-    }
-
-    public void toggleDrawing() {
-        int status = view.getDrawingStatus();
-        if (status == 1) {
-            view.setDrawingStatus(0);
-        }
-
-        if (status == 0) {
-            view.setDrawingStatus(1);
-        }
-    }
-
     public void toggleToolbox(View view) {
         ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
 
@@ -273,6 +274,10 @@ public class DocumentActivity extends Activity {
 
     public void saveCanvas(View view) {
 
+    }
+
+    public Activity getDocActivity() {
+        return this;
     }
 
     // Used for the SeekBar to change pen width
