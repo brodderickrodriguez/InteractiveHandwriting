@@ -14,7 +14,7 @@ import group6.interactivehandwriting.common.app.rooms.Room;
  * Created by JakeL on 9/22/18.
  */
 
-public interface NetworkLayer<T> {
+public interface NetworkLayer {
     public void begin(final Profile profile);
     public Profile getMyProfile();
 

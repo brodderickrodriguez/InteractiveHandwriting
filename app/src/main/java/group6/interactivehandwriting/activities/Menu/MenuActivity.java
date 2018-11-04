@@ -49,6 +49,11 @@ public class MenuActivity extends AppCompatActivity {
         myProfile = new Profile();
         myProfile.deviceId = Profile.DEVICE_ID;
         roomAdapter = new RoomAdapter(getApplicationContext(), R.layout.room_button);
+        for (int i = 0; i < 10; i++) {
+            Room r = new Room();
+            r.name = String.valueOf(i + 1) + ". Room Name";
+            roomAdapter.add(r);
+        }
         roomListView = findViewById(R.id.room_list);
         roomListView.setAdapter(roomAdapter);
         roomListView.setOnItemClickListener(roomSelectedListener());
@@ -139,7 +144,6 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void updateRoomList(Set<Room> discoveredRooms) {
-        // TODO add a listview and adapter
         roomAdapter.addAll(discoveredRooms);
     }
 

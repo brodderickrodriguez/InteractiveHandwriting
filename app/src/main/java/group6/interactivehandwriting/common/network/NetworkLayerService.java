@@ -10,7 +10,7 @@ import android.content.ServiceConnection;
  * Created by JakeL on 10/15/18.
  */
 
-public abstract class NetworkLayerService<T> extends Service implements NetworkLayer<T> {
+public abstract class NetworkLayerService extends Service implements NetworkLayer {
     public abstract NetworkLayerBinder onBind(Intent bindIntent);
 
     public static void startNetworkService(Activity activity) {

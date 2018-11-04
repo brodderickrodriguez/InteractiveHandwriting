@@ -36,7 +36,7 @@ import group6.interactivehandwriting.common.network.nearby.connections.message.s
  */
 
 // TODO we should definitely create an object that encapsulates the HEADER, DATA section pair for byte[]
-public class NCNetworkLayerService extends NetworkLayerService<Payload> {
+public class NCNetworkLayerService extends NetworkLayerService {
     private static boolean isActive = false;
 
     private NCRoutingTable routingTable;
