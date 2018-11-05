@@ -3,4 +3,5 @@
 
     <!-- for the prototype -->
     <string name="RoomActivity.Title">Room Activity</string>
+    <string name="DocumentActivity.Title">Document Activity</string>
 </resources>
