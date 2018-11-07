@@ -5,8 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
@@ -22,6 +24,10 @@ import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import org.w3c.dom.Document;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
@@ -40,6 +46,7 @@ public class RoomActivity extends Activity {
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
             };
 
     /* Request/Persmission Codes */
@@ -156,13 +163,68 @@ public class RoomActivity extends Activity {
         }
     }
 
+
     public void changeColor(View view) {
         RoomViewActionUtility.ChangeColorHex(view.getTag().toString());
     }
 
+
+    // TODO: COLLAPSE BITMAPS
+    // TODO: ADD ROOM NAME TO FILENAME
     public void saveCanvas(View view) {
+        Bitmap targetBitmap = roomView.getCanvasManager().getCanvasBitmap();
+        exportBitmap(targetBitmap);
+    }
+
+
+    public Boolean writeDiskPermission() {
+        String externalStorageState = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(externalStorageState);
+    }
+
+
+    private void exportBitmap(Bitmap targetBitmap) {
+        String root = Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED).toString();
+        String roomName = "ROOMNAME";
+        String filename = "/" + roomName + "_" + java.time.LocalDateTime.now() + ".txt";
+        File dir = new File(root + "/HandWritingAppWhiteBoards/");
+        File newFile = new File(dir, filename);
+
+        // if we do not have permission to write to disk, exit fatally
+        if (!writeDiskPermission()) {
+            Log.e("RoomActivity", "FATAL - CANNOT WRITE TO STORAGE");
+            return;
+        }
+
+        // if directory does not exist and we are unable to create it, exit fatally
+        if (!dir.exists() && !dir.mkdirs()) {
+            Log.e("RoomActivity", "FATAL - UNABLE TO MAKE DIRECTORY");
+            return;
+        }
+
+        // try to create new file to write to, if unsuccessful exit fatally
+        try {
+            newFile.createNewFile();
+        } catch (IOException e) {
+            Log.e("RoomActivity", "FATAL UNABLE TO MAKE FILE");
+            e.printStackTrace();
+            return;
+        }
+
+        // try to write to file, if unsuccessful exit fatally
+        try {
+            FileOutputStream out = new FileOutputStream(newFile);
+            //targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+            System.out.println("BITMAP EXPORTED SUCCESSFULLY");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("RoomActivity", "FATAL UNABLE TO WRITE TO FILE");
+        }
 
     }
+
 
     // Used for the SeekBar to change pen width
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {

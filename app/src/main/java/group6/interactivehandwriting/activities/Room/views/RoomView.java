@@ -31,6 +31,10 @@ public class RoomView extends View {
         canvasManager = new CanvasManager(this);
     }
 
+    public CanvasManager getCanvasManager() {
+        return canvasManager;
+    }
+
     public boolean setNetworkLayer(NetworkLayer layer) {
         if (layer != null) {
             this.profile = layer.getMyProfile();

@@ -39,6 +39,10 @@ public class CanvasManager implements DrawActionHandle {
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
     }
 
+    public Bitmap getCanvasBitmap() {
+        return canvasBitmap;
+    }
+
     @Override
     public void handleDrawAction(Profile user, DrawableAction action) {
         Log.v(DEBUG, "Profile with device id " + user.deviceId);
