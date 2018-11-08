@@ -39,5 +39,12 @@
             android:label="@string/RoomActivity.Title"
             android:theme="@style/AppTheme">
         </activity>
+
+        <activity
+            android:name=".activities.Room.DocumentActivity"
+            android:label="@string/DocumentActivity.Title"
+            android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 </manifest>
