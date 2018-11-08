@@ -32,6 +32,7 @@ public class CanvasManager implements DrawActionHandle {
     public CanvasManager(View parent) {
         this.parentView = parent;
         canvasBitmapPaint = new Paint(Paint.DITHER_FLAG);
+        canvasBitmapPaint.setARGB(255, 255, 255, 255);
         indexedDrawables = new HashMap<>();
     }
 
@@ -66,7 +67,7 @@ public class CanvasManager implements DrawActionHandle {
 
     public void update(Canvas canvas) {
         canvas.drawBitmap(canvasBitmap, 0, 0, canvasBitmapPaint);
-
+        canvas.drawARGB(255, 255, 255, 255);
         for (DrawableManager drawables : indexedDrawables.values()) {
             for (Drawable item : drawables.values()) {
                 item.draw(canvas);

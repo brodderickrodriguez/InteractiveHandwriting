@@ -160,6 +160,10 @@ public class RoomActivity extends Activity {
         RoomViewActionUtility.ChangeColorHex(view.getTag().toString());
     }
 
+    public void colorErase(View view) {
+        RoomViewActionUtility.toggleEraser();
+    }
+
     public void saveCanvas(View view) {
 
     }

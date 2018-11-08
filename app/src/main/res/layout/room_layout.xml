@@ -12,10 +12,10 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
         <!-- Layout used to position RoomView underneath the toolbox-->
         <android.support.constraint.ConstraintLayout
@@ -86,16 +86,17 @@
 
             <Button
                 android:id="@+id/change_color_erase"
-                android:layout_width="wrap_content"
+                android:layout_width="88dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:onClick="colorErase"
                 android:text="Erase"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.408"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/change_color_custom"
+                app:layout_constraintStart_toEndOf="@+id/load_document"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.171" />
+                app:layout_constraintVertical_bias="0.896" />
 
             <Button
                 android:id="@+id/change_color_green"
@@ -147,9 +148,8 @@
                 android:id="@+id/load_document"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="62dp"
                 android:onClick="showDocument"
-                android:text="Load Document"
+                android:text="Load"
                 app:layout_constraintBaseline_toBaselineOf="@+id/save_canvas"
                 app:layout_constraintStart_toEndOf="@+id/save_canvas" />
 
