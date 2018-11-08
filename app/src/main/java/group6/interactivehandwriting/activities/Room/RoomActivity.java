@@ -132,6 +132,10 @@ public class RoomActivity extends Activity {
         RoomViewActionUtility.ChangeColorCustom(0, 0, 255);
     }
 
+    public void colorErase(View view) {
+        RoomViewActionUtility.toggleEraser();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

@@ -50,6 +50,7 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
         buffer.putInt(action.getGreen());
         buffer.putInt(action.getBlue());
         buffer.putInt(action.getAlpha());
+        buffer.putInt(action.isEraser() ? 1 : 0);
 
         return buffer.array();
     }
@@ -67,12 +68,14 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
         int gColor = buffer.getInt();
         int bColor = buffer.getInt();
         int alphaColor = buffer.getInt();
+        boolean isErase = buffer.getInt() == 1 ? true : false;
 
         action = new StartDrawAction(false);
         action.setId(new ActionId(actionIdValue, actionIdSeq));
         action.setPosition(xPosition, yPosition);
         action.setWidth(penWidth);
         action.setColor(rColor, gColor, bColor, alphaColor);
+        action.setErase(isErase);
 
         return this;
     }
@@ -87,10 +90,11 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
         int gColorSize = NCNetworkUtility.BYTES_IN_A_INT;
         int bColorSize = NCNetworkUtility.BYTES_IN_A_INT;
         int alphaColorSize = NCNetworkUtility.BYTES_IN_A_INT;
+        int eraseSize = NCNetworkUtility.BYTES_IN_A_INT;
 
         int size = 0;
         size += actionIdSize + xPositionSize + yPositionSize + penWidthSize;
-        size += rColorSize + gColorSize + bColorSize + alphaColorSize;
+        size += rColorSize + gColorSize + bColorSize + alphaColorSize + eraseSize;
 
         return size;
     }

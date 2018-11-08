@@ -1,5 +1,7 @@
 package group6.interactivehandwriting.activities.Room.draw;
 
+import android.util.Log;
+
 import java.util.Random;
 
 import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
@@ -18,15 +20,23 @@ public class RoomViewActionUtility {
     private static int G;
     private static int B;
 
+    private static boolean toggleEraserValue;
+
     static {
         R = randomColorValue();
         G = randomColorValue();
         B = randomColorValue();
+        toggleEraserValue = false;
     }
 
     public static void setTouchPosition(float x, float y) {
         touchX = x;
         touchY = y;
+    }
+
+    public static void toggleEraser() {
+        toggleEraserValue = !toggleEraserValue;
+        Log.v("ERASE", "erase is " + String.valueOf(toggleEraserValue));
     }
 
     public static StartDrawAction touchStarted(float x, float y) {
@@ -35,6 +45,7 @@ public class RoomViewActionUtility {
         startAction.setPosition(x, y);
         startAction.setColor(R, G, B, 255);
         startAction.setWidth(12.0f);
+        startAction.setErase(toggleEraserValue);
         return startAction;
     }
 

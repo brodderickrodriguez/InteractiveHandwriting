@@ -5,6 +5,8 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -43,8 +45,19 @@ public class Line extends DrawableCanvasItem {
 
     public void startDraw(StartDrawAction action) {
         paint = new Paint();
-        setColor(action.getAlpha(), action.getRed(), action.getGreen(), action.getBlue());
-        setPen(action.getWidth());
+        if (action.isEraser()) {
+            setColor(255, 255, 255, 255);
+        } else {
+            setColor(action.getAlpha(), action.getRed(), action.getGreen(), action.getBlue());
+        }
+
+        paint.setStrokeWidth(action.getWidth());
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setAlpha(255);
 
         path = new Path();
         path.moveTo(action.getX(), action.getY());
@@ -55,12 +68,7 @@ public class Line extends DrawableCanvasItem {
     }
 
     private void setPen(float width) {
-        paint.setStrokeWidth(width);
-        paint.setAntiAlias(true);
-        paint.setDither(true);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeCap(Paint.Cap.ROUND);
+
     }
 
     public void moveDraw(MoveDrawAction action) {

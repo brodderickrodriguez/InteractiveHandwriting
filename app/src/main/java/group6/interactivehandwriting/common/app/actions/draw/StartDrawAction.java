@@ -20,9 +20,11 @@ public class StartDrawAction extends DrawableAction {
     private int gColor;
     private int bColor;
     private int alphaColor;
+    private boolean isErase;
 
     public StartDrawAction(boolean shouldGetNewActionId) {
         setActionIdIfNeeded(shouldGetNewActionId);
+        isErase = false;
     }
 
     @Override
@@ -60,6 +62,14 @@ public class StartDrawAction extends DrawableAction {
         gColor = g;
         bColor = b;
         alphaColor = a;
+    }
+
+    public void setErase(boolean shouldErase) {
+        isErase = shouldErase;
+    }
+
+    public boolean isEraser() {
+        return isErase;
     }
 
     public int getRed() {
