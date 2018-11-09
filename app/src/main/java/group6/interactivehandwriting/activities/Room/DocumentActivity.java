@@ -93,6 +93,7 @@ public class DocumentActivity extends Activity {
             }
         });
 
+        /*
         Button toggle_drawing = (Button) findViewById(R.id.toggle_drawing);
         toggle_drawing.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +108,7 @@ public class DocumentActivity extends Activity {
                 }
             }
         });
+        */
     }
 
     @Override

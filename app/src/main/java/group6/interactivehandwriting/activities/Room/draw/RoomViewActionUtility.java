@@ -36,9 +36,8 @@ public class RoomViewActionUtility {
         touchY = y;
     }
 
-    public static void toggleEraser() {
-        toggleEraserValue = !toggleEraserValue;
-        Log.v("ERASE", "erase is " + String.valueOf(toggleEraserValue));
+    public static void setEraser() {
+        toggleEraserValue = true;
     }
 
     public static StartDrawAction touchStarted(float x, float y) {
@@ -78,16 +77,11 @@ public class RoomViewActionUtility {
         return action;
     }
 
-    public static void ChangeColorCustom(int r, int g, int b) {
-        R = r;
-        G = g;
-        B = b;
-    }
-
     public static void ChangeColorHex(String hexValue) {
-        R = Integer.parseInt(hexValue.substring(0,2), 16);
-        G = Integer.parseInt(hexValue.substring(2,4), 16);
-        B = Integer.parseInt(hexValue.substring(4), 16);
+        toggleEraserValue = false;
+        R = Integer.parseInt(hexValue.substring(2, 4), 16);
+        G = Integer.parseInt(hexValue.substring(4, 6), 16);
+        B = Integer.parseInt(hexValue.substring(6, 8), 16);
     }
 
     public static void ChangeWidth(float width) {

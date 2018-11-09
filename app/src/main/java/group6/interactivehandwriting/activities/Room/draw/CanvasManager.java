@@ -8,7 +8,10 @@ import android.util.Log;
 import android.view.View;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Stack;
 
 import group6.interactivehandwriting.activities.Room.draw.drawables.DrawableManager;
 import group6.interactivehandwriting.common.app.Profile;
@@ -22,7 +25,7 @@ import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
 
 public class CanvasManager implements DrawActionHandle {
     public static final String DEBUG = "CanvasManager";
-    private Map<Profile, DrawableManager> indexedDrawables;
+    private LinkedList<DrawableRecord> items;
 
     private View parentView;
 
@@ -33,7 +36,7 @@ public class CanvasManager implements DrawActionHandle {
         this.parentView = parent;
         canvasBitmapPaint = new Paint(Paint.DITHER_FLAG);
         canvasBitmapPaint.setARGB(255, 255, 255, 255);
-        indexedDrawables = new HashMap<>();
+        items = new LinkedList<>();
     }
 
     public void updateSize(int w, int h) {
@@ -45,33 +48,57 @@ public class CanvasManager implements DrawActionHandle {
         Log.v(DEBUG, "Profile with device id " + user.deviceId);
         Log.v(DEBUG, "Profile with username " + user.username);
 
+        updateDrawable(user, action);
+        parentView.invalidate();
+    }
 
-        DrawableManager drawables = indexedDrawables.get(user);
-        if (drawables == null) {
-            Log.v(DEBUG, "drawables was null");
-            drawables = new DrawableManager();
-            indexedDrawables.put(user, drawables);
+    private boolean updateDrawable(Profile user, DrawableAction action) {
+        int index = 0;
+
+        boolean found = false;
+        ListIterator<DrawableRecord> recordIterator = items.listIterator(0);
+        while(!found && recordIterator.hasNext()) {
+            DrawableRecord record = recordIterator.next();
+            if (record.profile.equals(user) && action.getId().equals(record.actionId)) {
+                found = true;
+            }
+            index++;
+        }
+        index--;
+
+        if (found) {
+            DrawableRecord record = items.remove(index);
+            record.drawable = action.update(record.drawable);
+            items.addLast(record);
+        } else {
+            DrawableRecord record = new DrawableRecord();
+            record.profile = user;
+            record.actionId = action.getId();
+            record.drawable = action.update(null);
+            items.addLast(record);
         }
 
-        Log.v(DEBUG, "drawables size: " + drawables.size());
-        Log.v(DEBUG, "action with id: " + action.getId());
-        Drawable canvasItem = drawables.get(action.getId());
-        Log.v(DEBUG, "canvas item is not null? " + (canvasItem != null));
-        canvasItem = action.update(canvasItem);
-        Log.v(DEBUG, "canvas item is not null? " + (canvasItem != null));
-        ActionId id = action.getId();
-        drawables.put(id, canvasItem);
-
-        parentView.invalidate();
+        return found;
     }
 
     public void update(Canvas canvas) {
         canvas.drawBitmap(canvasBitmap, 0, 0, canvasBitmapPaint);
         canvas.drawARGB(255, 255, 255, 255);
-        for (DrawableManager drawables : indexedDrawables.values()) {
-            for (Drawable item : drawables.values()) {
-                item.draw(canvas);
+        for (DrawableRecord record : items) {
+            record.drawable.draw(canvas);
+        }
+    }
+
+    public void undo(Profile user) {
+        boolean removed = false;
+        ListIterator<DrawableRecord> iterator = items.listIterator(items.size());
+        while (!removed && iterator.hasPrevious()) {
+            DrawableRecord record = iterator.previous();
+            if (record.profile.equals(user)) {
+                iterator.remove();
+                removed = true;
             }
         }
+        parentView.invalidate();
     }
 }

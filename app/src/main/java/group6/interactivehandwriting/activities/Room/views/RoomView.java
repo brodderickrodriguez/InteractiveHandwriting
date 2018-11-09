@@ -73,6 +73,10 @@ public class RoomView extends View {
         return true;
     }
 
+    public void undo() {
+        canvasManager.undo(profile);
+    }
+
     @Override
     public boolean performClick() {
         return super.performClick();

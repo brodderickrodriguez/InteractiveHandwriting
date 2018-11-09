@@ -57,22 +57,7 @@ public class RoomActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String roomName;
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                roomName = null;
-            } else {
-                roomName = extras.getString("ROOM_NAME");
-            }
-        } else {
-            roomName = (String) savedInstanceState.getSerializable("ROOM_NAME");
-        }
-        if (roomName != null) {
-            Toast.makeText(getApplicationContext(), "Joined " + roomName, Toast.LENGTH_LONG).show();
-        } else {
-            Log.e("RoomActivity", "room name was null");
-        }
+        getRoomName(savedInstanceState);
 
         networkServiceConnection = getNetworkServiceConnection();
 
@@ -93,6 +78,25 @@ public class RoomActivity extends Activity {
                 RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
             }
         });
+    }
+
+    private void getRoomName(Bundle savedInstanceState) {
+        String roomName;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                roomName = null;
+            } else {
+                roomName = extras.getString("ROOM_NAME");
+            }
+        } else {
+            roomName = (String) savedInstanceState.getSerializable("ROOM_NAME");
+        }
+        if (roomName != null) {
+            Toast.makeText(getApplicationContext(), "Joined " + roomName, Toast.LENGTH_LONG).show();
+        } else {
+            Log.e("RoomActivity", "room name was null");
+        }
     }
 
     @Override
@@ -145,6 +149,10 @@ public class RoomActivity extends Activity {
         }
     }
 
+    public void undo(View view) {
+        roomView.undo();
+    }
+
     public void toggleColorPickerView(View view) {
         ConstraintLayout colorPickerLayout = findViewById(R.id.color_picker_view);
 
@@ -161,7 +169,7 @@ public class RoomActivity extends Activity {
     }
 
     public void colorErase(View view) {
-        RoomViewActionUtility.toggleEraser();
+        RoomViewActionUtility.setEraser();
     }
 
     public void saveCanvas(View view) {
