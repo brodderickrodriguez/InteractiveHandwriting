@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
 import group6.interactivehandwriting.common.app.Profile;
@@ -177,7 +178,7 @@ public class RoomActivity extends Activity {
     }
 
 
-    public Boolean writeDiskPermission() {
+    public Boolean hasWriteDiskPermission() {
         String externalStorageState = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(externalStorageState);
     }
@@ -185,13 +186,13 @@ public class RoomActivity extends Activity {
 
     private void exportBitmap(Bitmap targetBitmap) {
         String root = Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED).toString();
-        String roomName = "ROOMNAME";
+        String roomName = "ROOM_NAME";
         String filename = "/" + roomName + "_" + java.time.LocalDateTime.now() + ".txt";
         File dir = new File(root + "/HandWritingAppWhiteBoards/");
         File newFile = new File(dir, filename);
 
         // if we do not have permission to write to disk, exit fatally
-        if (!writeDiskPermission()) {
+        if (!hasWriteDiskPermission()) {
             Log.e("RoomActivity", "FATAL - CANNOT WRITE TO STORAGE");
             return;
         }
@@ -204,7 +205,12 @@ public class RoomActivity extends Activity {
 
         // try to create new file to write to, if unsuccessful exit fatally
         try {
-            newFile.createNewFile();
+            Boolean successfullyCreatedFile = newFile.createNewFile();
+
+            if (!successfullyCreatedFile) {
+                Log.e("RoomActivity", "ISSUE UNABLE TO MAKE FILE");
+                return;
+            }
         } catch (IOException e) {
             Log.e("RoomActivity", "FATAL UNABLE TO MAKE FILE");
             e.printStackTrace();
@@ -214,7 +220,7 @@ public class RoomActivity extends Activity {
         // try to write to file, if unsuccessful exit fatally
         try {
             FileOutputStream out = new FileOutputStream(newFile);
-            //targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            targetBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
             System.out.println("BITMAP EXPORTED SUCCESSFULLY");
