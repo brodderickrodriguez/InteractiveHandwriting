@@ -2,7 +2,11 @@ package group6.interactivehandwriting.activities.Room.draw;
 
 import android.graphics.drawable.Drawable;
 
+import java.util.List;
+
 import group6.interactivehandwriting.common.app.Profile;
+import group6.interactivehandwriting.common.app.TimeStamp;
+import group6.interactivehandwriting.common.app.actions.Action;
 import group6.interactivehandwriting.common.app.actions.ActionId;
 
 /**
@@ -11,6 +15,9 @@ import group6.interactivehandwriting.common.app.actions.ActionId;
 
 public class DrawableRecord {
     public Profile profile;
-    public ActionId actionId;
     public Drawable drawable;
+    public TimeStamp creationTime;
+    public int sourceId;
+    public int maxSequenceNumber;
+    List<Action> actionHistory;
 }

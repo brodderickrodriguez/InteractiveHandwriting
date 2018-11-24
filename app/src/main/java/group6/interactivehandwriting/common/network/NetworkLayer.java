@@ -20,10 +20,12 @@ public interface NetworkLayer {
 
     public Set<Room> getRooms();
     public void joinRoom(final Profile profile, final Room room);
+    public void synchronizeRoom();
     public void exitRoom();
 
     public void receiveDrawActions(final DrawActionHandle handle);
     public void startDraw(final StartDrawAction action);
     public void moveDraw(final MoveDrawAction action);
     public void endDraw(final EndDrawAction action);
+    public void undo(Profile profile);
 }

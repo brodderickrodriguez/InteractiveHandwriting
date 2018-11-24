@@ -15,9 +15,10 @@ public enum NetworkMessageType {
     START_DRAW(10),
     MOVE_DRAW(12),
     END_DRAW(13),
+    UNDO_DRAW(14),
 
-    ROOMS_REQUEST(24),
-    ROOMS_REPLY(25);
+    SYNC_REQUEST(24),
+    SYNC_REPLY(25);
 
     private int value;
 

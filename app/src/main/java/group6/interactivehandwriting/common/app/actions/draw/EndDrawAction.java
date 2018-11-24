@@ -6,11 +6,10 @@ package group6.interactivehandwriting.common.app.actions.draw;
 
 import android.graphics.drawable.Drawable;
 
+import group6.interactivehandwriting.common.app.TimeStamp;
 import group6.interactivehandwriting.common.app.actions.ActionId;
-import group6.interactivehandwriting.common.app.actions.ActionType;
 import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
-import group6.interactivehandwriting.common.app.actions.Action;
-
+import group6.interactivehandwriting.common.app.actions.ActionType;
 
 /**
  * Created by JakeL on 9/30/18.
@@ -22,6 +21,7 @@ public class EndDrawAction extends DrawableAction {
 
     public EndDrawAction() {
         id = ActionId.get();
+        timeStamp = new TimeStamp();
     }
 
     @Override

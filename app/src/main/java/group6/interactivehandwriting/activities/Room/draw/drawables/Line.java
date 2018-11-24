@@ -8,6 +8,11 @@ import android.graphics.PixelFormat;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.List;
+
+import group6.interactivehandwriting.common.app.TimeStamp;
+import group6.interactivehandwriting.common.app.actions.Action;
+import group6.interactivehandwriting.common.app.actions.draw.DrawableAction;
 import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
 import group6.interactivehandwriting.common.app.actions.draw.StartDrawAction;
@@ -42,6 +47,7 @@ public class Line extends DrawableCanvasItem {
     }
 
     public void startDraw(StartDrawAction action) {
+
         paint = new Paint();
         if (action.isEraser()) {
             setColor(action.getAlpha(), 255, 255, 255);

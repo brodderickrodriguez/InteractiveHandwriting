@@ -3,19 +3,15 @@ package group6.interactivehandwriting.activities.Room.draw;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
-import java.util.Stack;
 
-import group6.interactivehandwriting.activities.Room.draw.drawables.DrawableManager;
 import group6.interactivehandwriting.common.app.Profile;
-import group6.interactivehandwriting.common.app.actions.ActionId;
+import group6.interactivehandwriting.common.app.actions.Action;
 import group6.interactivehandwriting.common.app.actions.draw.DrawableAction;
 import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
 
@@ -25,7 +21,8 @@ import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
 
 public class CanvasManager implements DrawActionHandle {
     public static final String DEBUG = "CanvasManager";
-    private LinkedList<DrawableRecord> items;
+
+    private LinkedList<DrawableRecord> records;
 
     private View parentView;
 
@@ -34,9 +31,11 @@ public class CanvasManager implements DrawActionHandle {
 
     public CanvasManager(View parent) {
         this.parentView = parent;
+
         canvasBitmapPaint = new Paint(Paint.DITHER_FLAG);
         canvasBitmapPaint.setARGB(255, 255, 255, 255);
-        items = new LinkedList<>();
+
+        records = new LinkedList<>();
     }
 
     public void updateSize(int w, int h) {
@@ -45,53 +44,85 @@ public class CanvasManager implements DrawActionHandle {
 
     @Override
     public void handleDrawAction(Profile user, DrawableAction action) {
-        Log.v(DEBUG, "Profile with device id " + user.deviceId);
-        Log.v(DEBUG, "Profile with username " + user.username);
+        insertUpdateDrawable(user, action);
+        parentView.invalidate(); // refreshes the view on screen
+    }
 
-        updateDrawable(user, action);
-        parentView.invalidate();
+    @Override
+    public List<Action> getActionHistory() {
+        List<Action> actionHistory = new ArrayList<>();
+
+        for (DrawableRecord record : records) {
+            actionHistory.addAll(record.actionHistory);
+        }
+
+        return actionHistory;
+    }
+
+    @Override
+    public void mergeActionHistory(List<Action> actionHistory) {
+        // pass for now - should already merge history / discarding duplicates
+    }
+
+    public void insertUpdateDrawable(Profile user, DrawableAction action) {
+        boolean isUpdated = updateDrawable(user, action);
+        if (!isUpdated) {
+            insertDrawable(user, action);
+        }
     }
 
     private boolean updateDrawable(Profile user, DrawableAction action) {
+        boolean isUpdated = false;
+
+        ListIterator<DrawableRecord> recordIterator = records.listIterator(0);
+        while (!isUpdated && recordIterator.hasNext()) {
+            DrawableRecord record = recordIterator.next();
+            if (record.profile.equals(user) && action.id.id == record.sourceId) {
+                if (record.maxSequenceNumber < action.id.sequence) {
+                    record.maxSequenceNumber = action.id.sequence;
+                    action.update(record.drawable);
+                    record.actionHistory.add(action);
+                }
+                isUpdated = true;
+            }
+        }
+
+        return isUpdated;
+    }
+
+    private void insertDrawable(Profile user, DrawableAction action) {
+        DrawableRecord record = new DrawableRecord();
+        record.profile = user;
+        record.sourceId = action.id.id;
+        record.maxSequenceNumber = action.id.sequence;
+        record.creationTime = action.timeStamp;
+        record.drawable = action.update(null);
+        record.actionHistory = new ArrayList<>();
+        record.actionHistory.add(action);
+
+        // insert by time stamp
         int index = 0;
 
-        boolean found = false;
-        ListIterator<DrawableRecord> recordIterator = items.listIterator(0);
-        while(!found && recordIterator.hasNext()) {
-            DrawableRecord record = recordIterator.next();
-            if (record.profile.equals(user) && action.getId().equals(record.actionId)) {
-                found = true;
-            }
+        ListIterator<DrawableRecord> iterator = records.listIterator(0);
+        while (iterator.hasNext() && iterator.next().creationTime.milliseconds() < record.creationTime.milliseconds()) {
             index++;
         }
-        index--;
 
-        if (found) {
-            DrawableRecord record = items.remove(index);
-            record.drawable = action.update(record.drawable);
-            items.addLast(record);
-        } else {
-            DrawableRecord record = new DrawableRecord();
-            record.profile = user;
-            record.actionId = action.getId();
-            record.drawable = action.update(null);
-            items.addLast(record);
-        }
-
-        return found;
+        records.add(index, record);
     }
 
     public void update(Canvas canvas) {
         canvas.drawBitmap(canvasBitmap, 0, 0, canvasBitmapPaint);
         canvas.drawARGB(255, 255, 255, 255);
-        for (DrawableRecord record : items) {
+        for (DrawableRecord record : records) {
             record.drawable.draw(canvas);
         }
     }
 
     public void undo(Profile user) {
         boolean removed = false;
-        ListIterator<DrawableRecord> iterator = items.listIterator(items.size());
+        ListIterator<DrawableRecord> iterator = records.listIterator(records.size());
+
         while (!removed && iterator.hasPrevious()) {
             DrawableRecord record = iterator.previous();
             if (record.profile.equals(user)) {
@@ -99,6 +130,7 @@ public class CanvasManager implements DrawActionHandle {
                 removed = true;
             }
         }
+
         parentView.invalidate();
     }
 }

@@ -2,6 +2,7 @@ package group6.interactivehandwriting.common.network.nearby.connections.message.
 
 import java.nio.ByteBuffer;
 
+import group6.interactivehandwriting.common.app.TimeStamp;
 import group6.interactivehandwriting.common.app.actions.ActionId;
 import group6.interactivehandwriting.common.app.actions.draw.StartDrawAction;
 import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
@@ -41,8 +42,9 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
     public byte[] toBytes() {
         ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
 
-        buffer.putInt(action.getId().value);
-        buffer.putInt(action.getId().sequence);
+        buffer.putLong(action.timeStamp.milliseconds());
+        buffer.putInt(action.id.id);
+        buffer.putInt(action.id.sequence);
         buffer.putFloat(action.getX());
         buffer.putFloat(action.getY());
         buffer.putFloat(action.getWidth());
@@ -59,6 +61,7 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
     public StartDrawActionMessage fromBytes(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
+        long timeMs = buffer.getLong();
         int actionIdValue = buffer.getInt();
         int actionIdSeq = buffer.getInt();
         float xPosition = buffer.getFloat();
@@ -71,7 +74,8 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
         boolean isErase = buffer.getInt() == 1 ? true : false;
 
         action = new StartDrawAction(false);
-        action.setId(new ActionId(actionIdValue, actionIdSeq));
+        action.timeStamp = new TimeStamp(timeMs);
+        action.id = new ActionId(actionIdValue, actionIdSeq);
         action.setPosition(xPosition, yPosition);
         action.setWidth(penWidth);
         action.setColor(rColor, gColor, bColor, alphaColor);
@@ -82,6 +86,7 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
 
     @Override
     public int getByteBufferSize() {
+        int timeStampSize = NCNetworkUtility.BYTES_IN_A_LONG;
         int actionIdSize = 2 * NCNetworkUtility.BYTES_IN_A_INT;
         int xPositionSize = NCNetworkUtility.BYTES_IN_A_FLOAT;
         int yPositionSize = NCNetworkUtility.BYTES_IN_A_FLOAT;
@@ -93,6 +98,7 @@ public class StartDrawActionMessage implements SerialMessageData<StartDrawAction
         int eraseSize = NCNetworkUtility.BYTES_IN_A_INT;
 
         int size = 0;
+        size += timeStampSize;
         size += actionIdSize + xPositionSize + yPositionSize + penWidthSize;
         size += rColorSize + gColorSize + bColorSize + alphaColorSize + eraseSize;
 

@@ -36,6 +36,7 @@ public class RoomView extends View {
             this.profile = layer.getMyProfile();
             this.networkLayer = layer;
             this.networkLayer.receiveDrawActions(canvasManager);
+            this.networkLayer.synchronizeRoom();
             return true;
         } else {
             return false;
@@ -75,6 +76,10 @@ public class RoomView extends View {
 
     public void undo() {
         canvasManager.undo(profile);
+
+        if (networkLayer != null) {
+            networkLayer.undo(profile);
+        }
     }
 
     @Override
