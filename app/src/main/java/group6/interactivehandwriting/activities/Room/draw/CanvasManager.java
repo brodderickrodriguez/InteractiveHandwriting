@@ -2,7 +2,10 @@ package group6.interactivehandwriting.activities.Room.draw;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -32,14 +35,18 @@ public class CanvasManager implements DrawActionHandle {
     public CanvasManager(View parent) {
         this.parentView = parent;
 
-        canvasBitmapPaint = new Paint(Paint.DITHER_FLAG);
-        canvasBitmapPaint.setARGB(255, 255, 255, 255);
+        canvasBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        canvasBitmapPaint.setColor(Color.RED);
+        //canvasBitmapPaint.setColor(Color.TRANSPARENT);
+        //canvasBitmapPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+        //canvasBitmapPaint.setAntiAlias(true);
 
         records = new LinkedList<>();
     }
 
     public void updateSize(int w, int h) {
-        canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
+        canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        canvasBitmap.eraseColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -113,7 +120,6 @@ public class CanvasManager implements DrawActionHandle {
 
     public void update(Canvas canvas) {
         canvas.drawBitmap(canvasBitmap, 0, 0, canvasBitmapPaint);
-        canvas.drawARGB(255, 255, 255, 255);
         for (DrawableRecord record : records) {
             record.drawable.draw(canvas);
         }

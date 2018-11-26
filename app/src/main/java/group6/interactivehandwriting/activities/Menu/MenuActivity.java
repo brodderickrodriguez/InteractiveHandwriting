@@ -127,7 +127,7 @@ public class MenuActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Permissions.requestPermissions(this);
-
+        roomRequestTimer = new Timer();
         NetworkLayerService.startNetworkService(this);
         NetworkLayerService.bindNetworkService(this, networkServiceConnection);
     }

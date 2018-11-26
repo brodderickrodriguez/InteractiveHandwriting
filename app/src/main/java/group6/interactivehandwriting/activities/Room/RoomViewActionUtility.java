@@ -1,4 +1,4 @@
-package group6.interactivehandwriting.activities.Room.draw;
+package group6.interactivehandwriting.activities.Room;
 
 import android.util.Log;
 
