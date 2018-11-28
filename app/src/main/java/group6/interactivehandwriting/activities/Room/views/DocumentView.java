@@ -2,10 +2,23 @@ package group6.interactivehandwriting.activities.Room.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.ScaleGestureDetectorCompat;
+import android.support.v4.view.ViewCompat;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
 import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
@@ -38,15 +51,28 @@ public class DocumentView extends ImageView {
 
     private ScaleGestureDetector mScaleDetector;
 
+    float scale=1f;
+    Matrix m=new Matrix();
+    Matrix oldm=new Matrix();
+    int mode;
+    int tap=0;int none=0;int tap2=0;int drag=0;int pinch=0;
+    float posx=200f;float posy=200f;float oldx=200f;float oldy=200f;
+    float movx=0f;float movy=0f,x=0f,y=0f;
+    float nowsp=0f;float oldsp=0f;
+    MotionEvent olde;
+
     // 0 - zoom/resize .. 1 - drawing
     private int allowDrawing = 1;
+
 
     public DocumentView(Context context) {
         super(context);
         canvasManager = new CanvasManager(this);
 
         mScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
+        this.setScaleType(ImageView.ScaleType.MATRIX);
     }
+
 
     public boolean setNetworkLayer(NetworkLayer layer) {
         if (layer != null) {
@@ -70,80 +96,99 @@ public class DocumentView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvasManager.update(canvas);
+        canvas.save();
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent e) {
         switch (allowDrawing) {
             case 0: /* Resize / Zoom */
-                mScaleDetector.onTouchEvent(event);
+                tap=tap2=drag=pinch=none;
+                int mask=e.getActionMasked();
 
-                final int action = event.getAction();
-                switch (action & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN: {
-                        final float x = event.getX();
-                        final float y = event.getY();
-
-                        mLastTouchX = x;
-                        mLastTouchY = y;
-                        mActivePointerId = event.getPointerId(0);
+                posx=e.getX();
+                posy=e.getY();
+                float midx= this.getWidth()/2f;
+                float midy=this.getHeight()/2f;
+                int fingers=e.getPointerCount();
+                switch(mask)
+                {
+                    case MotionEvent.ACTION_POINTER_UP:
+                        tap2=1;
                         break;
-                    }
 
-                    case MotionEvent.ACTION_MOVE: {
-                        final int pointerIndex = event.findPointerIndex(mActivePointerId);
-                        final float x = event.getX(pointerIndex);
-                        final float y = event.getY(pointerIndex);
-
-                        // Only move if the ScaleGestureDetector isn't processing a gesture.
-                        if (!mScaleDetector.isInProgress()) {
-                            final float dx = x - mLastTouchX;
-                            final float dy = y - mLastTouchY;
-
-                            mPosX += dx;
-                            mPosY += dy;
-
-                            invalidate();
-                        }
-
-                        mLastTouchX = x;
-                        mLastTouchY = y;
-
+                    case MotionEvent.ACTION_UP:
+                        tap=1;
                         break;
-                    }
 
-                    case MotionEvent.ACTION_UP: {
-                        mActivePointerId = INVALID_POINTER_ID;
-                        break;
-                    }
-
-                    case MotionEvent.ACTION_CANCEL: {
-                        mActivePointerId = INVALID_POINTER_ID;
-                        break;
-                    }
-
-                    case MotionEvent.ACTION_POINTER_UP: {
-                        final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
-                                >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                        final int pointerId = event.getPointerId(pointerIndex);
-                        if (pointerId == mActivePointerId) {
-                            // This was our active pointer going up. Choose a new
-                            // active pointer and adjust accordingly.
-                            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-                            mLastTouchX = event.getX(newPointerIndex);
-                            mLastTouchY = event.getY(newPointerIndex);
-                            mActivePointerId = event.getPointerId(newPointerIndex);
-                        }
-                        break;
-                    }
+                    case MotionEvent.ACTION_MOVE:
+                        drag=1;
+                }
+                if(fingers==2){
+                    nowsp=Math.abs(e.getX(0)-e.getX(1));
+                }
+                if((fingers==2)&&(drag==0)){
+                    tap2=1;
+                    tap=0;
+                    drag=0;
+                }
+                if((fingers==2)&&(drag==1)){
+                    tap2=0;
+                    tap=0;
+                    drag=0;
+                    pinch=1;
                 }
 
-                break;
+                if(pinch==1)
+
+                {
+                    if(nowsp>oldsp) {
+                        //scale += 0.1;
+                        scale += 0.03;
+                    }
+                    if(nowsp<oldsp) {
+                        //scale -= 0.1;
+                        scale -= 0.03;
+                    }
+                    tap2=tap=drag=0;
+                }
+               /* if(tap2==1)
+                {
+                    scale-=0.1;
+                    tap=0;
+                    drag=0;
+                }
+                if(tap==1)
+                {
+                    tap2=0;
+                    drag=0;
+                    scale+=0.1;
+                }*/
+                if(drag==1)
+                {
+                    movx=posx-oldx;
+                    movy=posy-oldy;
+                    x+=movx;
+                    y+=movy;
+                    tap=0;
+                    tap2=0;
+                }
+                m.setTranslate(x,y);
+                m.postScale(scale,scale,midx,midy);
+                this.setImageMatrix(m);
+                this.invalidate();
+                tap=tap2=drag=none;
+                oldx=posx;
+                oldy=posy;
+                oldsp=nowsp;
+                this.setImageMatrix(m);
+                invalidate();
+                return true;
             case 1: /* Draw */
                 performClick();
-                float x = event.getX();
-                float y = event.getY();
-                switch (event.getAction()) {
+                float x = e.getX();
+                float y = e.getY();
+                switch (e.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         touchStarted(x, y);
                         break;
@@ -219,7 +264,6 @@ public class DocumentView extends ImageView {
             getView().setScaleX(mScaleFactor);
 
             getView().setScaleY(mScaleFactor);
-
             return true;
 
         }

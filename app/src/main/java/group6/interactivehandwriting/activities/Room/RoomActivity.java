@@ -14,6 +14,7 @@ import android.view.View;
 
 import group6.interactivehandwriting.R;
 
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -91,6 +92,21 @@ public class RoomActivity extends Activity {
             @Override
             public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
                 RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
+
+        Button toggle_drawing = (Button) findViewById(R.id.toggle_drawing);
+        toggle_drawing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int status = roomView.getDrawingStatus();
+                if (status == 1) {
+                    roomView.setDrawingStatus(0);
+                }
+
+                if (status == 0) {
+                    roomView.setDrawingStatus(1);
+                }
             }
         });
     }
