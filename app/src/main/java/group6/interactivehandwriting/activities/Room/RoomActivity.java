@@ -1,14 +1,17 @@
 package group6.interactivehandwriting.activities.Room;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -17,38 +20,34 @@ import group6.interactivehandwriting.R;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.nbsp.materialfilepicker.MaterialFilePicker;
+import com.nbsp.materialfilepicker.ui.FilePickerActivity;
+import com.shockwave.pdfium.PdfDocument;
+import com.shockwave.pdfium.PdfiumCore;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
-import org.w3c.dom.Document;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
+import group6.interactivehandwriting.activities.Room.views.DocumentView;
 import group6.interactivehandwriting.activities.Room.views.RoomView;
-import group6.interactivehandwriting.common.app.Profile;
+import group6.interactivehandwriting.common.app.Permissions;
 import group6.interactivehandwriting.common.network.NetworkLayer;
 import group6.interactivehandwriting.common.network.NetworkLayerBinder;
 import group6.interactivehandwriting.common.network.NetworkLayerService;
 
-// TODO move the file manipulation stuff to its own class
-public class RoomActivity extends Activity {
-    private static final String[] REQUIRED_PERMISSIONS =
-            new String[] {
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_WIFI_STATE,
-                    Manifest.permission.CHANGE_WIFI_STATE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-            };
-
-    /* Request/Persmission Codes */
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
-    public static final int REQUEST_CODE_FILEPICKER = 2;
-
+public class RoomActivity extends AppCompatActivity {
     private RoomView roomView;
     private SeekBar seekbar;
     private ColorPickerView color_picker_view;
+    private Context context;
+    private DocumentView documentView;
+    private ConstraintLayout roomLayout;
+
+    private boolean resizeToggle;
 
     NetworkLayer networkLayer;
     ServiceConnection networkServiceConnection;
@@ -57,6 +56,36 @@ public class RoomActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = getApplicationContext();
+        getRoomName(savedInstanceState);
+
+        networkServiceConnection = getNetworkServiceConnection();
+
+        setContentView(R.layout.room_layout);
+        roomLayout = findViewById(R.id.roomView_layout);
+        roomLayout.setBackgroundColor(Color.WHITE);
+
+        roomView = new RoomView(context);
+        roomLayout.addView(roomView);
+        roomLayout.bringChildToFront(roomView);
+
+        documentView = findViewById(R.id.documentView);
+
+        seekbar = findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        resizeToggle = false;
+
+        color_picker_view = findViewById(R.id.colorPickerLayout);
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
+    }
+
+    private void getRoomName(Bundle savedInstanceState) {
         String roomName;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -73,26 +102,6 @@ public class RoomActivity extends Activity {
         } else {
             Log.e("RoomActivity", "room name was null");
         }
-
-        networkServiceConnection = getNetworkServiceConnection();
-
-        roomView = new RoomView(getApplicationContext());
-
-        setContentView(R.layout.room_layout);
-        ConstraintLayout roomLayout = (ConstraintLayout)findViewById(R.id.roomView_layout);
-        roomLayout.addView(roomView);
-
-        //For seekbar
-        seekbar = findViewById(R.id.seekBar);
-        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
-        //For color picker
-        color_picker_view = findViewById(R.id.colorPickerLayout);
-        color_picker_view.setColorListener(new ColorEnvelopeListener() {
-            @Override
-            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
-            }
-        });
     }
 
     @Override
@@ -100,6 +109,7 @@ public class RoomActivity extends Activity {
         super.onStart();
         NetworkLayerService.startNetworkService(this);
         NetworkLayerService.bindNetworkService(this, networkServiceConnection);
+        roomLayout.bringChildToFront(roomView);
     }
 
     private ServiceConnection getNetworkServiceConnection() {
@@ -130,8 +140,70 @@ public class RoomActivity extends Activity {
     }
 
     public void showDocument(View view) {
-        Intent intent = new Intent(this, DocumentActivity.class);
-        startActivity(intent);
+        new MaterialFilePicker()
+                .withActivity(this)
+                .withRequestCode(Permissions.REQUEST_CODE_FILEPICKER)
+                .withHiddenFiles(true)
+                .start();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.v("JAKE", "REQUEST CODE " + String.valueOf(requestCode));
+
+
+        if (requestCode == Permissions.REQUEST_CODE_FILEPICKER) {
+            Log.v("JAKE", "FILE RECIEVED");
+            String filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
+            showPDF(new File(filePath));
+        }
+    }
+
+    public void resizeDoc(View view) {
+        if (resizeToggle == false) {
+            documentView.activateResizeMode();
+            resizeToggle = true;
+        } else {
+            documentView.deactivateResizeMode();
+            resizeToggle = false;
+        }
+    }
+
+    public void showPDF(File file) {
+        try {
+            PdfiumCore pdfiumCore = new PdfiumCore(context);
+
+            ParcelFileDescriptor fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+            PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
+
+            int pageNum = 0;
+            pdfiumCore.openPage(pdfDocument, pageNum);
+
+            //Get current screen size
+            DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
+            int screen_width = metrics.widthPixels;
+            int screen_height = metrics.heightPixels;
+
+            // ARGB_8888 - best quality, high memory usage, higher possibility of OutOfMemoryError
+            // RGB_565 - little worse quality, twice less memory usage
+            Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
+
+
+            pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
+
+            documentView.setImageBitmap(bitmap); // TODO this functionality should be separate from the RoomView functionality
+
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+
+            pdfiumCore.closeDocument(pdfDocument); // important!
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void toggleToolbox(View view) {
@@ -143,6 +215,10 @@ public class RoomActivity extends Activity {
         else {
             toolboxLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void undo(View view) {
+        roomView.undo();
     }
 
     public void toggleColorPickerView(View view) {
@@ -158,6 +234,10 @@ public class RoomActivity extends Activity {
 
     public void changeColor(View view) {
         RoomViewActionUtility.ChangeColorHex(view.getTag().toString());
+    }
+
+    public void colorErase(View view) {
+        RoomViewActionUtility.setEraser();
     }
 
     public void saveCanvas(View view) {

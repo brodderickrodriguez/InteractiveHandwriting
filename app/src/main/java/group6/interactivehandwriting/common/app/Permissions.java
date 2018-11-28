@@ -22,6 +22,7 @@ public class Permissions {
     };
 
     public static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    public static final int REQUEST_CODE_FILEPICKER = 2;
 
     public static void requestPermissions(Activity activity) {
         if (!hasPermissions(activity.getApplicationContext(), REQUIRED_PERMISSIONS)) {

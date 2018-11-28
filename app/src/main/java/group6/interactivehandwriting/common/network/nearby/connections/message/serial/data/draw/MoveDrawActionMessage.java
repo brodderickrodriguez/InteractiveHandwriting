@@ -2,6 +2,7 @@ package group6.interactivehandwriting.common.network.nearby.connections.message.
 
 import java.nio.ByteBuffer;
 
+import group6.interactivehandwriting.common.app.TimeStamp;
 import group6.interactivehandwriting.common.app.actions.ActionId;
 import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
 import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkUtility;
@@ -40,8 +41,8 @@ public class MoveDrawActionMessage implements SerialMessageData<MoveDrawActionMe
     public byte[] toBytes() {
         ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
 
-        buffer.putInt(action.getId().value);
-        buffer.putInt(action.getId().sequence);
+        buffer.putInt(action.id.id);
+        buffer.putInt(action.id.sequence);
         buffer.putFloat(action.getX());
         buffer.putFloat(action.getY());
         buffer.putFloat(action.getOffsetX());
@@ -62,7 +63,7 @@ public class MoveDrawActionMessage implements SerialMessageData<MoveDrawActionMe
         float dY = buffer.getFloat();
 
         action = new MoveDrawAction();
-        action.setId(new ActionId(actionIdValue, actionIdSeq));
+        action.id = new ActionId(actionIdValue, actionIdSeq);
         action.setMovePosition(xPosition, yPosition, dX, dY);
 
         return this;

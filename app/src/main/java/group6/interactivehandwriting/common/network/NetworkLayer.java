@@ -14,16 +14,18 @@ import group6.interactivehandwriting.common.app.rooms.Room;
  * Created by JakeL on 9/22/18.
  */
 
-public interface NetworkLayer<T> {
+public interface NetworkLayer {
     public void begin(final Profile profile);
     public Profile getMyProfile();
 
     public Set<Room> getRooms();
     public void joinRoom(final Profile profile, final Room room);
+    public void synchronizeRoom();
     public void exitRoom();
 
     public void receiveDrawActions(final DrawActionHandle handle);
     public void startDraw(final StartDrawAction action);
     public void moveDraw(final MoveDrawAction action);
     public void endDraw(final EndDrawAction action);
+    public void undo(Profile profile);
 }

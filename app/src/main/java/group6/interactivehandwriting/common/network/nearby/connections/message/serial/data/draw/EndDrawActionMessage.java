@@ -36,8 +36,8 @@ public class EndDrawActionMessage implements SerialMessageData<EndDrawActionMess
     public byte[] toBytes() {
         ByteBuffer buffer = ByteBuffer.allocate(getByteBufferSize());
 
-        buffer.putInt(action.getId().value);
-        buffer.putInt(action.getId().sequence);
+        buffer.putInt(action.id.id);
+        buffer.putInt(action.id.sequence);
         buffer.putFloat(action.getX());
         buffer.putFloat(action.getY());
 
@@ -59,7 +59,7 @@ public class EndDrawActionMessage implements SerialMessageData<EndDrawActionMess
         float yPosition = buffer.getFloat();
 
         action = new EndDrawAction();
-        action.setId(new ActionId(actionIdValue, actionIdSeq));
+        action.id = new ActionId(actionIdValue, actionIdSeq);
         action.setPosition(xPosition, yPosition);
 
         return this;

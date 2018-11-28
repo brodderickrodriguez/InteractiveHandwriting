@@ -10,28 +10,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
         <!-- Layout used to position RoomView underneath the toolbox-->
+
         <android.support.constraint.ConstraintLayout
             android:id="@+id/roomView_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#00ffffff">
 
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/docView_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#00ffffff">
-
+            <group6.interactivehandwriting.activities.Room.views.DocumentView
+                android:id="@+id/documentView"
+                android:layout_width="411dp"
+                android:layout_height="661dp"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="0dp" />
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -42,146 +42,83 @@
             android:background="#d9e2ff"
             android:visibility="visible">
 
-            <Button
-                android:id="@+id/save_canvas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="saveCanvas"
-                android:text="Save"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.054"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.894" />
-
-            <Button
-                android:id="@+id/change_color_red"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@drawable/red_button"
-                android:onClick="changeColor"
-                android:tag="ff0000"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.472"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.114" />
-
-            <Button
-                android:id="@+id/change_color_custom"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@drawable/round_button"
-                android:onClick="toggleColorPickerView"
-                android:tag=""
-                android:text="C"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.919"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.113" />
-
-            <Button
-                android:id="@+id/change_color_green"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@drawable/green_button"
-                android:onClick="changeColor"
-                android:tag="00ff00"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.682"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.114" />
-
-            <Button
-                android:id="@+id/change_color_blue"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="62dp"
-                android:background="@drawable/blue_button"
-                android:onClick="changeColor"
-                android:tag="0000ff"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.265"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.158" />
-
-            <Button
-                android:id="@+id/change_color_black"
-                android:layout_width="60dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="29dp"
-                android:layout_marginTop="25dp"
-                android:background="@drawable/black_button"
-                android:onClick="changeColor"
-                android:tag="000000"
-                app:layout_constraintBottom_toTopOf="@+id/seekBar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.049"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.114" />
-
-            <Button
-                android:id="@+id/load_document"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="62dp"
-                android:onClick="showDocument"
-                android:text="Load Document"
-                app:layout_constraintBaseline_toBaselineOf="@+id/save_canvas"
-                app:layout_constraintStart_toEndOf="@+id/save_canvas" />
-
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="148dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:max="50"
                 android:progress="11"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/change_color_black" />
+                app:layout_constraintTop_toBottomOf="@+id/button5" />
 
             <Button
-                android:id="@+id/toggle_drawing"
-                android:layout_width="wrap_content"
+                android:id="@+id/button5"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="37dp"
-                android:layout_marginTop="11dp"
-                android:text="Toggle Drawing/Resize"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toTopOf="@+id/save_canvas"
-                app:layout_constraintEnd_toStartOf="@+id/return_home"
+                android:layout_marginEnd="8dp"
+                android:onClick="colorErase"
+                android:text="Erase"
+                app:layout_constraintEnd_toStartOf="@+id/button6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="toggleColorPickerView"
+                android:text="Color"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.512"
+                app:layout_constraintStart_toEndOf="@+id/button5"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/load_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:onClick="showDocument"
+                android:text="Load Doc"
+                app:layout_constraintEnd_toStartOf="@+id/button9"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
             <Button
-                android:id="@+id/return_home"
-                android:layout_width="137dp"
+                android:id="@+id/button9"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="34dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="11dp"
-                android:text="Home"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@+id/load_document"
+                android:layout_marginStart="8dp"
+                android:onClick="undo"
+                android:text="Undo"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/toggle_drawing"
+                app:layout_constraintStart_toEndOf="@+id/load_button"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+            <Button
+                android:id="@+id/resize_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:onClick="resizeDoc"
+                android:text="Resize Doc"
+                app:layout_constraintEnd_toEndOf="@+id/load_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/load_button" />
+
+            <Button
+                android:id="@+id/close_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Close Doc"
+                app:layout_constraintEnd_toEndOf="@+id/resize_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/resize_button" />
 
         </android.support.constraint.ConstraintLayout>
 
