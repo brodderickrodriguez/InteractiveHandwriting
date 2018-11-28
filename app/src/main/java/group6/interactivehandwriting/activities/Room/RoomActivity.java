@@ -162,9 +162,11 @@ public class RoomActivity extends AppCompatActivity {
 
     public void resizeDoc(View view) {
         if (resizeToggle == false) {
+            documentView.bringToFront();
             documentView.activateResizeMode();
             resizeToggle = true;
         } else {
+            roomView.bringToFront();
             documentView.deactivateResizeMode();
             resizeToggle = false;
         }
