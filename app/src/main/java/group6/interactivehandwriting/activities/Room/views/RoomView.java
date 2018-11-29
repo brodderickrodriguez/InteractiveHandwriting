@@ -7,29 +7,24 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.ImageView;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Color;
-import group6.interactivehandwriting.R;
+import android.widget.Button;
 
-import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
+import group6.interactivehandwriting.activities.Room.RoomViewActionUtility;
 import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
 import group6.interactivehandwriting.common.app.Profile;
 
 import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
 import group6.interactivehandwriting.common.app.actions.draw.StartDrawAction;
-import group6.interactivehandwriting.activities.Room.draw.RoomViewActionUtility;
-import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
-import group6.interactivehandwriting.common.app.Profile;
 import group6.interactivehandwriting.common.network.NetworkLayer;
 
-public class RoomView extends View {
-    private static final String DEBUG_TAG_V = "RoomView";
+import group6.interactivehandwriting.R;
 
+import static android.view.MotionEvent.INVALID_POINTER_ID;
+
+public class RoomView extends View {
     private static final float TOUCH_TOLERANCE = 4;
 
     private NetworkLayer networkLayer;
@@ -53,11 +48,23 @@ public class RoomView extends View {
     // 0 - zoom/resize .. 1 - drawing
     private int allowDrawing = 1;
 
+    // document resizing
+    private ScaleGestureDetector mRoomScaleDetector;
+    private ScaleGestureDetector mDocumentScaleDetector;
+    private int mActivePointerId = INVALID_POINTER_ID;
+
+    private enum TouchStates {
+        RESIZE, DRAW;
+    }
+
+    private TouchStates touchState;
+
     public RoomView(Context context) {
         super(context);
         canvasManager = new CanvasManager(this);
 
-        mScaleDetector = new ScaleGestureDetector(context, new RoomScaleListener());
+        mRoomScaleDetector = new ScaleGestureDetector(context, new RoomScaleListener());
+        touchState = TouchStates.DRAW;
 
         marker = new Paint();
         marker.setColor(Color.RED);
@@ -65,11 +72,28 @@ public class RoomView extends View {
         marker.setTextSize(20);
     }
 
+    public void setTouchState(TouchStates touchStateIn) {
+        this.touchState = touchStateIn;
+    }
+
+    public TouchStates getTouchState() {
+        return this.touchState;
+    }
+
+    public TouchStates getDrawState() {
+        return TouchStates.DRAW;
+    }
+
+    public TouchStates getResizeState() {
+        return TouchStates.RESIZE;
+    }
+
     public boolean setNetworkLayer(NetworkLayer layer) {
         if (layer != null) {
-            this.profile = layer.getMyProfile();
             this.networkLayer = layer;
             this.networkLayer.receiveDrawActions(canvasManager);
+            this.networkLayer.synchronizeRoom();
+            this.profile = layer.getMyProfile();
             return true;
         } else {
             return false;
@@ -96,20 +120,22 @@ public class RoomView extends View {
         canvas.restore();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        switch (allowDrawing) {
-            case 0:
-                mScaleDetector.onTouchEvent(ev);
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (touchState) {
+            case DRAW: /* Draw */
+                drawEvent(event);
+                break;
+            case RESIZE: /* Resize */
+                mRoomScaleDetector.onTouchEvent(event);
 
-                final int action = ev.getAction();
+                final int action = event.getAction();
 
 
                 switch(action & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN: {
 
-                        final float x = (ev.getX() - scalePointX)/mScaleFactor;
-                        final float y = (ev.getY() - scalePointY)/mScaleFactor;
+                        final float x = (event.getX() - scalePointX)/mScaleFactor;
+                        final float y = (event.getY() - scalePointY)/mScaleFactor;
                         cX = x - mPosX + scalePointX; // canvas X
                         cY = y - mPosY + scalePointY; // canvas Y
                         mLastTouchX = x;
@@ -118,12 +144,12 @@ public class RoomView extends View {
                     }
                     case MotionEvent.ACTION_MOVE: {
 
-                        final float x = (ev.getX() - scalePointX)/mScaleFactor;
-                        final float y = (ev.getY() - scalePointY)/mScaleFactor;
+                        final float x = (event.getX() - scalePointX)/mScaleFactor;
+                        final float y = (event.getY() - scalePointY)/mScaleFactor;
                         cX = x - mPosX + scalePointX; // canvas X
                         cY = y - mPosY + scalePointY; // canvas Y
                         // Only move if the ScaleGestureDetector isn't processing a gesture.
-                        if (!mScaleDetector.isInProgress()) {
+                        if (!mRoomScaleDetector.isInProgress()) {
                             final float dx = x - mLastTouchX; // change in X
                             final float dy = y - mLastTouchY; // change in Y
                             mPosX += dx;
@@ -137,8 +163,8 @@ public class RoomView extends View {
 
                     }
                     case MotionEvent.ACTION_UP: {
-                        final float x = (ev.getX() - scalePointX)/mScaleFactor;
-                        final float y = (ev.getY() - scalePointY)/mScaleFactor;
+                        final float x = (event.getX() - scalePointX)/mScaleFactor;
+                        final float y = (event.getY() - scalePointY)/mScaleFactor;
                         cX = x - mPosX + scalePointX; // canvas X
                         cY = y - mPosY + scalePointY; // canvas Y
                         mLastTouchX = 0;
@@ -146,25 +172,30 @@ public class RoomView extends View {
                         invalidate();
                     }
                 }
-                return true;
-            case 1: /* Draw */
-                performClick();
-                float x = ev.getX();
-                float y = ev.getY();
-                switch (ev.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        touchStarted(x - mPosX + scalePointX, y - mPosY + scalePointY);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        touchMoved(x - mPosX + scalePointX, y - mPosY + scalePointY);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        touchReleased();
-                        break;
-                }
+                break;
+            default:
                 break;
         }
         return true;
+    }
+
+    private void drawEvent(MotionEvent event) {
+        performClick();
+        float x = event.getX();
+        float y = event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                touchStarted(x - mPosX + scalePointX, y - mPosY + scalePointY);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                touchMoved(x - mPosX + scalePointX, y - mPosY + scalePointY);
+                break;
+            case MotionEvent.ACTION_UP:
+                touchReleased();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -201,23 +232,11 @@ public class RoomView extends View {
         }
     }
 
-    public View getView() {
-        return this;
-    }
-
-    public int getDrawingStatus() {
-        return this.allowDrawing;
-    }
-
-    public void setDrawingStatus(int allowDrawingIn) {
-        this.allowDrawing = allowDrawingIn;
-    }
-
     private class RoomScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             mScaleFactor *= detector.getScaleFactor();
-            scalePointX =  detector.getFocusX();
+            scalePointX = detector.getFocusX();
             scalePointY = detector.getFocusY();
 
             // Don't let the object get too small or too large.
@@ -227,4 +246,12 @@ public class RoomView extends View {
             return true;
         }
     }
-}
+
+        public void undo() {
+            canvasManager.undo(profile);
+
+            if (networkLayer != null) {
+                networkLayer.undo(profile);
+            }
+        }
+    }

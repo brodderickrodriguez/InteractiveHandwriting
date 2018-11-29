@@ -1,4 +1,6 @@
-package group6.interactivehandwriting.activities.Room.draw;
+package group6.interactivehandwriting.activities.Room;
+
+import android.util.Log;
 
 import java.util.Random;
 
@@ -19,10 +21,13 @@ public class RoomViewActionUtility {
     private static int B;
     private static float Width;
 
+    private static boolean toggleEraserValue;
+
     static {
         R = randomColorValue();
         G = randomColorValue();
         B = randomColorValue();
+        toggleEraserValue = false;
         Width = 11;
     }
 
@@ -31,11 +36,17 @@ public class RoomViewActionUtility {
         touchY = y;
     }
 
+    public static void setEraser() {
+        toggleEraserValue = true;
+    }
+
     public static StartDrawAction touchStarted(float x, float y) {
         setTouchPosition(x, y);
         StartDrawAction startAction = new StartDrawAction(true);
         startAction.setPosition(x, y);
         startAction.setColor(R, G, B, 255);
+        startAction.setWidth(12.0f);
+        startAction.setErase(toggleEraserValue);
         startAction.setWidth(Width);
         return startAction;
     }
@@ -66,16 +77,11 @@ public class RoomViewActionUtility {
         return action;
     }
 
-    public static void ChangeColorCustom(int r, int g, int b) {
-        R = r;
-        G = g;
-        B = b;
-    }
-
     public static void ChangeColorHex(String hexValue) {
-        R = Integer.parseInt(hexValue.substring(0,2), 16);
-        G = Integer.parseInt(hexValue.substring(2,4), 16);
-        B = Integer.parseInt(hexValue.substring(4), 16);
+        toggleEraserValue = false;
+        R = Integer.parseInt(hexValue.substring(2, 4), 16);
+        G = Integer.parseInt(hexValue.substring(4, 6), 16);
+        B = Integer.parseInt(hexValue.substring(6, 8), 16);
     }
 
     public static void ChangeWidth(float width) {

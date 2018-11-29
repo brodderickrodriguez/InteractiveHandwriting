@@ -2,6 +2,7 @@ package group6.interactivehandwriting.common.app.actions.draw;
 
 import android.graphics.drawable.Drawable;
 
+import group6.interactivehandwriting.common.app.TimeStamp;
 import group6.interactivehandwriting.common.app.actions.ActionId;
 import group6.interactivehandwriting.common.app.actions.ActionType;
 import group6.interactivehandwriting.activities.Room.draw.drawables.Line;
@@ -19,6 +20,7 @@ public class MoveDrawAction extends DrawableAction {
 
     public MoveDrawAction() {
         id = ActionId.get();
+        timeStamp = new TimeStamp();
     }
 
     @Override

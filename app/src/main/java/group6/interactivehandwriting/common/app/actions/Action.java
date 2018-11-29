@@ -1,16 +1,10 @@
 package group6.interactivehandwriting.common.app.actions;
 
+import group6.interactivehandwriting.common.app.TimeStamp;
+
 public abstract class Action {
-    protected ActionType type;
-    protected ActionId id;
+    public ActionId id;
+    public TimeStamp timeStamp;
 
     public abstract ActionType getType();
-
-    public void setId(ActionId id) {
-        this.id = id;
-    };
-
-    public ActionId getId() {
-        return id;
-    }
 }

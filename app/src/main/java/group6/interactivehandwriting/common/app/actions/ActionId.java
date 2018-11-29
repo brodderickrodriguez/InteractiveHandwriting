@@ -12,11 +12,11 @@ public class ActionId {
     private static int lastValue;
     private static int sequenceNumber;
 
-    public int value;
+    public int id;
     public int sequence;
 
-    public ActionId(int value, int sequence) {
-        this.value = value;
+    public ActionId(int id, int sequence) {
+        this.id = id;
         this.sequence = sequence;
     }
 
@@ -43,7 +43,7 @@ public class ActionId {
         } else if (other == this) {
             return true;
         } else if (other instanceof ActionId) {
-            return this.value == ((ActionId) other).value;
+            return this.id == ((ActionId) other).id;
         } else {
             return false;
         }
@@ -51,11 +51,11 @@ public class ActionId {
 
     @Override
     public int hashCode() {
-        return value;
+        return id;
     }
 
     @Override
     public String toString() {
-        return "ActionId with value " + value + " and sequence " + sequence;
+        return "ActionId with id " + id + " and sequence " + sequence;
     }
 }

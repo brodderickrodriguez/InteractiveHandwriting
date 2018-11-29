@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import group6.interactivehandwriting.common.app.actions.Action;
 import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
 import group6.interactivehandwriting.common.app.actions.draw.DrawableAction;
 import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
@@ -25,9 +26,12 @@ import group6.interactivehandwriting.common.network.nearby.connections.device.NC
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.NetworkSerializable;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.SerialMessage;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.SerialMessageHeader;
+import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.SerialMessageData;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.draw.EndDrawActionMessage;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.draw.MoveDrawActionMessage;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.draw.StartDrawActionMessage;
+import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.draw.UndoDrawMessage;
+import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.room.RoomSynchronizeRequest;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.routing.RoutingUpdate;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.data.routing.RoutingUpdateRequest;
 
@@ -36,7 +40,7 @@ import group6.interactivehandwriting.common.network.nearby.connections.message.s
  */
 
 // TODO we should definitely create an object that encapsulates the HEADER, DATA section pair for byte[]
-public class NCNetworkLayerService extends NetworkLayerService<Payload> {
+public class NCNetworkLayerService extends NetworkLayerService {
     private static boolean isActive = false;
 
     private NCRoutingTable routingTable;
@@ -112,6 +116,30 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     }
 
     @Override
+    public void synchronizeRoom() {
+        sendSerialMessage(new RoomSynchronizeRequest().withRoomNumber(myRoom.getRoomNumber()));
+    }
+
+    private void synchronizeRoomReply(String endpoint) {
+        List<Action> actionHistory = drawActionHandle.getActionHistory();
+        List<SerialMessageData> messages = new ArrayList<>();
+
+        for (Action act : actionHistory) {
+            if (act instanceof StartDrawAction) {
+                messages.add(StartDrawActionMessage.fromAction((StartDrawAction) act));
+            } else if (act instanceof MoveDrawAction) {
+                messages.add(MoveDrawActionMessage.fromAction((MoveDrawAction) act));
+            } else if (act instanceof EndDrawAction) {
+                messages.add(EndDrawActionMessage.fromAction((EndDrawAction) act));
+            }
+        }
+
+        for (SerialMessageData data : messages) {
+            sendSerialMessage(data, endpoint);
+        }
+    }
+
+    @Override
     public void exitRoom() {
         // cleanup
         routingTable.exitMyRoom(myProfile);
@@ -138,6 +166,11 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
     @Override
     public void endDraw(EndDrawAction action) {
         sendSerialMessage(EndDrawActionMessage.fromAction(action));
+    }
+
+    @Override
+    public void undo(Profile p) {
+        sendSerialMessage(new UndoDrawMessage().withProfile(p));
     }
 
     public void sendSerialMessage(NetworkSerializable data) {
@@ -202,6 +235,13 @@ public class NCNetworkLayerService extends NetworkLayerService<Payload> {
             case END_DRAW:
                 sendActionToCanvasManager(id, EndDrawActionMessage.actionFromBytes(dataSection));
                 break;
+            case UNDO_DRAW:
+                if (drawActionHandle != null) {
+                    drawActionHandle.undo(UndoDrawMessage.undoFromBytes(dataSection).getData());
+                }
+                break;
+            case SYNC_REQUEST:
+                synchronizeRoomReply(endpoint);
             default:
                 break;
         }

@@ -10,8 +10,10 @@ import android.os.IBinder;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,6 +42,9 @@ public class MenuActivity extends AppCompatActivity {
     RoomAdapter roomAdapter;
     ListView roomListView;
     TextView usernameText;
+    View menuLayout;
+    View newRoomLayout;
+    EditText roomNameText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,23 @@ public class MenuActivity extends AppCompatActivity {
         roomListView.setAdapter(roomAdapter);
         roomListView.setOnItemClickListener(roomSelectedListener());
         usernameText = findViewById(R.id.username);
+
+        menuLayout = findViewById(R.id.menu_layout);
+        newRoomLayout = findViewById(R.id.new_room_layout);
+
+        setMenuVisible();
+
+        roomNameText = findViewById(R.id.room_name_text_edit);
+    }
+
+    public void setMenuVisible() {
+        menuLayout.setVisibility(View.VISIBLE);
+        newRoomLayout.setVisibility(View.GONE);
+    }
+
+    public void setCreateRoomFormVisible() {
+        menuLayout.setVisibility(View.GONE);
+        newRoomLayout.setVisibility(View.VISIBLE);
     }
 
     private AdapterView.OnItemClickListener roomSelectedListener() {
@@ -69,6 +91,7 @@ public class MenuActivity extends AppCompatActivity {
         if (networkLayer != null) {
             updateUsername();
             networkLayer.joinRoom(myProfile, selectedRoom);
+            setMenuVisible();
             enterRoom(selectedRoom);
         }
     }
@@ -81,11 +104,19 @@ public class MenuActivity extends AppCompatActivity {
 
     public void showNewRoomPopup(View view) {
         if (networkLayer != null) {
-            Room defaultRoom = new Room();
-            defaultRoom.deviceId = myProfile.deviceId;
-            defaultRoom.name = "Default Room";
-            joinRoom(defaultRoom);
+            setCreateRoomFormVisible();
         }
+    }
+
+    public void createRoom(View view) {
+        Room defaultRoom = new Room();
+        defaultRoom.deviceId = myProfile.deviceId;
+        defaultRoom.name = roomNameText.getText().toString();
+        joinRoom(defaultRoom);
+    }
+
+    public void cancelCreateRoom(View view) {
+        setMenuVisible();
     }
 
     private void updateUsername() {
@@ -96,7 +127,7 @@ public class MenuActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Permissions.requestPermissions(this);
-
+        roomRequestTimer = new Timer();
         NetworkLayerService.startNetworkService(this);
         NetworkLayerService.bindNetworkService(this, networkServiceConnection);
     }
@@ -139,7 +170,6 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void updateRoomList(Set<Room> discoveredRooms) {
-        // TODO add a listview and adapter
         roomAdapter.addAll(discoveredRooms);
     }
 
