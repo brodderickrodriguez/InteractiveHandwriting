@@ -28,6 +28,7 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
 
     public DocumentView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        scaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
         resizeMode = ResizeMode.INACTIVE;
     }
 
@@ -106,5 +107,16 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     @Override
     public boolean performClick() {
         return super.performClick();
+    }
+
+    public class DocumentScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector){
+            scaleFactor *= scaleGestureDetector.getScaleFactor();
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
+            setScaleX(scaleFactor);
+            setScaleY(scaleFactor);
+            return true;
+        }
     }
 }
