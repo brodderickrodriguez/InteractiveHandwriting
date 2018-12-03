@@ -101,12 +101,12 @@
                 app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
             <Button
-                android:id="@+id/resize_button"
+                android:id="@+id/toggle_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:onClick="resizeDoc"
-                android:text="Resize Doc"
+                android:onClick="toggleDraw"
+                android:text="Toggle Draw"
                 app:layout_constraintEnd_toEndOf="@+id/load_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/load_button" />
@@ -116,9 +116,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Close Doc"
-                app:layout_constraintEnd_toEndOf="@+id/resize_button"
+                app:layout_constraintEnd_toEndOf="@+id/toggle_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/resize_button" />
+                app:layout_constraintTop_toBottomOf="@+id/toggle_button" />
 
         </android.support.constraint.ConstraintLayout>
 
