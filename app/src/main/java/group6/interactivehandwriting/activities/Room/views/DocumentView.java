@@ -34,7 +34,7 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (resizeMode == ResizeMode.ACTIVE) {
-            resizeEvent(event);
+            //resizeEvent(event); TODO: Fix document resizing
         }
         return true;
     }
