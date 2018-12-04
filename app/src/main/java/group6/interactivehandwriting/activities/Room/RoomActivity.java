@@ -243,6 +243,15 @@ public class RoomActivity extends AppCompatActivity {
 
     }
 
+    public void toggleDraw(View view) {
+        if (roomView.getTouchState() == roomView.getDrawState()) {
+            roomView.setTouchState(roomView.getResizeState());
+        }
+        else {
+            roomView.setTouchState(roomView.getDrawState());
+        }
+    }
+
     // Used for the SeekBar to change pen width
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
@@ -259,4 +268,6 @@ public class RoomActivity extends AppCompatActivity {
             RoomViewActionUtility.ChangeWidth((float)seekbar.getProgress());
         }
     };
+
+
 }
