@@ -185,10 +185,10 @@ public class RoomView extends View {
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                touchStarted(x - mPosX + scalePointX, y - mPosY + scalePointY);
+                touchStarted(x - mPosX, y - mPosY);
                 break;
             case MotionEvent.ACTION_MOVE:
-                touchMoved(x - mPosX + scalePointX, y - mPosY + scalePointY);
+                touchMoved(x - mPosX, y - mPosY);
                 break;
             case MotionEvent.ACTION_UP:
                 touchReleased();
