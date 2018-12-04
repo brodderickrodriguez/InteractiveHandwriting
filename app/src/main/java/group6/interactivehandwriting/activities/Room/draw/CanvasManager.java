@@ -23,8 +23,6 @@ import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
  */
 
 public class CanvasManager implements DrawActionHandle {
-    public static final String DEBUG = "CanvasManager";
-
     private LinkedList<DrawableRecord> records;
 
     private View parentView;
@@ -37,9 +35,6 @@ public class CanvasManager implements DrawActionHandle {
 
         canvasBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         canvasBitmapPaint.setColor(Color.RED);
-        //canvasBitmapPaint.setColor(Color.TRANSPARENT);
-        //canvasBitmapPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
-        //canvasBitmapPaint.setAntiAlias(true);
 
         records = new LinkedList<>();
     }
@@ -64,11 +59,6 @@ public class CanvasManager implements DrawActionHandle {
         }
 
         return actionHistory;
-    }
-
-    @Override
-    public void mergeActionHistory(List<Action> actionHistory) {
-        // pass for now - should already merge history / discarding duplicates
     }
 
     public void insertUpdateDrawable(Profile user, DrawableAction action) {

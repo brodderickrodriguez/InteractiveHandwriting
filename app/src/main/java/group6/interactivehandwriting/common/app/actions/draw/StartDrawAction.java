@@ -39,8 +39,6 @@ public class StartDrawAction extends DrawableAction {
 
     @Override
     public Drawable update(Drawable drawableItem) {
-        Log.v("Canvas", "creating a line line");
-
         Line line = new Line();
         line.startDraw(this);
         return line;

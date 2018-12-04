@@ -15,6 +15,4 @@ public interface DrawActionHandle {
     public void undo(Profile profile);
 
     public List<Action> getActionHistory();
-
-    public void mergeActionHistory(List<Action> actionHistory);
 }

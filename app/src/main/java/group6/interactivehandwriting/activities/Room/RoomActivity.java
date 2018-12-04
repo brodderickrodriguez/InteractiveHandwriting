@@ -150,11 +150,8 @@ public class RoomActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.v("JAKE", "REQUEST CODE " + String.valueOf(requestCode));
-
 
         if (requestCode == Permissions.REQUEST_CODE_FILEPICKER) {
-            Log.v("JAKE", "FILE RECIEVED");
             String filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
             showPDF(new File(filePath));
         }
