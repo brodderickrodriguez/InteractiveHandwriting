@@ -44,7 +44,6 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
             scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
             self().setScaleX(scaleFactor);
             self().setScaleY(scaleFactor);
-            Log.v("RESIZE", "onScale() called");
             invalidate();
             return true;
         }

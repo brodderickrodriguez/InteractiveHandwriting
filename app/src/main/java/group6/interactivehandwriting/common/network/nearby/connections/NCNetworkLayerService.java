@@ -215,10 +215,8 @@ public class NCNetworkLayerService extends NetworkLayerService {
         if (myRoom != null &&
                 myRoom.getRoomNumber() != Room.VOID_ROOM_NUMBER &&
                 header.getRoomNumber() == myRoom.getRoomNumber()) {
-            Log.v("Room", "Room message received");
             dispatchRoomMessage(endpoint, header, data);
         } else {
-            Log.v("Room", "Non room message received");
             dispatchMessage(endpoint, header, data);
         }
     }
