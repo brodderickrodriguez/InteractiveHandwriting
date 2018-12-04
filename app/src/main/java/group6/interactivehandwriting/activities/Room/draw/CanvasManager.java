@@ -22,7 +22,7 @@ import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
  * Created by JakeL on 9/29/18.
  */
 
-public class CanvasManager implements DrawActionHandle
+public class CanvasManager implements DrawActionHandle {
     private LinkedList<DrawableRecord> records;
 
     private View parentView;
