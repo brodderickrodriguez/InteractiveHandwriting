@@ -32,3 +32,4 @@
 * Can't change color to black
 * With 3 devices, only one device gets updates from both peers.
 * Add pinch/zoom ability
+* Progress is erased after rotating screen, app crashes
