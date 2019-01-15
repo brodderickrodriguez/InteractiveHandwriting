@@ -30,3 +30,4 @@
 * This is a result of some bugs in the global coordinate system. All local drawings should be mapped into a global coordinate system shared by all devices. To render the drawings on the screen, the device should convert these global coordinates to local coordinates. Local coordinates can then be used to render each drawable object. 
 * Resume drawing after erasing
 * Can't change color to black
+* With 3 devices, only one device gets updates from both peers.
