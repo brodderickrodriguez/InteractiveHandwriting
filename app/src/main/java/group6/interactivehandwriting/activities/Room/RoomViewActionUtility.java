@@ -19,6 +19,7 @@ public class RoomViewActionUtility {
     private static int R;
     private static int G;
     private static int B;
+    private static int a;
     private static float Width;
 
     private static boolean toggleEraserValue;
@@ -27,6 +28,7 @@ public class RoomViewActionUtility {
         R = randomColorValue();
         G = randomColorValue();
         B = randomColorValue();
+        a = 255;
         toggleEraserValue = false;
         Width = 11;
     }
@@ -37,14 +39,14 @@ public class RoomViewActionUtility {
     }
 
     public static void setEraser() {
-        toggleEraserValue = true;
+        toggleEraserValue = !toggleEraserValue;
     }
 
     public static StartDrawAction touchStarted(float x, float y) {
         setTouchPosition(x, y);
         StartDrawAction startAction = new StartDrawAction(true);
         startAction.setPosition(x, y);
-        startAction.setColor(R, G, B, 255);
+        startAction.setColor(R, G, B, a);
         startAction.setWidth(12.0f);
         startAction.setErase(toggleEraserValue);
         startAction.setWidth(Width);
@@ -79,6 +81,7 @@ public class RoomViewActionUtility {
 
     public static void ChangeColorHex(String hexValue) {
         toggleEraserValue = false;
+        a = Integer.parseInt(hexValue.substring(0, 2), 16);
         R = Integer.parseInt(hexValue.substring(2, 4), 16);
         G = Integer.parseInt(hexValue.substring(4, 6), 16);
         B = Integer.parseInt(hexValue.substring(6, 8), 16);

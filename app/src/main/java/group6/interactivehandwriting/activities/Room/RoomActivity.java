@@ -27,6 +27,8 @@ import com.shockwave.pdfium.PdfiumCore;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
+import com.skydoves.colorpickerview.sliders.AlphaSlideBar;
+import com.skydoves.colorpickerview.sliders.BrightnessSlideBar;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +48,10 @@ public class RoomActivity extends AppCompatActivity {
     private Context context;
     private DocumentView documentView;
     private ConstraintLayout roomLayout;
+
+    private AlphaSlideBar alphaSlideBar;
+    private BrightnessSlideBar brightnessSlideBar;
+
 
     private boolean resizeToggle;
 
@@ -74,15 +80,11 @@ public class RoomActivity extends AppCompatActivity {
         seekbar = findViewById(R.id.seekBar);
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
 
-        resizeToggle = false;
-
         color_picker_view = findViewById(R.id.colorPickerLayout);
-        color_picker_view.setColorListener(new ColorEnvelopeListener() {
-            @Override
-            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
-            }
-        });
+        alphaSlideBar = findViewById(R.id.alphaSlideBar);
+        brightnessSlideBar = findViewById(R.id.brightnessSlide);
+
+        resizeToggle = false;
     }
 
     private void getRoomName(Bundle savedInstanceState) {
@@ -221,6 +223,16 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     public void toggleColorPickerView(View view) {
+        color_picker_view.attachAlphaSlider(alphaSlideBar);
+        color_picker_view.attachBrightnessSlider(brightnessSlideBar);
+        // Moved this here so that random color value is initially assigned
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
+
         ConstraintLayout colorPickerLayout = findViewById(R.id.color_picker_view);
 
         if (colorPickerLayout.getVisibility() == View.VISIBLE) {
