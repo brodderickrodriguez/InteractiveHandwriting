@@ -32,6 +32,7 @@ import com.skydoves.colorpickerview.sliders.BrightnessSlideBar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import group6.interactivehandwriting.activities.Room.views.DocumentView;
@@ -48,10 +49,6 @@ public class RoomActivity extends AppCompatActivity {
     private Context context;
     private DocumentView documentView;
     private ConstraintLayout roomLayout;
-
-    private AlphaSlideBar alphaSlideBar;
-    private BrightnessSlideBar brightnessSlideBar;
-
 
     private boolean resizeToggle;
 
@@ -81,10 +78,24 @@ public class RoomActivity extends AppCompatActivity {
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
 
         color_picker_view = findViewById(R.id.colorPickerLayout);
-        alphaSlideBar = findViewById(R.id.alphaSlideBar);
-        brightnessSlideBar = findViewById(R.id.brightnessSlide);
+        AlphaSlideBar alphaSlideBar = findViewById(R.id.alphaSlideBar);
+        BrightnessSlideBar brightnessSlideBar = findViewById(R.id.brightnessSlide);
 
         resizeToggle = false;
+
+        // Add alpha and brightness sliders
+        color_picker_view.attachAlphaSlider(alphaSlideBar);
+        color_picker_view.attachBrightnessSlider(brightnessSlideBar);
+
+        // Create listener for changing color
+        color_picker_view.setColorListener(new ColorEnvelopeListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+            }
+        });
+
+        set_initial_color();
     }
 
     private void getRoomName(Bundle savedInstanceState) {
@@ -230,16 +241,33 @@ public class RoomActivity extends AppCompatActivity {
         roomView.undo();
     }
 
-    public void toggleColorPickerView(View view) {
-        color_picker_view.attachAlphaSlider(alphaSlideBar);
-        color_picker_view.attachBrightnessSlider(brightnessSlideBar);
-        // Moved this here so that random color value is initially assigned
-        color_picker_view.setColorListener(new ColorEnvelopeListener() {
-            @Override
-            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                RoomViewActionUtility.ChangeColorHex(envelope.getHexCode());
+    private void set_initial_color() {
+        // Wait for color_picker_view to load to get width and height
+        color_picker_view.post(new Runnable() {
+            public void run() {
+                // Makes sure the initial color is not too light to see
+                int min_dist_from_center = 200;
+
+                int width = color_picker_view.getWidth();
+                int radius = width / 2;
+                int center_y = color_picker_view.getHeight() / 2;
+
+                // Generate random angle and distance from center of color wheel
+                double rand_angle = new Random().nextDouble() * Math.PI*2;
+                double rand_dist = new Random().nextInt(radius - min_dist_from_center) + min_dist_from_center;
+
+                // Use random values to set initial color
+                int rand_x =(int)(Math.cos(rand_angle) * rand_dist) + radius;
+                int rand_y =(int)(Math.sin(rand_angle) * rand_dist) + center_y;
+                color_picker_view.setSelectorPoint(rand_x, rand_y);
             }
-        });
+        }
+        );
+    }
+
+    public void toggleColorPickerView(View view) {
+
+
 
         ConstraintLayout colorPickerLayout = findViewById(R.id.color_picker_view);
 
@@ -249,6 +277,8 @@ public class RoomActivity extends AppCompatActivity {
         else {
             colorPickerLayout.setVisibility(View.VISIBLE);
         }
+
+
     }
 
     public void changeColor(View view) {

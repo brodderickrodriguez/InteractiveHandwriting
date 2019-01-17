@@ -157,7 +157,7 @@
             android:layout_height="400dp"
             android:layout_gravity="bottom"
             android:background="#d9e2ff"
-            android:visibility="gone">
+            android:visibility="invisible">
 
             <com.skydoves.colorpickerview.ColorPickerView
                 android:id="@+id/colorPickerLayout"
