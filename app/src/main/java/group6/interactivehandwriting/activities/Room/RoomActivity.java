@@ -149,13 +149,21 @@ public class RoomActivity extends AppCompatActivity {
                 .start();
     }
 
+    // Modified by Kyle Ehlers on 1/17/19
+    // Added the try/catch to handle the NullPointerException
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == Permissions.REQUEST_CODE_FILEPICKER) {
-            String filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
-            showPDF(new File(filePath));
+            try {
+                String filePath = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
+                showPDF(new File(filePath));
+            }
+            catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
