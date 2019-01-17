@@ -245,12 +245,13 @@ public class RoomActivity extends AppCompatActivity {
         // Wait for color_picker_view to load to get width and height
         color_picker_view.post(new Runnable() {
             public void run() {
-                // Makes sure the initial color is not too light to see
-                int min_dist_from_center = 200;
 
                 int width = color_picker_view.getWidth();
                 int radius = width / 2;
                 int center_y = color_picker_view.getHeight() / 2;
+
+                // Makes sure the initial color is not too light to see
+                int min_dist_from_center = radius / 2;
 
                 // Generate random angle and distance from center of color wheel
                 double rand_angle = new Random().nextDouble() * Math.PI*2;
