@@ -61,7 +61,6 @@ public class Line extends DrawableCanvasItem {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setAlpha(255);
 
         path = new Path();
         path.moveTo(action.getX(), action.getY());
