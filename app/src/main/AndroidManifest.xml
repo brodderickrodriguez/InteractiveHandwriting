@@ -20,9 +20,11 @@
         android:theme="@style/AppTheme">
 
         <service android:name=".common.network.nearby.connections.NCNetworkLayerService"></service>
-
+        <!-- added by kyle 1/16/19 -> potential screen rotation bug fix  configChanges   android:configChanges="orientation|keyboardHidden|screenSize"-->
         <activity
             android:name=".activities.Menu.MenuActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+
             android:label="Menu Activity"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -33,11 +35,12 @@
             </intent-filter>
 
         </activity>
-
+        <!-- added by kyle 1/16/19 -> potential screen rotation bug fix  configChanges-->
         <activity
             android:name=".activities.Room.RoomActivity"
             android:label="@string/RoomActivity.Title"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
 
     </application>
