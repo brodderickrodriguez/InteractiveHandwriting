@@ -26,7 +26,7 @@ import static android.view.MotionEvent.INVALID_POINTER_ID;
 
 public class RoomView extends View {
     private static final float TOUCH_TOLERANCE = 4;
-    private static final float MIN_SCALE = 0.3f;
+    private static final float MIN_SCALE = 0.5f;
     private static final float MAX_SCALE = 5.0f;
 
     private NetworkLayer networkLayer;
@@ -41,7 +41,7 @@ public class RoomView extends View {
     private float cX, cY; // circle coords
 
     private ScaleGestureDetector mScaleDetector;
-    private float mScaleFactor = 1.0f;
+    private float mScaleFactor = 2.0f;
     private float scalePointX;
     private float scalePointY;
 
@@ -115,7 +115,10 @@ public class RoomView extends View {
         canvas.save();
         canvas.scale(mScaleFactor, mScaleFactor, scalePointX, scalePointY);
         canvas.translate(mPosX, mPosY);
+
+        // Draw the center of the screen
 //        canvas.drawCircle(cX, cY, 10, marker);
+//        System.out.println("cX: " + cX + " cY: " + cY);
 
         canvasManager.update(canvas);
 
@@ -138,6 +141,8 @@ public class RoomView extends View {
 
                         final float x = event.getX();
                         final float y = event.getY();
+                        cX = (((getWidth() / 2) - scalePointX) / mScaleFactor) - mPosX + scalePointX; // center X
+                        cY = (((getHeight() / 2) - scalePointY) / mScaleFactor) - mPosY + scalePointY; // center Y
                         mLastTouchX = x;
                         mLastTouchY = y;
                         break;
@@ -146,6 +151,8 @@ public class RoomView extends View {
 
                         final float x = event.getX();
                         final float y = event.getY();
+                        cX = (((getWidth() / 2) - scalePointX) / mScaleFactor) - mPosX + scalePointX; // center X
+                        cY = (((getHeight() / 2) - scalePointY) / mScaleFactor) - mPosY + scalePointY; // center Y
                         // Only move if the ScaleGestureDetector isn't processing a gesture.
                         if (!mRoomScaleDetector.isInProgress()) {
                             final float dx = x - mLastTouchX; // change in X
@@ -163,6 +170,8 @@ public class RoomView extends View {
                     case MotionEvent.ACTION_UP: {
                         final float x = event.getX();
                         final float y = event.getY();
+                        cX = (((getWidth() / 2) - scalePointX) / mScaleFactor) - mPosX + scalePointX; // center X
+                        cY = (((getHeight() / 2) - scalePointY) / mScaleFactor) - mPosY + scalePointY; // center Y
                         mLastTouchX = 0;
                         mLastTouchY = 0;
                         invalidate();
@@ -179,8 +188,8 @@ public class RoomView extends View {
         performClick();
         float x = event.getX();
         float y = event.getY();
-        x = ((x - scalePointX) / mScaleFactor) + scalePointX - mPosX;
-        y = ((y - scalePointY) / mScaleFactor) + scalePointY - mPosY;
+        x = ((x - scalePointX) / mScaleFactor) - mPosX + scalePointX;
+        y = ((y - scalePointY) / mScaleFactor) - mPosY + scalePointY;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 touchStarted(x, y);

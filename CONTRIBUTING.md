@@ -36,4 +36,4 @@
 * Selecting Load Doc and then closing or going back from the popup screen crashes the app
 * Recenter button
 * Lightly colored outline around the canvas box
-* Set default scale
+* Translation speed changes depending on scale
