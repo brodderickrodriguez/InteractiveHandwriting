@@ -139,8 +139,8 @@ public class RoomView extends View {
                 switch(action & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN: {
 
-                        final float x = event.getX();
-                        final float y = event.getY();
+                        final float x = (event.getX() - scalePointX)/mScaleFactor;
+                        final float y = (event.getY() - scalePointY)/mScaleFactor;
                         cX = (((getWidth() / 2) - scalePointX) / mScaleFactor) - mPosX + scalePointX; // center X
                         cY = (((getHeight() / 2) - scalePointY) / mScaleFactor) - mPosY + scalePointY; // center Y
                         mLastTouchX = x;
@@ -149,8 +149,8 @@ public class RoomView extends View {
                     }
                     case MotionEvent.ACTION_MOVE: {
 
-                        final float x = event.getX();
-                        final float y = event.getY();
+                        final float x = (event.getX() - scalePointX)/mScaleFactor;
+                        final float y = (event.getY() - scalePointY)/mScaleFactor;
                         cX = (((getWidth() / 2) - scalePointX) / mScaleFactor) - mPosX + scalePointX; // center X
                         cY = (((getHeight() / 2) - scalePointY) / mScaleFactor) - mPosY + scalePointY; // center Y
                         // Only move if the ScaleGestureDetector isn't processing a gesture.
@@ -168,8 +168,8 @@ public class RoomView extends View {
 
                     }
                     case MotionEvent.ACTION_UP: {
-                        final float x = event.getX();
-                        final float y = event.getY();
+                        final float x = (event.getX() - scalePointX)/mScaleFactor;
+                        final float y = (event.getY() - scalePointY)/mScaleFactor;
                         cX = (((getWidth() / 2) - scalePointX) / mScaleFactor) - mPosX + scalePointX; // center X
                         cY = (((getHeight() / 2) - scalePointY) / mScaleFactor) - mPosY + scalePointY; // center Y
                         mLastTouchX = 0;
