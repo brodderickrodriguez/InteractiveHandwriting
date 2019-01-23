@@ -245,11 +245,11 @@ public class RoomView extends View {
         }
     }
 
-    public void undo() {
-        canvasManager.undo(profile);
+        public void undo() {
+            canvasManager.undo(profile);
 
-        if (networkLayer != null) {
-            networkLayer.undo(profile);
+            if (networkLayer != null) {
+                networkLayer.undo(profile);
+            }
         }
     }
-}
