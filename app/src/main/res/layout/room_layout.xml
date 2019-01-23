@@ -63,8 +63,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:onClick="colorErase"
-                android:textOn="@string/draw"
                 android:textOff="@string/erase"
+                android:textOn="@string/draw"
                 app:layout_constraintEnd_toStartOf="@+id/button6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -109,8 +109,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:onClick="toggleDraw"
-                android:textOn="@string/draw"
                 android:textOff="@string/move_view"
+                android:textOn="@string/draw"
                 app:layout_constraintEnd_toEndOf="@+id/load_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/load_button" />

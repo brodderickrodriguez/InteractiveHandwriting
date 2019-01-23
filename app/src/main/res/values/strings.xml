@@ -8,7 +8,7 @@
     <string name="load_doc">Load Doc</string>
     <string name="draw">Draw</string>
     <string name="erase">Erase</string>
-    <string name="move_view">Move</string>
+    <string name="move_view">Adjust View</string>
     <string name="resize_doc">Resize Doc</string>
     <string name="stop_resize">Stop Resizing</string>
     <string name="undo">Undo</string>
