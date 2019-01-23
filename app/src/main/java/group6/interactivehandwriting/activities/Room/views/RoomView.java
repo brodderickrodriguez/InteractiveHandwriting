@@ -26,6 +26,8 @@ import static android.view.MotionEvent.INVALID_POINTER_ID;
 
 public class RoomView extends View {
     private static final float TOUCH_TOLERANCE = 4;
+    private static final float MIN_SCALE = 0.3f;
+    private static final float MAX_SCALE = 5.0f;
 
     private NetworkLayer networkLayer;
 
@@ -113,7 +115,7 @@ public class RoomView extends View {
         canvas.save();
         canvas.scale(mScaleFactor, mScaleFactor, scalePointX, scalePointY);
         canvas.translate(mPosX, mPosY);
-        canvas.drawCircle(cX, cY, 10, marker);
+//        canvas.drawCircle(cX, cY, 10, marker);
 
         canvasManager.update(canvas);
 
@@ -134,20 +136,16 @@ public class RoomView extends View {
                 switch(action & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN: {
 
-                        final float x = (event.getX() - scalePointX)/mScaleFactor;
-                        final float y = (event.getY() - scalePointY)/mScaleFactor;
-                        cX = x - mPosX + scalePointX; // canvas X
-                        cY = y - mPosY + scalePointY; // canvas Y
+                        final float x = event.getX();
+                        final float y = event.getY();
                         mLastTouchX = x;
                         mLastTouchY = y;
                         break;
                     }
                     case MotionEvent.ACTION_MOVE: {
 
-                        final float x = (event.getX() - scalePointX)/mScaleFactor;
-                        final float y = (event.getY() - scalePointY)/mScaleFactor;
-                        cX = x - mPosX + scalePointX; // canvas X
-                        cY = y - mPosY + scalePointY; // canvas Y
+                        final float x = event.getX();
+                        final float y = event.getY();
                         // Only move if the ScaleGestureDetector isn't processing a gesture.
                         if (!mRoomScaleDetector.isInProgress()) {
                             final float dx = x - mLastTouchX; // change in X
@@ -163,10 +161,8 @@ public class RoomView extends View {
 
                     }
                     case MotionEvent.ACTION_UP: {
-                        final float x = (event.getX() - scalePointX)/mScaleFactor;
-                        final float y = (event.getY() - scalePointY)/mScaleFactor;
-                        cX = x - mPosX + scalePointX; // canvas X
-                        cY = y - mPosY + scalePointY; // canvas Y
+                        final float x = event.getX();
+                        final float y = event.getY();
                         mLastTouchX = 0;
                         mLastTouchY = 0;
                         invalidate();
@@ -183,12 +179,14 @@ public class RoomView extends View {
         performClick();
         float x = event.getX();
         float y = event.getY();
+        x = ((x - scalePointX) / mScaleFactor) + scalePointX - mPosX;
+        y = ((y - scalePointY) / mScaleFactor) + scalePointY - mPosY;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                touchStarted(x - mPosX, y - mPosY);
+                touchStarted(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                touchMoved(x - mPosX, y - mPosY);
+                touchMoved(x, y);
                 break;
             case MotionEvent.ACTION_UP:
                 touchReleased();
@@ -240,18 +238,18 @@ public class RoomView extends View {
             scalePointY = detector.getFocusY();
 
             // Don't let the object get too small or too large.
-            mScaleFactor = Math.max(1.0f, Math.min(mScaleFactor, 2.0f));
+            mScaleFactor = Math.max(MIN_SCALE, Math.min(mScaleFactor, MAX_SCALE));
 
             invalidate();
             return true;
         }
     }
 
-        public void undo() {
-            canvasManager.undo(profile);
+    public void undo() {
+        canvasManager.undo(profile);
 
-            if (networkLayer != null) {
-                networkLayer.undo(profile);
-            }
+        if (networkLayer != null) {
+            networkLayer.undo(profile);
         }
     }
+}
