@@ -49,6 +49,7 @@ public class RoomActivity extends AppCompatActivity {
     private Context context;
     private DocumentView documentView;
     private ConstraintLayout roomLayout;
+    private Bitmap pdfPages[];
 
     private boolean resizeToggle;
 
@@ -81,7 +82,8 @@ public class RoomActivity extends AppCompatActivity {
         AlphaSlideBar alphaSlideBar = findViewById(R.id.alphaSlideBar);
         BrightnessSlideBar brightnessSlideBar = findViewById(R.id.brightnessSlide);
 
-        resizeToggle = false;
+
+        resizeToggle = findViewById(R.id.toggle_button).isActivated();
 
         // Add alpha and brightness sliders
         color_picker_view.attachAlphaSlider(alphaSlideBar);
@@ -179,7 +181,7 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     public void resizeDoc(View view) {
-        if (resizeToggle == false) {
+        if (!resizeToggle) {
             documentView.bringToFront();
             documentView.activateResizeMode();
             resizeToggle = true;
@@ -197,22 +199,30 @@ public class RoomActivity extends AppCompatActivity {
             ParcelFileDescriptor fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
 
-            int pageNum = 0;
-            pdfiumCore.openPage(pdfDocument, pageNum);
-
             //Get current screen size
             DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
             int screen_width = metrics.widthPixels;
             int screen_height = metrics.heightPixels;
 
+            int pageCount = pdfiumCore.getPageCount(pdfDocument);
+
             // ARGB_8888 - best quality, high memory usage, higher possibility of OutOfMemoryError
             // RGB_565 - little worse quality, twice less memory usage
-            Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(screen_width, pageCount * screen_height, Bitmap.Config.ARGB_8888);
 
+//            Bitmap bitmapArr[] = new Bitmap[pageCount];
 
-            pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
+            for (int pageNum = 0; pageNum < pageCount; pageNum++) {
+//                Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
+                pdfiumCore.openPage(pdfDocument, pageNum);
+                pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, pageNum * screen_height, screen_width, screen_height, true);
+//                pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
+//                bitmapArr[pageNum] = bitmap;
+            }
 
             documentView.setImageBitmap(bitmap); // TODO this functionality should be separate from the RoomView functionality
+
+//            documentView.setImageBitmap(bitmapArr[0]);
 
             try {
                 TimeUnit.SECONDS.sleep(3);
@@ -221,6 +231,7 @@ public class RoomActivity extends AppCompatActivity {
             }
 
             pdfiumCore.closeDocument(pdfDocument); // important!
+//            this.pdfPages = bitmapArr;
         } catch(IOException ex) {
             ex.printStackTrace();
         }
@@ -268,15 +279,16 @@ public class RoomActivity extends AppCompatActivity {
 
     public void toggleColorPickerView(View view) {
 
-
-
         ConstraintLayout colorPickerLayout = findViewById(R.id.color_picker_view);
+        ConstraintLayout toolboxLayout = findViewById(R.id.toolbox_view);
 
         if (colorPickerLayout.getVisibility() == View.VISIBLE) {
             colorPickerLayout.setVisibility(View.GONE);
+            toolboxLayout.setVisibility(View.VISIBLE);
         }
         else {
             colorPickerLayout.setVisibility(View.VISIBLE);
+            toolboxLayout.setVisibility(View.INVISIBLE);
         }
 
 
@@ -288,6 +300,7 @@ public class RoomActivity extends AppCompatActivity {
 
     public void colorErase(View view) {
         RoomViewActionUtility.setEraser();
+        view.setPressed(true);
     }
 
     public void saveCanvas(View view) {

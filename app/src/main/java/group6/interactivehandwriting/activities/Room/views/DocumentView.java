@@ -25,7 +25,7 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     private ScaleGestureDetector scaleDetector;
 
     private enum ResizeMode {
-        ACTIVE, INACTIVE;
+        ACTIVE, INACTIVE
     }
     private ResizeMode resizeMode;
 
