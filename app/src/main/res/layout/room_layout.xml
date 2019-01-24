@@ -20,6 +20,37 @@
 
         <!-- Layout used to position RoomView underneath the toolbox-->
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/decPageBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:clickable="true"
+            android:onClick="decPDFPage"
+            android:rotation="90"
+            android:visibility="gone"
+            app:srcCompat="@android:drawable/arrow_down_float" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/incPageBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:onClick="incPDFPage"
+            android:rotation="-90"
+            android:visibility="gone"
+            app:srcCompat="@android:drawable/arrow_down_float" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/pdfButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal">
+
+        </android.support.constraint.ConstraintLayout>
+
         <android.support.constraint.ConstraintLayout
             android:id="@+id/roomView_layout"
             android:layout_width="match_parent"

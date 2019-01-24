@@ -50,6 +50,7 @@ public class RoomActivity extends AppCompatActivity {
     private DocumentView documentView;
     private ConstraintLayout roomLayout;
     private Bitmap pdfPages[];
+    private int curPDFPage;
 
     private boolean resizeToggle;
 
@@ -208,21 +209,18 @@ public class RoomActivity extends AppCompatActivity {
 
             // ARGB_8888 - best quality, high memory usage, higher possibility of OutOfMemoryError
             // RGB_565 - little worse quality, twice less memory usage
-            Bitmap bitmap = Bitmap.createBitmap(screen_width, pageCount * screen_height, Bitmap.Config.ARGB_8888);
 
-//            Bitmap bitmapArr[] = new Bitmap[pageCount];
+            Bitmap bitmapArr[] = new Bitmap[pageCount];
 
             for (int pageNum = 0; pageNum < pageCount; pageNum++) {
-//                Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
+                Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
                 pdfiumCore.openPage(pdfDocument, pageNum);
-                pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, pageNum * screen_height, screen_width, screen_height, true);
-//                pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
-//                bitmapArr[pageNum] = bitmap;
+                pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
+                bitmapArr[pageNum] = bitmap;
             }
 
-            documentView.setImageBitmap(bitmap); // TODO this functionality should be separate from the RoomView functionality
 
-//            documentView.setImageBitmap(bitmapArr[0]);
+            documentView.setImageBitmap(bitmapArr[0]);
 
             try {
                 TimeUnit.SECONDS.sleep(3);
@@ -231,7 +229,12 @@ public class RoomActivity extends AppCompatActivity {
             }
 
             pdfiumCore.closeDocument(pdfDocument); // important!
-//            this.pdfPages = bitmapArr;
+            this.pdfPages = bitmapArr;
+            this.curPDFPage = 0;
+
+            findViewById(R.id.decPageBtn).setVisibility(View.VISIBLE);
+            findViewById(R.id.incPageBtn).setVisibility(View.VISIBLE);
+
         } catch(IOException ex) {
             ex.printStackTrace();
         }
@@ -251,6 +254,35 @@ public class RoomActivity extends AppCompatActivity {
     public void undo(View view) {
         roomView.undo();
     }
+
+    public void incPDFPage(View view) {
+        int pageCount = this.pdfPages.length;
+        if (pageCount == 0) {
+            return;
+        }
+        if (this.curPDFPage == pageCount - 1) {
+            this.curPDFPage = 0;
+        }
+        else {
+            this.curPDFPage++;
+        }
+        documentView.setImageBitmap(this.pdfPages[this.curPDFPage]);
+    }
+
+    public void decPDFPage(View view) {
+        int pageCount = this.pdfPages.length;
+        if (pageCount == 0) {
+            return;
+        }
+        if (this.curPDFPage == pageCount - 1) {
+            this.curPDFPage = 0;
+        }
+        else {
+            this.curPDFPage++;
+        }
+        documentView.setImageBitmap(this.pdfPages[this.curPDFPage]);
+    }
+
 
     private void set_initial_color() {
         // Wait for color_picker_view to load to get width and height
@@ -332,6 +364,5 @@ public class RoomActivity extends AppCompatActivity {
             RoomViewActionUtility.ChangeWidth((float)seekbar.getProgress());
         }
     };
-
 
 }
