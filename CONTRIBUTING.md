@@ -33,3 +33,5 @@
 * With 3 devices, only one device gets updates from both peers.
 * Add pinch/zoom ability
 * Progress is erased after rotating screen, app crashes
+* Recenter button
+* Lightly colored outline around the canvas box
