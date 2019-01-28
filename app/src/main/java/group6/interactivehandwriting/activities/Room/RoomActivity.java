@@ -274,11 +274,11 @@ public class RoomActivity extends AppCompatActivity {
         if (pageCount == 0) {
             return;
         }
-        if (this.curPDFPage == pageCount - 1) {
-            this.curPDFPage = 0;
+        if (this.curPDFPage == 0) {
+            this.curPDFPage = pageCount - 1;
         }
         else {
-            this.curPDFPage++;
+            this.curPDFPage--;
         }
         documentView.setImageBitmap(this.pdfPages[this.curPDFPage]);
     }
