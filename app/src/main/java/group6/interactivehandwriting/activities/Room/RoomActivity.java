@@ -30,6 +30,7 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.skydoves.colorpickerview.sliders.AlphaSlideBar;
 import com.skydoves.colorpickerview.sliders.BrightnessSlideBar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
@@ -211,12 +212,21 @@ public class RoomActivity extends AppCompatActivity {
             // RGB_565 - little worse quality, twice less memory usage
 
             Bitmap bitmapArr[] = new Bitmap[pageCount];
+            byte[][] bitmapByteArray = new byte[pageCount][];
 
             for (int pageNum = 0; pageNum < pageCount; pageNum++) {
                 Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
                 pdfiumCore.openPage(pdfDocument, pageNum);
                 pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
                 bitmapArr[pageNum] = bitmap;
+
+                if (networkLayer != null) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+    //                bitmap.recycle();
+                    bitmapByteArray[pageNum] = byteArray;
+                }
             }
 
 
