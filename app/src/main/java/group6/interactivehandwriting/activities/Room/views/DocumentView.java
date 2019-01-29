@@ -8,6 +8,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
+
+import group6.interactivehandwriting.R;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
@@ -18,11 +21,16 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     private float xTouchLast;
     private float yTouchLast;
 
+    private float dx;
+    private float dy;
+
     private float scaleFactor = 1.0f;
 
     private int pointerId = INVALID_POINTER_ID;
 
     private ScaleGestureDetector scaleDetector;
+
+    private View documentView = findViewById(R.id.documentView);
 
     private enum ResizeMode {
         ACTIVE, INACTIVE
@@ -71,8 +79,7 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     private void resizeEvent(MotionEvent event) {
         scaleDetector.onTouchEvent(event);
 
-        final int action = event.getAction();
-        switch (action & MotionEvent.ACTION_MASK) {
+         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
                 final float x = event.getX();
                 final float y = event.getY();
@@ -84,23 +91,31 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
             }
 
             case MotionEvent.ACTION_MOVE: {
+
+
                 final int pointerIndex = event.findPointerIndex(pointerId);
                 final float x = event.getX(pointerIndex);
                 final float y = event.getY(pointerIndex);
 
                 // Only move if the ScaleGestureDetector isn't processing a gesture.
                 if (!scaleDetector.isInProgress()) {
-                    final float dx = x - xTouchLast;
-                    final float dy = y - yTouchLast;
+                    dx = x - xTouchLast;
+                    dy = y - yTouchLast;
 
-                    xPosition += dx;
-                    yPosition += dy;
+                    documentView.animate()
+                            .x(xTouchLast + dx / scaleFactor)
+                            .y(yTouchLast + dy / scaleFactor)
+                            .setDuration(0)
+                            .start();
+
+//                    xPosition += dx;
+//                    yPosition += dy;
 
                     invalidate();
                 }
 
-                xTouchLast = x;
-                yTouchLast = y;
+//                xTouchLast = x;
+//                yTouchLast = y;
 
                 break;
             }

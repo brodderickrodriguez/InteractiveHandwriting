@@ -56,7 +56,7 @@ public class RoomView extends View {
     private int mActivePointerId = INVALID_POINTER_ID;
 
     private enum TouchStates {
-        RESIZE, DRAW;
+        RESIZE, DRAW
     }
 
     private TouchStates touchState;
