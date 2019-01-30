@@ -23,6 +23,11 @@ public class SerialMessage implements NetworkSerializable<SerialMessage> {
         return this;
     }
 
+    public SerialMessage withData(byte[] bytes) {
+        this.data = bytes;
+        return this;
+    }
+
     public byte[] getHeader() {
         return header;
     }

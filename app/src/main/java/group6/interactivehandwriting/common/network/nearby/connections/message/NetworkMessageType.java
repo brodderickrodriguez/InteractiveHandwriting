@@ -12,6 +12,8 @@ public enum NetworkMessageType {
     ROUTING_UPDATE_REQUEST(1),
     ROUTING_UPDATE_REPLY(2),
 
+    SEND_PDF(9),
+
     START_DRAW(10),
     MOVE_DRAW(12),
     END_DRAW(13),

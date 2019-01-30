@@ -23,6 +23,7 @@ import group6.interactivehandwriting.common.app.rooms.Room;
 import group6.interactivehandwriting.common.network.NetworkLayerBinder;
 import group6.interactivehandwriting.common.network.NetworkLayerService;
 import group6.interactivehandwriting.common.network.nearby.connections.device.NCRoutingTable;
+import group6.interactivehandwriting.common.network.nearby.connections.message.NetworkMessageType;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.NetworkSerializable;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.SerialMessage;
 import group6.interactivehandwriting.common.network.nearby.connections.message.serial.SerialMessageHeader;
@@ -150,8 +151,17 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
     @Override
     public void sendPDf(byte[][] bitmapByteArrays) {
-        for (int i = 0; i < bitmapByteArrays.length; i++) {
-            Payload payload = Payload.fromBytes(bitmapByteArrays[i]);
+        for (byte[] bitmapByteArray : bitmapByteArrays) {
+            SerialMessageHeader header = new SerialMessageHeader()
+                    .withId(myProfile.deviceId)
+                    .withRoomNumber(myRoom.getRoomNumber())
+                    .withSequenceNumber(SerialMessageHeader.getNextSequenceNumber())
+                    .withType(NetworkMessageType.SEND_PDF);
+
+            SerialMessage message = new SerialMessage();
+            message.withHeader(header).withData(bitmapByteArray);
+
+            Payload payload = Payload.fromBytes(message.toBytes());
             networkConnection.sendMessage(payload, routingTable.getNeighborEndpoints());
         }
     }
@@ -233,6 +243,8 @@ public class NCNetworkLayerService extends NetworkLayerService {
     private void dispatchRoomMessage(String endpoint, SerialMessageHeader header, byte[] dataSection) {
         long id = header.getDeviceId();
         switch(header.getType()) {
+            case SEND_PDF:
+                System.out.print("PDF received");
             case START_DRAW:
                 sendActionToCanvasManager(id, StartDrawActionMessage.actionFromBytes(dataSection));
                 break;
