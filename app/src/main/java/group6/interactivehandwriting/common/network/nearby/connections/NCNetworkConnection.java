@@ -2,6 +2,7 @@ package group6.interactivehandwriting.common.network.nearby.connections;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 
 import com.google.android.gms.nearby.Nearby;
@@ -25,6 +26,10 @@ public class NCNetworkConnection {
 
     private NCNetworkLayerService manager;
     private String deviceName;
+
+    private final SimpleArrayMap<Long, Payload> incomingFilePayloads = new SimpleArrayMap<>();
+    private final SimpleArrayMap<Long, Payload> completedFilePayloads = new SimpleArrayMap<>();
+    private final SimpleArrayMap<Long, String> filePayloadFilenames = new SimpleArrayMap<>();
 
     public NCNetworkConnection forService(NCNetworkLayerService service) {
         this.manager = service;
@@ -84,8 +89,16 @@ public class NCNetworkConnection {
             }
 
             @Override
-            public void onPayloadTransferUpdate(@NonNull String s, @NonNull PayloadTransferUpdate payloadTransferUpdate) {
-                // TODO what to do if the payload has status updates (e.g. a FILE payload)
+            public void onPayloadTransferUpdate(@NonNull String s, @NonNull PayloadTransferUpdate update) {
+//                if (update.getStatus() == PayloadTransferUpdate.Status.SUCCESS) {
+//                    long payloadId = update.getPayloadId();
+//                    Payload payload = incomingFilePayloads.remove(payloadId);
+//                    completedFilePayloads.put(payloadId, payload);
+//                    if (payload.getType() == Payload.Type.FILE) {
+//                        manager.receiveFile(payloadId);
+//                    }
+//                }
+
             }
         };
     }
@@ -192,5 +205,9 @@ public class NCNetworkConnection {
 
     public void sendMessage(Payload message, List<String> endpointIds) {
         connectionClient.sendPayload(endpointIds, message);
+    }
+
+    public void sendFile(Payload filePayload, List<String> endpointIds) {
+        connectionClient.sendPayload(endpointIds, filePayload);
     }
 }

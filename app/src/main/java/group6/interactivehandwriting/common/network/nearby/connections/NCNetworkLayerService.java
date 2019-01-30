@@ -2,12 +2,17 @@ package group6.interactivehandwriting.common.network.nearby.connections;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.Payload;
+import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -149,21 +154,28 @@ public class NCNetworkLayerService extends NetworkLayerService {
         sendRoutingUpdate();
     }
 
+//    @Override
+//    public void sendPDf(byte[][] bitmapByteArrays) {
+//        for (byte[] bitmapByteArray : bitmapByteArrays) {
+//            SerialMessageHeader header = new SerialMessageHeader()
+//                    .withId(myProfile.deviceId)
+//                    .withRoomNumber(myRoom.getRoomNumber())
+//                    .withSequenceNumber(SerialMessageHeader.getNextSequenceNumber())
+//                    .withType(NetworkMessageType.SEND_PDF);
+//
+//            SerialMessage message = new SerialMessage();
+//            message.withHeader(header).withData(bitmapByteArray);
+//
+//            Payload payload = Payload.fromBytes(message.toBytes());
+//            networkConnection.sendMessage(payload, routingTable.getNeighborEndpoints());
+//        }
+//    }
+
     @Override
-    public void sendPDf(byte[][] bitmapByteArrays) {
-        for (byte[] bitmapByteArray : bitmapByteArrays) {
-            SerialMessageHeader header = new SerialMessageHeader()
-                    .withId(myProfile.deviceId)
-                    .withRoomNumber(myRoom.getRoomNumber())
-                    .withSequenceNumber(SerialMessageHeader.getNextSequenceNumber())
-                    .withType(NetworkMessageType.SEND_PDF);
+    public void sendFile(ParcelFileDescriptor fd) {
+        Payload filePayload = Payload.fromFile(fd);
+        networkConnection.sendFile(filePayload, routingTable.getNeighborEndpoints());
 
-            SerialMessage message = new SerialMessage();
-            message.withHeader(header).withData(bitmapByteArray);
-
-            Payload payload = Payload.fromBytes(message.toBytes());
-            networkConnection.sendMessage(payload, routingTable.getNeighborEndpoints());
-        }
     }
 
 
@@ -218,11 +230,21 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
     public void receiveMessage(String endpoint, Payload payload) {
         switch(payload.getType()) {
+            case Payload.Type.FILE:
+                handleFilePayload(endpoint, payload);
+                break;
             case Payload.Type.BYTES:
                 handleBytesPayload(endpoint, payload.asBytes());
                 break;
             default:
                 break;
+        }
+    }
+
+    private void handleFilePayload(String endpoint, Payload payload) {
+        if (payload != null) {
+            File payloadFile = payload.asFile().asJavaFile();
+            payloadFile.renameTo(new File(payloadFile.getParentFile(), "downloaded_file"));
         }
     }
 

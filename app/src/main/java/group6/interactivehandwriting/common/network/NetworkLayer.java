@@ -1,5 +1,8 @@
 package group6.interactivehandwriting.common.network;
 
+import android.os.ParcelFileDescriptor;
+
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +26,8 @@ public interface NetworkLayer {
     public void synchronizeRoom();
     public void exitRoom();
 
-    public void sendPDf(final byte[][] bitmapByteArrays);
+//    public void sendPDf(final byte[][] bitmapByteArrays);
+    public void sendFile(ParcelFileDescriptor fd);
 
     public void receiveDrawActions(final DrawActionHandle handle);
     public void startDraw(final StartDrawAction action);

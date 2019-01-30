@@ -229,7 +229,8 @@ public class RoomActivity extends AppCompatActivity {
             }
 
             if (networkLayer != null) {
-                networkLayer.sendPDf(bitmapByteArray);
+//                networkLayer.sendPDf(bitmapByteArray);
+                networkLayer.sendFile(fd);
             }
 
             documentView.setImageBitmap(bitmapArr[0]);
