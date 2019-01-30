@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import group6.interactivehandwriting.activities.Room.RoomActivity;
 import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
 import group6.interactivehandwriting.common.app.actions.draw.EndDrawAction;
 import group6.interactivehandwriting.common.app.actions.draw.MoveDrawAction;
@@ -22,12 +23,13 @@ public interface NetworkLayer {
     public void begin(final Profile profile);
     public Profile getMyProfile();
 
+    public void setRoomActivity(RoomActivity roomActivity);
+
     public Set<Room> getRooms();
     public void joinRoom(final Profile profile, final Room room);
     public void synchronizeRoom();
     public void exitRoom();
 
-//    public void sendPDf(final byte[][] bitmapByteArrays);
     public void sendFile(ParcelFileDescriptor fd);
 
     public void receiveDrawActions(final DrawActionHandle handle);

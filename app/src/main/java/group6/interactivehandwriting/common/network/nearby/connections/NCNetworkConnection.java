@@ -27,10 +27,6 @@ public class NCNetworkConnection {
     private NCNetworkLayerService manager;
     private String deviceName;
 
-    private final SimpleArrayMap<Long, Payload> incomingFilePayloads = new SimpleArrayMap<>();
-    private final SimpleArrayMap<Long, Payload> completedFilePayloads = new SimpleArrayMap<>();
-    private final SimpleArrayMap<Long, String> filePayloadFilenames = new SimpleArrayMap<>();
-
     public NCNetworkConnection forService(NCNetworkLayerService service) {
         this.manager = service;
         return this;

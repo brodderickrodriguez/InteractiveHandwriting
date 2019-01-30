@@ -42,6 +42,7 @@ import group6.interactivehandwriting.common.app.Permissions;
 import group6.interactivehandwriting.common.network.NetworkLayer;
 import group6.interactivehandwriting.common.network.NetworkLayerBinder;
 import group6.interactivehandwriting.common.network.NetworkLayerService;
+import group6.interactivehandwriting.common.network.nearby.connections.NCNetworkLayerService;
 
 public class RoomActivity extends AppCompatActivity {
     private RoomView roomView;
@@ -54,6 +55,7 @@ public class RoomActivity extends AppCompatActivity {
     private boolean resizeToggle;
 
     NetworkLayer networkLayer;
+    NCNetworkLayerService ncNetworkLayerService;
     ServiceConnection networkServiceConnection;
 
     @Override
@@ -125,6 +127,7 @@ public class RoomActivity extends AppCompatActivity {
         NetworkLayerService.startNetworkService(this);
         NetworkLayerService.bindNetworkService(this, networkServiceConnection);
         roomLayout.bringChildToFront(roomView);
+//        ncNetworkLayerService.startNCNetworkLayerService(this);
     }
 
     private ServiceConnection getNetworkServiceConnection() {
@@ -146,6 +149,7 @@ public class RoomActivity extends AppCompatActivity {
 
     private void handleNetworkStarted() {
         roomView.setNetworkLayer(networkLayer);
+        networkLayer.setRoomActivity(this);
     }
 
     @Override

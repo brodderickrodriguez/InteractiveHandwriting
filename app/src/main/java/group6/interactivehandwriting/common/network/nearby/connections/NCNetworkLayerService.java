@@ -1,5 +1,6 @@
 package group6.interactivehandwriting.common.network.nearby.connections;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import group6.interactivehandwriting.R;
+import group6.interactivehandwriting.activities.Room.RoomActivity;
 import group6.interactivehandwriting.activities.Room.views.DocumentView;
 import group6.interactivehandwriting.common.app.actions.Action;
 import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
@@ -69,6 +71,13 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
     private DrawActionHandle drawActionHandle;
 
+
+    private RoomActivity roomActivity;
+
+    public void startNCNetworkLayerService(RoomActivity roomActivity) {
+        this.roomActivity = roomActivity;
+    }
+
     public boolean onConnectionInitiated(String endpointId) {
         Toast.makeText(context, "Device found with id " + endpointId, Toast.LENGTH_SHORT).show();
 
@@ -110,6 +119,11 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
             Toast.makeText(context, "Starting Network Service", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void setRoomActivity(RoomActivity roomActivity) {
+        this.roomActivity = roomActivity;
     }
 
     @Override
@@ -233,7 +247,7 @@ public class NCNetworkLayerService extends NetworkLayerService {
         }
     }
 
-    private void handleFilePayload(String endpoint, Payload payload) {
+    private Bitmap[] handleFilePayload(String endpoint, Payload payload) {
         if (payload != null) {
             ParcelFileDescriptor fd = payload.asFile().asParcelFileDescriptor();
 
@@ -261,17 +275,15 @@ public class NCNetworkLayerService extends NetworkLayerService {
                     bitmapArr[pageNum] = bitmap;
                 }
 
-//                DocumentView documentView;
-//                documentView = new View(this.context).findViewById(R.id.documentView);
-//                documentView.setPDF(bitmapArr);
-
-
+                DocumentView documentView = this.roomActivity.findViewById(R.id.documentView);
+                documentView.setPDF(bitmapArr);
             }
             catch (IOException ex) {
                 System.out.print("IO Exception");
             }
 
         }
+        return null;
     }
 
     private void handleBytesPayload(String endpoint, byte[] payloadBytes) {
@@ -291,8 +303,6 @@ public class NCNetworkLayerService extends NetworkLayerService {
     private void dispatchRoomMessage(String endpoint, SerialMessageHeader header, byte[] dataSection) {
         long id = header.getDeviceId();
         switch(header.getType()) {
-            case SEND_PDF:
-                System.out.print("PDF received");
             case START_DRAW:
                 sendActionToCanvasManager(id, StartDrawActionMessage.actionFromBytes(dataSection));
                 break;
