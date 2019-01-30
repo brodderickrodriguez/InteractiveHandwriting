@@ -2,7 +2,9 @@ package group6.interactivehandwriting.common.network.nearby.connections;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.ParcelFileDescriptor;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -10,9 +12,13 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
+import com.shockwave.pdfium.PdfDocument;
+import com.shockwave.pdfium.PdfiumCore;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -243,8 +249,38 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
     private void handleFilePayload(String endpoint, Payload payload) {
         if (payload != null) {
-            File payloadFile = payload.asFile().asJavaFile();
-            payloadFile.renameTo(new File(payloadFile.getParentFile(), "downloaded_file"));
+            ParcelFileDescriptor fd = payload.asFile().asParcelFileDescriptor();
+
+            PdfiumCore pdfiumCore = new PdfiumCore(context);
+
+            try {
+                PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
+
+                //Get current screen size
+                DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
+                int screen_width = metrics.widthPixels;
+                int screen_height = metrics.heightPixels;
+
+                int pageCount = pdfiumCore.getPageCount(pdfDocument);
+
+                // ARGB_8888 - best quality, high memory usage, higher possibility of OutOfMemoryError
+                // RGB_565 - little worse quality, twice less memory usage
+
+                Bitmap bitmapArr[] = new Bitmap[pageCount];
+
+                for (int pageNum = 0; pageNum < pageCount; pageNum++) {
+                    Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
+                    pdfiumCore.openPage(pdfDocument, pageNum);
+                    pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
+                    bitmapArr[pageNum] = bitmap;
+                }
+
+                System.out.print("File changed to bitmap");
+            }
+            catch (IOException ex) {
+                System.out.print("IO Exception");
+            }
+
         }
     }
 
