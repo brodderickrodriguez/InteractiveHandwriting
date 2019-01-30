@@ -196,6 +196,7 @@ public class RoomActivity extends AppCompatActivity {
 
     public void showPDF(File file) {
         try {
+
             PdfiumCore pdfiumCore = new PdfiumCore(context);
 
             ParcelFileDescriptor fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
@@ -220,23 +221,18 @@ public class RoomActivity extends AppCompatActivity {
                 pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
                 bitmapArr[pageNum] = bitmap;
 
-                if (networkLayer != null) {
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte[] byteArray = stream.toByteArray();
-    //                bitmap.recycle();
-                    bitmapByteArray[pageNum] = byteArray;
-                }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                //                bitmap.recycle();
+                bitmapByteArray[pageNum] = byteArray;
             }
 
+            if (networkLayer != null) {
+                networkLayer.sendPDf(bitmapByteArray);
+            }
 
             documentView.setImageBitmap(bitmapArr[0]);
-
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-            }
 
             pdfiumCore.closeDocument(pdfDocument); // important!
             this.pdfPages = bitmapArr;

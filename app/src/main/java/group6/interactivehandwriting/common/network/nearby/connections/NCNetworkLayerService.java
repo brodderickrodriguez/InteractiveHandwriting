@@ -149,6 +149,15 @@ public class NCNetworkLayerService extends NetworkLayerService {
     }
 
     @Override
+    public void sendPDf(byte[][] bitmapByteArrays) {
+        for (int i = 0; i < bitmapByteArrays.length; i++) {
+            Payload payload = Payload.fromBytes(bitmapByteArrays[i]);
+            networkConnection.sendMessage(payload, routingTable.getNeighborEndpoints());
+        }
+    }
+
+
+    @Override
     public void receiveDrawActions(DrawActionHandle handle) {
         this.drawActionHandle = handle;
     }

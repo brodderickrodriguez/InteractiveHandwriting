@@ -23,6 +23,8 @@ public interface NetworkLayer {
     public void synchronizeRoom();
     public void exitRoom();
 
+    public void sendPDf(final byte[][] bitmapByteArrays);
+
     public void receiveDrawActions(final DrawActionHandle handle);
     public void startDraw(final StartDrawAction action);
     public void moveDraw(final MoveDrawAction action);
