@@ -247,8 +247,11 @@ public class NCNetworkLayerService extends NetworkLayerService {
         }
     }
 
-    private Bitmap[] handleFilePayload(String endpoint, Payload payload) {
+    private void handleFilePayload(String endpoint, Payload payload) {
         if (payload != null) {
+
+            System.out.println("Payload Received");
+
             ParcelFileDescriptor fd = payload.asFile().asParcelFileDescriptor();
 
             PdfiumCore pdfiumCore = new PdfiumCore(context);
@@ -275,15 +278,22 @@ public class NCNetworkLayerService extends NetworkLayerService {
                     bitmapArr[pageNum] = bitmap;
                 }
 
+                System.out.println("Bitmap Created");
+
                 DocumentView documentView = this.roomActivity.findViewById(R.id.documentView);
                 documentView.setPDF(bitmapArr);
+                this.roomActivity.findViewById(R.id.decPageBtn).setVisibility(View.VISIBLE);
+                this.roomActivity.findViewById(R.id.incPageBtn).setVisibility(View.VISIBLE);
+
+                System.out.println("PDF Displayed");
+
             }
             catch (IOException ex) {
-                System.out.print("IO Exception");
+                Toast.makeText(context, "File corrupted", Toast.LENGTH_SHORT).show();
+                ex.printStackTrace();
             }
 
         }
-        return null;
     }
 
     private void handleBytesPayload(String endpoint, byte[] payloadBytes) {

@@ -155,7 +155,6 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
         this.pdfPages = bitmapArr;
         this.curPDFPage = 0;
         setImageBitmap(bitmapArr[0]);
-
     }
 
     public void incPDFPage() {
