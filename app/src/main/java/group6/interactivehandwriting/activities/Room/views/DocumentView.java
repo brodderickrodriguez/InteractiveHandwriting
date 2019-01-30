@@ -1,6 +1,7 @@
 package group6.interactivehandwriting.activities.Room.views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.MotionEventCompat;
@@ -31,6 +32,9 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     private ScaleGestureDetector scaleDetector;
 
     private View documentView = findViewById(R.id.documentView);
+
+    private Bitmap pdfPages[];
+    private int curPDFPage;
 
     private enum ResizeMode {
         ACTIVE, INACTIVE
@@ -145,6 +149,41 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
                 break;
             }
         }
+    }
+
+    public void setPDF(Bitmap bitmapArr[]) {
+        this.pdfPages = bitmapArr;
+        this.curPDFPage = 0;
+        setImageBitmap(bitmapArr[0]);
+
+    }
+
+    public void incPDFPage() {
+        int pageCount = this.pdfPages.length;
+        if (pageCount == 0) {
+            return;
+        }
+        if (this.curPDFPage == pageCount - 1) {
+            this.curPDFPage = 0;
+        }
+        else {
+            this.curPDFPage++;
+        }
+        setImageBitmap(this.pdfPages[this.curPDFPage]);
+    }
+
+    public void decPDFPage() {
+        int pageCount = this.pdfPages.length;
+        if (pageCount == 0) {
+            return;
+        }
+        if (this.curPDFPage == 0) {
+            this.curPDFPage = pageCount - 1;
+        }
+        else {
+            this.curPDFPage--;
+        }
+        setImageBitmap(this.pdfPages[this.curPDFPage]);
     }
 
     public void activateResizeMode() {

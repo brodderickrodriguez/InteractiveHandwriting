@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.ParcelFileDescriptor;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import group6.interactivehandwriting.R;
+import group6.interactivehandwriting.activities.Room.views.DocumentView;
 import group6.interactivehandwriting.common.app.actions.Action;
 import group6.interactivehandwriting.common.app.actions.DrawActionHandle;
 import group6.interactivehandwriting.common.app.actions.draw.DrawableAction;
@@ -160,30 +164,12 @@ public class NCNetworkLayerService extends NetworkLayerService {
         sendRoutingUpdate();
     }
 
-//    @Override
-//    public void sendPDf(byte[][] bitmapByteArrays) {
-//        for (byte[] bitmapByteArray : bitmapByteArrays) {
-//            SerialMessageHeader header = new SerialMessageHeader()
-//                    .withId(myProfile.deviceId)
-//                    .withRoomNumber(myRoom.getRoomNumber())
-//                    .withSequenceNumber(SerialMessageHeader.getNextSequenceNumber())
-//                    .withType(NetworkMessageType.SEND_PDF);
-//
-//            SerialMessage message = new SerialMessage();
-//            message.withHeader(header).withData(bitmapByteArray);
-//
-//            Payload payload = Payload.fromBytes(message.toBytes());
-//            networkConnection.sendMessage(payload, routingTable.getNeighborEndpoints());
-//        }
-//    }
-
     @Override
     public void sendFile(ParcelFileDescriptor fd) {
         Payload filePayload = Payload.fromFile(fd);
         networkConnection.sendFile(filePayload, routingTable.getNeighborEndpoints());
 
     }
-
 
     @Override
     public void receiveDrawActions(DrawActionHandle handle) {
@@ -275,7 +261,11 @@ public class NCNetworkLayerService extends NetworkLayerService {
                     bitmapArr[pageNum] = bitmap;
                 }
 
-                System.out.print("File changed to bitmap");
+//                DocumentView documentView;
+//                documentView = new View(this.context).findViewById(R.id.documentView);
+//                documentView.setPDF(bitmapArr);
+
+
             }
             catch (IOException ex) {
                 System.out.print("IO Exception");

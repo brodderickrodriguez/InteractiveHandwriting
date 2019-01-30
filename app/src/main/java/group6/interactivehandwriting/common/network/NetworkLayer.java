@@ -1,6 +1,7 @@
 package group6.interactivehandwriting.common.network;
 
 import android.os.ParcelFileDescriptor;
+import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.List;

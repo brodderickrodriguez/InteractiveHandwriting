@@ -50,8 +50,6 @@ public class RoomActivity extends AppCompatActivity {
     private Context context;
     private DocumentView documentView;
     private ConstraintLayout roomLayout;
-    private Bitmap pdfPages[];
-    private int curPDFPage;
 
     private boolean resizeToggle;
 
@@ -213,31 +211,22 @@ public class RoomActivity extends AppCompatActivity {
             // RGB_565 - little worse quality, twice less memory usage
 
             Bitmap bitmapArr[] = new Bitmap[pageCount];
-            byte[][] bitmapByteArray = new byte[pageCount][];
 
             for (int pageNum = 0; pageNum < pageCount; pageNum++) {
                 Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
                 pdfiumCore.openPage(pdfDocument, pageNum);
                 pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
                 bitmapArr[pageNum] = bitmap;
-
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                //                bitmap.recycle();
-                bitmapByteArray[pageNum] = byteArray;
             }
 
+            documentView.setPDF(bitmapArr);
+
             if (networkLayer != null) {
-//                networkLayer.sendPDf(bitmapByteArray);
                 networkLayer.sendFile(fd);
             }
 
-            documentView.setImageBitmap(bitmapArr[0]);
-
             pdfiumCore.closeDocument(pdfDocument); // important!
-            this.pdfPages = bitmapArr;
-            this.curPDFPage = 0;
+
 
             findViewById(R.id.decPageBtn).setVisibility(View.VISIBLE);
             findViewById(R.id.incPageBtn).setVisibility(View.VISIBLE);
@@ -263,31 +252,11 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     public void incPDFPage(View view) {
-        int pageCount = this.pdfPages.length;
-        if (pageCount == 0) {
-            return;
-        }
-        if (this.curPDFPage == pageCount - 1) {
-            this.curPDFPage = 0;
-        }
-        else {
-            this.curPDFPage++;
-        }
-        documentView.setImageBitmap(this.pdfPages[this.curPDFPage]);
+        documentView.incPDFPage();
     }
 
     public void decPDFPage(View view) {
-        int pageCount = this.pdfPages.length;
-        if (pageCount == 0) {
-            return;
-        }
-        if (this.curPDFPage == 0) {
-            this.curPDFPage = pageCount - 1;
-        }
-        else {
-            this.curPDFPage--;
-        }
-        documentView.setImageBitmap(this.pdfPages[this.curPDFPage]);
+        documentView.decPDFPage();
     }
 
 
