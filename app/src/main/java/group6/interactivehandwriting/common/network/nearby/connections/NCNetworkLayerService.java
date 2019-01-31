@@ -74,10 +74,6 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
     private RoomActivity roomActivity;
 
-    public void startNCNetworkLayerService(RoomActivity roomActivity) {
-        this.roomActivity = roomActivity;
-    }
-
     public boolean onConnectionInitiated(String endpointId) {
         Toast.makeText(context, "Device found with id " + endpointId, Toast.LENGTH_SHORT).show();
 
@@ -249,50 +245,8 @@ public class NCNetworkLayerService extends NetworkLayerService {
 
     private void handleFilePayload(String endpoint, Payload payload) {
         if (payload != null) {
-
-            System.out.println("Payload Received");
-
-            ParcelFileDescriptor fd = payload.asFile().asParcelFileDescriptor();
-
-            PdfiumCore pdfiumCore = new PdfiumCore(context);
-
-            try {
-                PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
-
-                //Get current screen size
-                DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
-                int screen_width = metrics.widthPixels;
-                int screen_height = metrics.heightPixels;
-
-                int pageCount = pdfiumCore.getPageCount(pdfDocument);
-
-                // ARGB_8888 - best quality, high memory usage, higher possibility of OutOfMemoryError
-                // RGB_565 - little worse quality, twice less memory usage
-
-                Bitmap bitmapArr[] = new Bitmap[pageCount];
-
-                for (int pageNum = 0; pageNum < pageCount; pageNum++) {
-                    Bitmap bitmap = Bitmap.createBitmap(screen_width, screen_height, Bitmap.Config.ARGB_8888);
-                    pdfiumCore.openPage(pdfDocument, pageNum);
-                    pdfiumCore.renderPageBitmap(pdfDocument, bitmap, pageNum, 0, 0, screen_width, screen_height, true);
-                    bitmapArr[pageNum] = bitmap;
-                }
-
-                System.out.println("Bitmap Created");
-
-                DocumentView documentView = this.roomActivity.findViewById(R.id.documentView);
-                documentView.setPDF(bitmapArr);
-                this.roomActivity.findViewById(R.id.decPageBtn).setVisibility(View.VISIBLE);
-                this.roomActivity.findViewById(R.id.incPageBtn).setVisibility(View.VISIBLE);
-
-                System.out.println("PDF Displayed");
-
-            }
-            catch (IOException ex) {
-                Toast.makeText(context, "File corrupted", Toast.LENGTH_SHORT).show();
-                ex.printStackTrace();
-            }
-
+            File file = payload.asFile().asJavaFile();
+            this.roomActivity.showPDF(file);
         }
     }
 

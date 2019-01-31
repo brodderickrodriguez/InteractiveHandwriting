@@ -55,7 +55,6 @@ public class RoomActivity extends AppCompatActivity {
     private boolean resizeToggle;
 
     NetworkLayer networkLayer;
-    NCNetworkLayerService ncNetworkLayerService;
     ServiceConnection networkServiceConnection;
 
     @Override
@@ -127,7 +126,6 @@ public class RoomActivity extends AppCompatActivity {
         NetworkLayerService.startNetworkService(this);
         NetworkLayerService.bindNetworkService(this, networkServiceConnection);
         roomLayout.bringChildToFront(roomView);
-//        ncNetworkLayerService.startNCNetworkLayerService(this);
     }
 
     private ServiceConnection getNetworkServiceConnection() {
@@ -236,6 +234,7 @@ public class RoomActivity extends AppCompatActivity {
             findViewById(R.id.incPageBtn).setVisibility(View.VISIBLE);
 
         } catch(IOException ex) {
+            Toast.makeText(context, "File corrupted", Toast.LENGTH_SHORT).show();
             ex.printStackTrace();
         }
     }
