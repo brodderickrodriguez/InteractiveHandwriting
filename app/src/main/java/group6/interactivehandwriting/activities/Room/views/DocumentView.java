@@ -12,24 +12,32 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import group6.interactivehandwriting.R;
+import group6.interactivehandwriting.activities.Room.draw.CanvasManager;
+import group6.interactivehandwriting.common.app.Profile;
+import group6.interactivehandwriting.common.network.NetworkLayer;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
 
 public class DocumentView extends android.support.v7.widget.AppCompatImageView {
-    private float xPosition;
-    private float yPosition;
 
-    private float xTouchLast;
-    private float yTouchLast;
+    private static final float MIN_SCALE = 0.95f;
+    private static final float MAX_SCALE = 2.0f;
 
-    private float dx;
-    private float dy;
+    private NetworkLayer networkLayer;
 
-    private float scaleFactor = 1.0f;
+    private CanvasManager canvasManager;
+    private Profile profile;
 
-    private int pointerId = INVALID_POINTER_ID;
+    private float mLastTouchX;
+    private float mLastTouchY;
+    private float mPosX;
+    private float mPosY;
 
-    private ScaleGestureDetector scaleDetector;
+    private float mScaleFactor = 1.0f;
+    private float scalePointX;
+    private float scalePointY;
+    
+    private ScaleGestureDetector mDocumentScaleDetector;
 
     private View documentView = findViewById(R.id.documentView);
 
@@ -43,19 +51,35 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
 
     public DocumentView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        canvasManager = new CanvasManager(this);
+        mDocumentScaleDetector = new ScaleGestureDetector(context, new DocumentScaleListener());
         resizeMode = ResizeMode.INACTIVE;
-        xPosition = 0;
-        yPosition = 0;
     }
 
-    public class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    @Override
+    protected void onSizeChanged(int w, int h, int oldWidth, int oldHeight) {
+        super.onSizeChanged(w, h, oldWidth, oldHeight);
+        canvasManager.updateSize(w, h);
+    }
+
+    private class DocumentScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector){
-            scaleFactor *= scaleGestureDetector.getScaleFactor();
-            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
-            self().setScaleX(scaleFactor);
-            self().setScaleY(scaleFactor);
+        public boolean onScale(ScaleGestureDetector detector) {
+            mScaleFactor *= detector.getScaleFactor();
+            scalePointX = detector.getFocusX();
+            scalePointY = detector.getFocusY();
+
+            // Don't let the object get too small or too large.
+            if (mScaleFactor > MAX_SCALE) {
+                mScaleFactor = MAX_SCALE;
+            }
+            if (mScaleFactor < MIN_SCALE) {
+                mScaleFactor = MIN_SCALE;
+            }
+
+            self().setScaleX(mScaleFactor);
+            self().setScaleY(mScaleFactor);
+
             invalidate();
             return true;
         }
@@ -66,8 +90,8 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
         super.onDraw(canvas);
 
         canvas.save();
-        canvas.scale(scaleFactor, scaleFactor);
 
+        canvasManager.update(canvas);
         canvas.restore();
     }
 
@@ -81,72 +105,52 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
 
 
     private void resizeEvent(MotionEvent event) {
-        scaleDetector.onTouchEvent(event);
 
-         switch (event.getAction() & MotionEvent.ACTION_MASK) {
+        mDocumentScaleDetector.onTouchEvent(event);
+
+        final int action = event.getAction();
+
+
+        switch(action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
-                final float x = event.getX();
-                final float y = event.getY();
 
-                xTouchLast = x;
-                yTouchLast = y;
-                pointerId = event.getPointerId(0);
+                final float x = (event.getX() - scalePointX)/mScaleFactor;
+                final float y = (event.getY() - scalePointY)/mScaleFactor;
+                mLastTouchX = x;
+                mLastTouchY = y;
                 break;
             }
-
             case MotionEvent.ACTION_MOVE: {
 
-
-                final int pointerIndex = event.findPointerIndex(pointerId);
-                final float x = event.getX(pointerIndex);
-                final float y = event.getY(pointerIndex);
-
+                final float x = (event.getX() - scalePointX)/mScaleFactor;
+                final float y = (event.getY() - scalePointY)/mScaleFactor;
                 // Only move if the ScaleGestureDetector isn't processing a gesture.
-                if (!scaleDetector.isInProgress()) {
-                    dx = x - xTouchLast;
-                    dy = y - yTouchLast;
+                if (!mDocumentScaleDetector.isInProgress()) {
+                    final float dx = x - mLastTouchX; // change in X
+                    final float dy = y - mLastTouchY; // change in Y
+                    mPosX += dx;
+                    mPosY += dy;
+                    invalidate();
 
                     documentView.animate()
-                            .x(xTouchLast + dx / scaleFactor)
-                            .y(yTouchLast + dy / scaleFactor)
+                            .x(mPosX * mScaleFactor)
+                            .y(mPosY * mScaleFactor)
                             .setDuration(0)
                             .start();
 
-//                    xPosition += dx;
-//                    yPosition += dy;
-
-                    invalidate();
                 }
 
-//                xTouchLast = x;
-//                yTouchLast = y;
-
+                mLastTouchX = x;
+                mLastTouchY = y;
                 break;
-            }
 
+            }
             case MotionEvent.ACTION_UP: {
-                pointerId = INVALID_POINTER_ID;
-                break;
-            }
-
-            case MotionEvent.ACTION_CANCEL: {
-                pointerId = INVALID_POINTER_ID;
-                break;
-            }
-
-            case MotionEvent.ACTION_POINTER_UP: {
-                final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
-                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                final int nextPointerId = event.getPointerId(pointerIndex);
-                if (nextPointerId == pointerId) {
-                    // This was our active pointer going up. Choose a new
-                    // active pointer and adjust accordingly.
-                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-                    xTouchLast = event.getX(newPointerIndex);
-                    yTouchLast = event.getY(newPointerIndex);
-                    pointerId = event.getPointerId(newPointerIndex);
-                }
-                break;
+                final float x = (event.getX() - scalePointX)/mScaleFactor;
+                final float y = (event.getY() - scalePointY)/mScaleFactor;
+                mLastTouchX = 0;
+                mLastTouchY = 0;
+                invalidate();
             }
         }
     }
