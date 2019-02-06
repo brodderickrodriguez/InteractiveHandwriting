@@ -33,8 +33,8 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
 //    private float mPosX;
 //    private float mPosY;
 //
-    private float mScaleFactor = 1.0f;
-    
+    private float mScaleFactor = 0.5f;
+
     private ScaleGestureDetector mDocumentScaleDetector;
 //
 //    private View documentView = findViewById(R.id.documentView);
@@ -42,7 +42,6 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     private Bitmap pdfPages[];
     private int curPDFPage;
 
-//    private RoomView roomView;
 
     private enum ResizeMode {
         ACTIVE, INACTIVE
@@ -52,8 +51,7 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
     public DocumentView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         canvasManager = new CanvasManager(this);
-//        this.setScaleX(mScaleFactor);
-//        this.setScaleY(mScaleFactor);
+
         invalidate();
 //        resizeMode = ResizeMode.INACTIVE;
     }
@@ -63,7 +61,7 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
         super.onSizeChanged(w, h, oldWidth, oldHeight);
         canvasManager.updateSize(w, h);
     }
-
+//
 //    private class DocumentScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 //        @Override
 //        public boolean onScale(ScaleGestureDetector detector) {
@@ -206,7 +204,4 @@ public class DocumentView extends android.support.v7.widget.AppCompatImageView {
         return this;
     }
 
-//    public void setRoomView(RoomView roomView) {
-//        this.roomView = roomView;
-//    }
 }

@@ -122,6 +122,12 @@ public class RoomView extends View {
         documentView.setScaleX(mScaleFactor);
         documentView.setScaleY(mScaleFactor);
 
+        documentView.animate()
+                .x(mPosX * mScaleFactor)
+                .y(mPosY * mScaleFactor)
+                .setDuration(0)
+                .start();
+
 
         // Draw the center of the screen
 //        canvas.drawCircle(cX, cY, 10, marker);
@@ -167,11 +173,6 @@ public class RoomView extends View {
                             mPosX += dx;
                             mPosY += dy;
                             invalidate();
-                            documentView.animate()
-                                    .x(mPosX * mScaleFactor)
-                                    .y(mPosY * mScaleFactor)
-                                    .setDuration(0)
-                                    .start();
                         }
 
                         mLastTouchX = x;
