@@ -40,8 +40,7 @@ public class RoomView extends View {
     private float mPosY;
     private float cX, cY; // circle coords
 
-    private ScaleGestureDetector mScaleDetector;
-    private float mScaleFactor = 2.0f;
+    private float mScaleFactor = 1.0f;
     private float scalePointX;
     private float scalePointY;
 
@@ -52,8 +51,6 @@ public class RoomView extends View {
 
     // document resizing
     private ScaleGestureDetector mRoomScaleDetector;
-    private ScaleGestureDetector mDocumentScaleDetector;
-    private int mActivePointerId = INVALID_POINTER_ID;
 
     private DocumentView documentView;
 
@@ -114,9 +111,10 @@ public class RoomView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        scalePointX = documentView.getPivotX();
+        scalePointY = documentView.getPivotY();
         canvas.save();
-//        canvas.scale(mScaleFactor, mScaleFactor);
-        canvas.scale(mScaleFactor, mScaleFactor, documentView.getPivotX(), documentView.getPivotY());
+        canvas.scale(mScaleFactor, mScaleFactor, scalePointX, scalePointY);
         canvas.translate(mPosX, mPosY);
 
         documentView.setScaleX(mScaleFactor);
