@@ -55,6 +55,8 @@ public class RoomView extends View {
     private ScaleGestureDetector mDocumentScaleDetector;
     private int mActivePointerId = INVALID_POINTER_ID;
 
+    private DocumentView documentView;
+
     private enum TouchStates {
         RESIZE, DRAW
     }
@@ -113,8 +115,13 @@ public class RoomView extends View {
         super.onDraw(canvas);
 
         canvas.save();
-        canvas.scale(mScaleFactor, mScaleFactor, scalePointX, scalePointY);
+//        canvas.scale(mScaleFactor, mScaleFactor);
+        canvas.scale(mScaleFactor, mScaleFactor, documentView.getPivotX(), documentView.getPivotY());
         canvas.translate(mPosX, mPosY);
+
+        documentView.setScaleX(mScaleFactor);
+        documentView.setScaleY(mScaleFactor);
+
 
         // Draw the center of the screen
 //        canvas.drawCircle(cX, cY, 10, marker);
@@ -160,6 +167,11 @@ public class RoomView extends View {
                             mPosX += dx;
                             mPosY += dy;
                             invalidate();
+                            documentView.animate()
+                                    .x(mPosX * mScaleFactor)
+                                    .y(mPosY * mScaleFactor)
+                                    .setDuration(0)
+                                    .start();
                         }
 
                         mLastTouchX = x;
@@ -247,7 +259,12 @@ public class RoomView extends View {
             scalePointY = detector.getFocusY();
 
             // Don't let the object get too small or too large.
-            mScaleFactor = Math.max(MIN_SCALE, Math.min(mScaleFactor, MAX_SCALE));
+            if (mScaleFactor > MAX_SCALE) {
+                mScaleFactor = MAX_SCALE;
+            }
+            if (mScaleFactor < MIN_SCALE) {
+                mScaleFactor = MIN_SCALE;
+            }
 
             invalidate();
             return true;
@@ -260,5 +277,10 @@ public class RoomView extends View {
             if (networkLayer != null) {
                 networkLayer.undo(profile);
             }
+        }
+
+
+        public void setDocumentView(DocumentView documentView) {
+            this.documentView = documentView;
         }
     }

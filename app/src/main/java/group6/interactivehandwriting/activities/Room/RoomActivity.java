@@ -76,6 +76,8 @@ public class RoomActivity extends AppCompatActivity {
 
         documentView = findViewById(R.id.documentView);
 
+        roomView.setDocumentView(documentView);
+
         seekbar = findViewById(R.id.seekBar);
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
 
@@ -185,11 +187,11 @@ public class RoomActivity extends AppCompatActivity {
     public void resizeDoc(View view) {
         if (!resizeToggle) {
             documentView.bringToFront();
-            documentView.activateResizeMode();
+//            documentView.activateResizeMode();
             resizeToggle = true;
         } else {
             roomView.bringToFront();
-            documentView.deactivateResizeMode();
+//            documentView.deactivateResizeMode();
             resizeToggle = false;
         }
     }
